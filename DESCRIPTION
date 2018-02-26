@@ -1,0 +1,12 @@
+Package: ploom
+Type: Package
+Title: Bounded memory linear models
+Version: 0.0
+Date: 2018-02-25
+Author: Blake Boswell
+Maintainer: Blake Boswell <j.blake.boswell@gmail.com>
+Description: Currently a direct translation of biglm
+License: GPL
+Depends: R6
+Imports: Rcpp (>= 0.12.15)
+LinkingTo: Rcpp, RcppArmadillo
