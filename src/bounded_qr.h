@@ -8,8 +8,8 @@ using namespace Rcpp;
 // [[Rcpp::depends(RcppArmadillo)]]
 
 
-//'
-class BoundedQR {
+//' @internal
+class BoundedQr {
   
 private:
   const double zero_      = 0.0;
@@ -28,7 +28,7 @@ public:
   double sserr;
   bool tol_set;
   
-  BoundedQR(int p) {
+  BoundedQr(int p) {
     
     n_cov_ = p;
     n_obs_ = 0;
@@ -44,7 +44,7 @@ public:
     
   };
   
-  ~BoundedQR(){ /* am free? */ };
+  ~BoundedQr(){ /* am free? */ };
   
   void update(arma::mat &X, arma::vec &y, arma::vec &w);
   void includ(arma::vec &xrow, double yelem, double weight);
@@ -55,24 +55,24 @@ public:
 };
 
 
-RCPP_MODULE(BoundedQRModule) {
+RCPP_MODULE(BoundedQrModule) {
   
   using namespace Rcpp;
   
-  class_<BoundedQR>("BoundedQR")
+  class_<BoundedQr>("BoundedQr")
     
     .constructor<int>()
     
-    .field("D",       &BoundedQR::D)
-    .field("rbar",    &BoundedQR::rbar)
-    .field("thetab",  &BoundedQR::thetab)
-    .field("tol_set", &BoundedQR::tol_set)
-    .field("tol",     &BoundedQR::tol)
-    .field("sserr",   &BoundedQR::sserr)
+    .field("D",       &BoundedQr::D)
+    .field("rbar",    &BoundedQr::rbar)
+    .field("thetab",  &BoundedQr::thetab)
+    .field("tol_set", &BoundedQr::tol_set)
+    .field("tol",     &BoundedQr::tol)
+    .field("sserr",   &BoundedQr::sserr)
     
-    .method("update_qr", &BoundedQR::update)
-    .method("includ",    &BoundedQR::includ)
-    .method("regcf",     &BoundedQR::regcf)
+    .method("update_qr", &BoundedQr::update)
+    .method("includ",    &BoundedQr::includ)
+    .method("regcf",     &BoundedQr::regcf)
     ;
   
 }

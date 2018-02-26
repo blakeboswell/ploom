@@ -1,25 +1,42 @@
 #include "bounded_qr.h"
 
 
-void update(arma::mat &X,
-            arma::vec &y,
-            arma::vec &w) {
+//' @internal
+void BoundedQr::update(arma::mat &X,
+                       arma::vec &y,
+                       arma::vec &w) {
   
-  return;
+  const int np = n_cov_;
+  
+  arma::vec xrow = arma::vec(np);
+  
+  for(int i = 0; i < X.n_rows; ++i) {
+    
+    for(int j = 0; j < X.n_cols; ++i) {
+      xrow[j] = X(i, j);
+    }
+    
+    includ(xrow, y[i], w[i]);
+    
+  }
+  
 }
 
 
-void BoundedQR::includ(arma::vec &xrow,
+//' @internal
+//'  ALGORITHM AS274  APPL. STATIST. (1992) VOL.41, NO. 2
+//'  Modified from algorithm AS 75.1
+//'
+//'  Calling this routine updates `D`, `rbar`, `thetab` and `sserr` by the
+// ' inclusion of `xrow`, `yelem` with the specified `weight`.   The number
+//'  of columns (variables) may exceed the number of rows (cases).
+//'  @param xrow
+//'  @param yelem
+//'  @param weight
+void BoundedQr::includ(arma::vec &xrow,
                        double yelem,
                        double weight) {
 
-//  ALGORITHM AS274  APPL. STATIST. (1992) VOL.41, NO. 2
-//  Modified from algorithm AS 75.1
-//
-//  Calling this routine updates `D`, `rbar`, `thetab`` and `sserr`` by the
-//  inclusion of `xrow`, `yelem` with the specified `weight`.   The number
-//  of columns (variables) may exceed the number of rows (cases).  
-  
   const int np     = n_cov_;
   const int n_xrow = xrow.n_rows;
   
@@ -75,13 +92,13 @@ void BoundedQR::includ(arma::vec &xrow,
 }
 
 
-void BoundedQR::tolset() {
+//' @internal
+//'  ALGORITHM AS274  APPL. STATIST. (1992) VOL.41, NO. 2
+//'
+//'  Sets up array TOL for testing for zeroes in an orthogonal
+//'  reduction formed using AS75.1.
+void BoundedQr::tolset() {
 
-//  ALGORITHM AS274  APPL. STATIST. (1992) VOL.41, NO. 2
-//
-//  Sets up array TOL for testing for zeroes in an orthogonal
-//  reduction formed using AS75.1.
-  
     const int np = n_cov_;
   
 //  EPS is a machine-dependent constant.   For compilers which use
@@ -114,12 +131,11 @@ void BoundedQR::tolset() {
 }
 
 
-void BoundedQR::singchk() {
-
-//  ALGORITHM AS274  APPL. STATIST. (1992) VOL.41, NO. 2
-//
-//  Checks for singularities, reports, and adjusts orthogonal
-//  reductions produced by AS75.1.
+//'  ALGORITHM AS274  APPL. STATIST. (1992) VOL.41, NO. 2
+//'
+//'  Checks for singularities, reports, and adjusts orthogonal
+//'  reductions produced by AS75.1.
+void BoundedQr::singchk() {
 
   const int np = n_cov_;
 
@@ -178,14 +194,13 @@ void BoundedQR::singchk() {
 }
 
 
-arma::vec BoundedQR::regcf() {
+//'  ALGORITHM AS274  APPL. STATIST. (1992) VOL 41, NO. x
+//'
+//'  Modified version of AS75.4 to calculate regression coefficients
+//'  for the first NREQ variables, given an orthogonal reduction from
+//'  AS75.1.
+arma::vec BoundedQr::regcf() {
   
-//  ALGORITHM AS274  APPL. STATIST. (1992) VOL 41, NO. x
-//
-//  Modified version of AS75.4 to calculate regression coefficients
-//  for the first NREQ variables, given an orthogonal reduction from
-//  AS75.1.
-
   const int np = n_cov_;
 
   if(!tol_set) {
