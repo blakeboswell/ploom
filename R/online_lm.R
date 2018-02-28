@@ -1,62 +1,76 @@
 
-#' @internal
-#' prepare model inputs
+#' extract weights from online_lm inputs
 #' 
+#' @param weights a formula object
+#' @param data a data.frame, list, or environment (or object coercible
+#'      by as.data.frame to a data.frame), containing the variables in formula.
+#'      Neither a matrix nor an array will be accepted.
+#' @param n number of rows to be weighted
+#' 
+#' @internal
+prepare_weights <- function(weights, data, n) {
+
+  if(is.null(weights)) {
+    return(rep(1.0, n))
+  }
+
+  if(!inherits(weights, "formula")) {
+    stop("`weights` must be a formula")
+  }
+
+  model.frame(weights, data)[[1]]
+
+}
+
+
+#' prepare model inputs
+#'
 #' @param formula
 #' @param data
 #' @param weight
-prepare_model <- function(formula, data, weights) {
-  
+#' 
+#' @internal
+prepare_model <- function(data, formula, weights) {
+
   model_terms <- terms(formula)
   model_data  <- model.frame(model_terms, data)
-  
+
   if(is.null(offset <- model.offset(model_data))) {
     offset <- 0
   }
-  
-  model_response  <- model.response(model_data) - offset
-  
-  if(!is.null(weights)) {
-    
-    if(!inherits(weights, "formula")) {
-      stop("`weights` must be a formula")
-    }
-    
-    weights <- model.frame(weights, data)[[1]]
-    
-  } else {
-    weights <- rep(1.0, length(model_response))
-  }
-  
-  model_data <- model.matrix(model_terms, model_data)
-  
+
+  model_response <- model.response(model_data) - offset
+  model_weights  <- prepare_weights(weights, data, length(model_response))
+  model_data     <- model.matrix(model_terms, model_data)
+
   list(
     model_terms    = model_terms,
     model_matrix   = model_data,
     model_response = model_response,
-    weights        = weights
+    weights        = model_weights
   )
-  
+
 }
 
 
 #' @export
-#' 
-#' @param formula
+#'
 #' @param data
+#' @param formula
 #' @param weights
 #' @param sandwich
-online_lm <- function(formula,
-                      data,
+online_lm <- function(data,
+                      formula,
                       weights  = NULL,
                       sandwich = FALSE) {
 
-  data <- prepare_model(formula, data, weights)
-  qr   <- bounded_qr(ncol(data$model_matrix))
-  qr   <- update(data$model_matrix,
+  data <- prepare_model(data, formula, weights)
+  qr   <- new_bounded_qr(ncol(data$model_matrix))
+  qr   <- update(qr,
+                 data$model_matrix,
                  data$model_response,
                  data$weights)
-  
+
   rval <- list(
     call    = sys.call(),
     qr      = qr,
@@ -68,22 +82,22 @@ online_lm <- function(formula,
   )
 
   if (sandwich) {
-    
-    p    <- ncol(mm)
-    n    <- nrow(mm)
-    xyqr <- bounded_qr(p * (p + 1))
-    
-    xx   <- matrix(nrow = n, ncol = p * (p + 1))
-    xx[, 1:p] <- mm * data$model_response
-    for (i in 1:p) {
-      xx[, p * i + (1:p)] <- mm * mm[, i]
-    }
-    
-    xyqr <- update_qr(xyqr, xx, rep(0, n), data$weights ^ 2)
-    rval$sandwich <- list(xy = xyqr)
-    
+
+    # p    <- ncol(mm)
+    # n    <- nrow(mm)
+    # xyqr <- bounded_qr(p * (p + 1))
+    # 
+    # xx   <- matrix(nrow = n, ncol = p * (p + 1))
+    # xx[, 1:p] <- mm * data$model_response
+    # for (i in 1:p) {
+    #   xx[, p * i + (1:p)] <- mm * mm[, i]
+    # }
+    # 
+    # xyqr <- update_qr(xyqr, xx, rep(0, n), data$weights ^ 2)
+    # rval$sandwich <- list(xy = xyqr)
+
   }
-    
+
   rval$df.resid <- rval$n - length(qr$D)
   class(rval) <- "online_lm"
   rval

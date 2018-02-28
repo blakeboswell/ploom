@@ -1,1 +1,1 @@
-Rcpp::loadModule("BoundedQRModule", TRUE)
+Rcpp::loadModule("BoundedQrModule", TRUE)

@@ -20,13 +20,16 @@ private:
   int r_dim_;     // size of upper triangle of R in QR-factorization
   
 public:
-  arma::vec D;
-  arma::vec rbar;
-  arma::vec thetab;
-  arma::vec tol;
+  arma::vec D_;
+  arma::vec rbar_;
+  arma::vec thetab_;
+  arma::vec tol_;
   
-  double sserr;
-  bool tol_set;
+  double sserr_;
+  bool tolset_;
+  
+  void set_tolerance();
+  void check_singularity();
   
   BoundedQr(int p) {
     
@@ -34,22 +37,20 @@ public:
     n_obs_ = 0;
     r_dim_ = p * (p - 1) / 2;
     
-    D      = arma::zeros(n_cov_);
-    rbar   = arma::zeros(r_dim_);
-    thetab = arma::zeros(n_cov_);
-    tol    = arma::zeros(n_cov_);
+    D_      = arma::zeros(n_cov_);
+    rbar_   = arma::zeros(r_dim_);
+    thetab_ = arma::zeros(n_cov_);
+    tol_    = arma::zeros(n_cov_);
     
-    sserr   = zero_;
-    tol_set = false;
+    sserr_  = zero_;
+    tolset_ = false;
     
   };
   
   ~BoundedQr(){ /* am free? */ };
   
+  void include(arma::vec &xrow, double yelem, double weight);
   void update(arma::mat &X, arma::vec &y, arma::vec &w);
-  void includ(arma::vec &xrow, double yelem, double weight);
-  void tolset();
-  void singchk();
   arma::vec regcf();
   
 };
@@ -63,16 +64,16 @@ RCPP_MODULE(BoundedQrModule) {
     
     .constructor<int>()
     
-    .field("D",       &BoundedQr::D)
-    .field("rbar",    &BoundedQr::rbar)
-    .field("thetab",  &BoundedQr::thetab)
-    .field("tol_set", &BoundedQr::tol_set)
-    .field("tol",     &BoundedQr::tol)
-    .field("sserr",   &BoundedQr::sserr)
+    .field("D",       &BoundedQr::D_)
+    .field("rbar",    &BoundedQr::rbar_)
+    .field("thetab",  &BoundedQr::thetab_)
+    .field("tolset",  &BoundedQr::tolset_)
+    .field("tol",     &BoundedQr::tol_)
+    .field("sserr",   &BoundedQr::sserr_)
     
-    .method("update_qr", &BoundedQr::update)
-    .method("includ",    &BoundedQr::includ)
-    .method("regcf",     &BoundedQr::regcf)
+    .method("include", &BoundedQr::include)
+    .method("update",  &BoundedQr::update)
+    .method("regcf",   &BoundedQr::regcf)
     ;
   
 }
