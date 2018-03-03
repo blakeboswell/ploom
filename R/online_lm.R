@@ -1,58 +1,4 @@
 
-#' extract weights from online_lm inputs
-#' 
-#' @param weights a formula object
-#' @param data a data.frame, list, or environment (or object coercible
-#'      by as.data.frame to a data.frame), containing the variables in formula.
-#'      Neither a matrix nor an array will be accepted.
-#' @param n number of rows to be weighted
-#' 
-#' @internal
-prepare_weights <- function(weights, data, n) {
-
-  if(is.null(weights)) {
-    return(rep(1.0, n))
-  }
-
-  if(!inherits(weights, "formula")) {
-    stop("`weights` must be a formula")
-  }
-
-  model.frame(weights, data)[[1]]
-
-}
-
-
-#' prepare model inputs
-#'
-#' @param formula
-#' @param data
-#' @param weight
-#' 
-#' @internal
-prepare_model <- function(data, formula, weights) {
-
-  model_terms <- terms(formula)
-  model_data  <- model.frame(model_terms, data)
-
-  if(is.null(offset <- model.offset(model_data))) {
-    offset <- 0
-  }
-
-  model_response <- model.response(model_data) - offset
-  model_weights  <- prepare_weights(weights, data, length(model_response))
-  model_data     <- model.matrix(model_terms, model_data)
-
-  list(
-    model_terms    = model_terms,
-    model_matrix   = model_data,
-    model_response = model_response,
-    weights        = model_weights
-  )
-
-}
-
-
 #' @export
 #'
 #' @param data
@@ -64,41 +10,58 @@ online_lm <- function(data,
                       weights  = NULL,
                       sandwich = FALSE) {
 
-  data <- prepare_model(data, formula, weights)
-  qr   <- new_bounded_qr(ncol(data$model_matrix))
-  qr   <- update(qr,
-                 data$model_matrix,
-                 data$model_response,
-                 data$weights)
+  model_terms <- terms(formula)
+  model_data  <- model.frame(model_terms, data)
+  
+  if(is.null(offset <- model.offset(model_data))) {
+    offset <- 0
+  }
+  
+  model_response <- model.response(model_data) - offset
+  model_data     <- model.matrix(model_terms, model_data)
+  
+  p <- ncol(model_data)
+  n <- nrow(model_data) 
+
+  if(is.null(weights)) {
+    weights <- rep(1.0, n)
+  } else {
+    if(!inherits(weights, "formula")) {
+      stop("`weights` must be a formula")
+    }
+    weights <- model.frame(weights, data)[[1]]
+  }
+  
+  model_qr <- update(new_bounded_qr(p),
+                     model_data, model_response, weights)
 
   rval <- list(
-    call    = sys.call(),
-    qr      = qr,
-    assign  = attr(data$model_data, "assign"),
-    terms   = data$model_terms,
-    n       = nrow(data$model_data),
-    names   = colnames(data$model_data),
-    weights = data$weights
+    call     = sys.call(),
+    qr       = model_qr,
+    assign   = attr(model_data, "assign"),
+    terms    = model_terms,
+    n        = n,
+    names    = colnames(model_data),
+    weights  = weights,
+    df.resid = n - length(model_qr$D)
   )
 
   if (sandwich) {
 
-    # p    <- ncol(mm)
-    # n    <- nrow(mm)
-    # xyqr <- bounded_qr(p * (p + 1))
-    # 
-    # xx   <- matrix(nrow = n, ncol = p * (p + 1))
-    # xx[, 1:p] <- mm * data$model_response
-    # for (i in 1:p) {
-    #   xx[, p * i + (1:p)] <- mm * mm[, i]
-    # }
-    # 
-    # xyqr <- update_qr(xyqr, xx, rep(0, n), data$weights ^ 2)
-    # rval$sandwich <- list(xy = xyqr)
+    xx        <- matrix(nrow = n, ncol = p * (p + 1))
+    xx[, 1:p] <- model_data * model_response
+    
+    for (i in 1:p) {
+      xx[, p * i + (1:p)] <- model_data * model_data[, i]
+    }
+
+    sandwich_qr <- update(new_bounded_qr(p * (p + 1)),
+                          xx, rep(0, n), weights ^ 2)
+    
+    rval$sandwich <- list(xy = sandwich_qr)
 
   }
 
-  rval$df.resid <- rval$n - length(qr$D)
   class(rval) <- "online_lm"
   rval
 
@@ -210,7 +173,7 @@ online_lm <- function(data,
 
 
 print.online_lm <- function(x, ...) {
-  cat("Bounded memory regression model: ")
+  cat("Online linear regression model: ")
   print(x$call)
   cat("Observations included = ", x$n, "\n")
   invisible(x)
