@@ -107,15 +107,11 @@ online_lm <- function(data,
 # }
 
 
-# coef.online_lm <- function(object, ...) {
-#   if (!object$qr$tol_set) {
-#     object$qr$singchk()
-#   }
-#   rval <- coef(object$qr)
-#   rval[object$qr$D == 0] <- NA
-#   names(rval) <- object$names
-#   rval
-# }
+coef.online_lm <- function(obj, ...) {
+  beta        <- coef(obj$qr)
+  names(beta) <- obj$names
+  beta
+}
 
 # vcov.online_lm <- function(object, ...) {
 #   

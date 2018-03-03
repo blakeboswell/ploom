@@ -52,7 +52,7 @@ public:
   
   void include(arma::vec &xrow, double yelem, double weight);
   void update(arma::mat &X, arma::vec &y, arma::vec &w);
-  arma::vec regcf();
+  arma::vec betas();
   
 };
 
@@ -72,9 +72,9 @@ RCPP_MODULE(BoundedQrModule) {
     .field("tol",     &BoundedQr::tol_)
     .field("sserr",   &BoundedQr::sserr_)
     
-    .method("include", &BoundedQr::include)
     .method("update",  &BoundedQr::update)
-    .method("regcf",   &BoundedQr::regcf)
+    .method("betas",   &BoundedQr::betas)
+    .method("check_singularity", &BoundedQr::check_singularity)
     ;
   
 }

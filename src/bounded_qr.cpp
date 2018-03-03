@@ -198,7 +198,7 @@ void BoundedQr::check_singularity() {
 //'  Modified version of AS75.4 to calculate regression coefficients
 //'  for the first NREQ variables, given an orthogonal reduction from
 //'  AS75.1.
-arma::vec BoundedQr::regcf() {
+arma::vec BoundedQr::betas() {
   
   const int np = n_cov_;
 

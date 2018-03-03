@@ -17,3 +17,29 @@ update.Rcpp_BoundedQr <- function(qr, X, y, weights) {
 }
 
 
+coef.Rcpp_BoundedQr <- function(qr, nvar = NULL, ...){
+  
+  p <- length(qr$D)
+  
+  if (is.null(nvar)) {
+    nvar <- p
+  }
+    
+  if (nvar < 1 | nvar > p) {
+    stop("Invalid value of `nvar`")
+  }
+  
+  if (!qr$tolset) {
+    qr$check_singularity()
+  }
+  
+  # TODO: replicate this error handle
+  # if (tmp$ier!=0) stop("Error in REGCF: can't happen")
+  
+  beta              <- qr$betas()
+  beta[qr$D == 0.0] <- NA
+  
+  beta
+  
+}
+
