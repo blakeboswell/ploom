@@ -87,18 +87,16 @@ vcov.online_lm <- function(obj, ...) {
   k       <- length(cov_vec)
   np      <- length(obj$qr$D)
   pos     <- 1
-  V       <- matrix(NA, np, np)
-  
+  V       <- matrix(nrow = np, ncol = np)
+
   for(col in 1:np) {
-    for(row in 1:col) {
-      V[col, row] <- cov_vec[pos]
-      pos <- pos + 1
-    }
+    V[col, 1:col] <- cov_vec[pos:(pos + col - 1)]
+    pos <- pos + col
   }
-  
+
   V[upper.tri(V)] <- t(V)[upper.tri(V)]
   dimnames(V)     <- list(obj$names, obj$names)
-  
+
   V
   
 }
