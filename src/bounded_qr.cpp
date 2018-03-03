@@ -45,6 +45,8 @@ void BoundedQr::include(arma::vec &xrow,
   ++n_obs_;
   int nextr = 0;
   
+  rssset_ = false;
+  
   for(int i = 0; i < np; ++i) {
   //  Skip unnecessary transformations.   Test on exact zeroes must be
   //  used or stability can be destroyed.
@@ -136,10 +138,8 @@ void BoundedQr::set_tolerance() {
 //'  reductions produced by AS75.1.
 void BoundedQr::check_singularity() {
 
-  const int np = n_cov_;
-
-  arma::vec linedep = arma::vec(np).fill(false);
-  arma::vec work    = arma::sqrt(D_);
+  const int np   = n_cov_;
+  arma::vec work = arma::sqrt(D_);
   
   for(int col = 0; col < np; ++col) {
   //  Set elements within `rbar_` to `zero`` if they are less than `tol_[col]` in
@@ -160,9 +160,11 @@ void BoundedQr::check_singularity() {
   //  element of `lindep`, and use `include` to augment the projections in
   //  the lower rows of the orthogonalization.
   
+    lindep_[col] = false;
+    
     if(work[col] <= temp) {
       
-      linedep[col] = true;
+      lindep_[col] = true;
       
       if(col < np - 1) {
         
@@ -229,3 +231,135 @@ arma::vec BoundedQr::betas() {
   return beta;
   
 }
+
+
+void BoundedQr::residual_sumsquares() {
+  
+  int np = n_cov_;
+  
+  double total = sserr_;
+  rss_[np - 1] = sserr_;
+  
+  for(int i = np - 1; i > 0; i--) {
+    total += D_[i] * thetab_[i] * thetab_[i];
+    rss_[i - 1] = total;
+  }
+  
+  rssset_ = true;
+  
+}
+
+
+arma::vec BoundedQr::vcov(int nreq) {
+  
+  if(n_obs_ <= nreq) {
+    // TODO: handle error appropriately
+    return arma::vec(1).fill(NA_REAL);
+  }
+  
+  if(!tolset_) {
+    check_singularity();
+  }
+  
+  if(!rssset_) {
+    residual_sumsquares();
+  }
+  
+  double rnk = 0.0;
+  for (int i = 0; i < nreq; ++i) {
+    if(!lindep_[i]) {
+      rnk++;
+    }
+  }
+  
+  double var       = rss_[nreq - 1] / (n_obs_ - rnk);
+  arma::vec rinv   = rbar_inverse(nreq);
+  arma::vec covmat = arma::vec(nreq * (nreq + 1) / 2).fill(NA_REAL);
+  
+  int pos1;
+  int pos2;
+  int start    = 0;
+  double total = 0.0;
+  
+  for(int row = 0; row < nreq; ++row) {
+    
+    pos2 = start;
+    
+    if(!lindep_[row]) {
+      
+      for(int col = row; col < nreq; ++col) {
+        
+        if(!lindep_[col]) {
+          
+          pos1 = start + col - row;
+          
+          if(row == col) {
+            total = 1.0 / D_[col];
+          } else {
+            total = rinv[pos1 - 1] / D_[col];
+          }
+          
+          for(int k = col + 1; k < nreq; k++) {
+            if(!lindep_[k]) {
+              total += rinv[pos1] * rinv[pos2] / D_[k];
+            }
+            ++pos1;
+            ++pos2;
+          }
+          
+          covmat[(col + 1) * col / 2 + row] = total * var;
+          
+        } else {
+          pos2 += nreq - col - 1;
+        }
+      }
+    }
+    start += nreq - row - 1;
+  }
+  
+  return covmat;
+  
+}
+
+
+arma::vec BoundedQr::rbar_inverse(int nreq) {
+  
+  int np   = n_cov_;
+  int pos  = nreq * (nreq - 1) / 2 - 1;
+  int pos1 = -1;
+  int pos2 = -1;
+  
+  double total   = 0.0;
+  arma::vec rinv = arma::vec(pos + 1).fill(NA_REAL);
+  
+  for(int row = nreq - 1; row > 0; --row) {
+    
+    if(!lindep_[row]) {
+      
+      int start = (row - 1) * (np + np - row) / 2;
+      
+      for(int col = nreq; col > row; --col) {
+        
+        pos1  = start;
+        pos2  = pos;
+        total = 0.0;
+        
+        for(int k = row; k < col - 1; ++k) {
+          pos2 += nreq - k - 1;
+          if (!lindep_[k]) {
+            total += -rbar_[pos1] * rinv[pos2];
+          }
+          ++pos1;
+        }
+        rinv[pos] = total - rbar_[pos1];
+        --pos;
+      }
+    } else {
+      pos -= nreq - row;
+    }
+  }
+  
+  return rinv;
+  
+}
+

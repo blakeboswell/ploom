@@ -20,6 +20,15 @@ private:
   int n_obs_;     // online count of number of observations processed
   int r_dim_;     // size of upper triangle of R in QR-factorization
   
+  arma::vec lindep_;
+  arma::vec rss_;
+  bool rssset_;
+  
+  void set_tolerance();
+  void residual_sumsquares();
+  arma::vec rbar_inverse(int nreq);
+  
+  
 public:
   arma::vec D_;
   arma::vec rbar_;
@@ -29,22 +38,23 @@ public:
   double sserr_;
   bool tolset_;
   
-  void set_tolerance();
-  void check_singularity();
-  
   BoundedQr(int p) {
     
     n_cov_ = p;
     n_obs_ = 0;
     r_dim_ = p * (p - 1) / 2;
     
-    D_      = arma::zeros(n_cov_);
-    rbar_   = arma::zeros(r_dim_);
-    thetab_ = arma::zeros(n_cov_);
-    tol_    = arma::zeros(n_cov_);
+    D_       = arma::zeros(n_cov_);
+    rbar_    = arma::zeros(r_dim_);
+    thetab_  = arma::zeros(n_cov_);
+    tol_     = arma::zeros(n_cov_);
     
-    sserr_  = zero_;
-    tolset_ = false;
+    sserr_   = zero_;
+    tolset_  = false;
+    
+    lindep_ = arma::vec(n_cov_).fill(false);
+    rss_     = arma::zeros(n_cov_);
+    rssset_  = false;
     
   };
   
@@ -52,6 +62,8 @@ public:
   
   void include(arma::vec &xrow, double yelem, double weight);
   void update(arma::mat &X, arma::vec &y, arma::vec &w);
+  void check_singularity();
+  arma::vec vcov(int nreq);
   arma::vec betas();
   
 };
@@ -74,6 +86,7 @@ RCPP_MODULE(BoundedQrModule) {
     
     .method("update",  &BoundedQr::update)
     .method("betas",   &BoundedQr::betas)
+    .method("vcov",    &BoundedQr::vcov)
     .method("check_singularity", &BoundedQr::check_singularity)
     ;
   

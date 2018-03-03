@@ -43,3 +43,12 @@ coef.Rcpp_BoundedQr <- function(qr, nvar = NULL, ...){
   
 }
 
+
+vcov.Rcpp_BoundedQr <- function(qr) {
+  
+  qr$vcov(length(qr$D))
+  
+}
+
+
+
