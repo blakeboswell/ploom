@@ -1,36 +1,58 @@
 
-#' @internal
-new_bounded_qr <- function(p) {
-  new(Class = BoundedQr, p)
+#' initialize new `BoundedQr` object
+#'
+#' @param np int number of independent parameters in model
+#'   including the intercept when model has intercept
+#' @return
+#' @keywords internal
+new_bounded_qr <- function(np) {
+  
+  if(np < 1) {
+    stop("Number of parameters must be greater than 0")
+  }
+  
+  new(Class = BoundedQr, np)
 }
 
 
-#' @export 
+#' wrapper for `BoundedQr` method `update`
 #'
-#' @param qr Rcpp_BoundedQr object to update
-#' @param X matrix of covariate observations
-#' @param y response
-#' @param weights weights of each observation
+#' @param qr BoundedQr object to update
+#' @param X numeric matrix of covariate observations
+#' @param y numeric vector of response
+#' @param weights numeric vector of observation weights
+#' @keywords internal
 update.Rcpp_BoundedQr <- function(qr, X, y, weights) {
+  
+  if(ncol(X) != qr$np) {
+    stop("Invalid column dimension for `X`")
+  }
+  
+  if(!all.equal.numeric(nrow(X),
+                        length(y),
+                        length(weights))) {
+    stop("Incompatible row dimensions for `X`, `y`, `weights`")
+  }
+  
   qr$update(X, y, weights)
   qr
 }
 
 
+#' wrapper for `BoundedQr` method `betas`
+#' 
+#' @param qr BoundedQr object
+#' @param nvar int number of coefficients to return
+#' @param ... ignored
+#' @keywords internal
 coef.Rcpp_BoundedQr <- function(qr, nvar = NULL, ...){
   
-  p <- length(qr$D)
-  
   if (is.null(nvar)) {
-    nvar <- p
+    nvar <- qr$np
   }
     
-  if (nvar < 1 | nvar > p) {
+  if (nvar < 1 | nvar > qr$np) {
     stop("Invalid value of `nvar`")
-  }
-  
-  if (!qr$tolset) {
-    qr$check_singularity()
   }
   
   # TODO: replicate this error handle
@@ -44,10 +66,12 @@ coef.Rcpp_BoundedQr <- function(qr, nvar = NULL, ...){
 }
 
 
+#' wrapper for `BoundedQr` method `vcov` 
+#'
+#' @param qr BoundedQr object
+#' @keywords internal
 vcov.Rcpp_BoundedQr <- function(qr) {
-  
-  qr$vcov(length(qr$D))
-  
+  qr$vcov(qr$np)
 }
 
 

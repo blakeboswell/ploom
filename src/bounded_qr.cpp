@@ -1,7 +1,7 @@
 #include "bounded_qr.h"
 #include <string>
 
-//' @internal
+//' @keywords internal
 void BoundedQr::update(arma::mat &X,
                        arma::vec &y,
                        arma::vec &w) {
@@ -22,7 +22,6 @@ void BoundedQr::update(arma::mat &X,
 }
 
 
-//' @internal
 //'  ALGORITHM AS274  APPL. STATIST. (1992) VOL.41, NO. 2
 //'  Modified from algorithm AS 75.1
 //'
@@ -32,6 +31,7 @@ void BoundedQr::update(arma::mat &X,
 //'  @param xrow
 //'  @param yelem
 //'  @param weight
+//'  @keywords internal
 void BoundedQr::include(arma::vec &xrow,
                         double yelem,
                         double weight) {
@@ -89,15 +89,17 @@ void BoundedQr::include(arma::vec &xrow,
   // `yelem` * `sqrt(weight)` is now equal to Brown & Durbin's recursive residual.
   
   sserr_ += w * y * y;
+  singchecked_ = false;
+  tolset_      = false;
   
 }
 
 
-//' @internal
 //'  ALGORITHM AS274  APPL. STATIST. (1992) VOL.41, NO. 2
 //'
 //'  Sets up array TOL for testing for zeroes in an orthogonal
 //'  reduction formed using AS75.1.
+//' @keywords internal
 void BoundedQr::set_tolerance() {
 
     const int np = n_cov_;
@@ -136,10 +138,15 @@ void BoundedQr::set_tolerance() {
 //'
 //'  Checks for singularities, reports, and adjusts orthogonal
 //'  reductions produced by AS75.1.
+//' @keywords internal
 void BoundedQr::check_singularity() {
 
   const int np   = n_cov_;
   arma::vec work = arma::sqrt(D_);
+  
+  if(!tolset_) {
+    set_tolerance();
+  }
   
   for(int col = 0; col < np; ++col) {
   //  Set elements within `rbar_` to `zero`` if they are less than `tol_[col]` in
@@ -192,6 +199,7 @@ void BoundedQr::check_singularity() {
       }
     }
   }
+  singchecked_ = true;
 }
 
 
@@ -200,12 +208,13 @@ void BoundedQr::check_singularity() {
 //'  Modified version of AS75.4 to calculate regression coefficients
 //'  for the first NREQ variables, given an orthogonal reduction from
 //'  AS75.1.
+//' @keywords internal
 arma::vec BoundedQr::betas() {
   
   const int np = n_cov_;
 
-  if(!tolset_) {
-    set_tolerance();
+  if(!singchecked_) {
+    check_singularity();
   }
   
   arma::vec beta = arma::zeros(np);
@@ -233,6 +242,7 @@ arma::vec BoundedQr::betas() {
 }
 
 
+//' @keywords internal
 void BoundedQr::residual_sumsquares() {
   
   int np = n_cov_;
@@ -250,6 +260,7 @@ void BoundedQr::residual_sumsquares() {
 }
 
 
+//' @keywords internal
 arma::vec BoundedQr::vcov(int nreq) {
   
   if(n_obs_ <= nreq) {
@@ -257,7 +268,7 @@ arma::vec BoundedQr::vcov(int nreq) {
     return arma::vec(1).fill(NA_REAL);
   }
   
-  if(!tolset_) {
+  if(!singchecked_) {
     check_singularity();
   }
   
@@ -284,11 +295,8 @@ arma::vec BoundedQr::vcov(int nreq) {
   for(int row = 0; row < nreq; ++row) {
     
     pos2 = start;
-    
     if(!lindep_[row]) {
-      
       for(int col = row; col < nreq; ++col) {
-        
         if(!lindep_[col]) {
           
           pos1 = start + col - row;
@@ -316,12 +324,11 @@ arma::vec BoundedQr::vcov(int nreq) {
     }
     start += nreq - row - 1;
   }
-  
   return covmat;
-  
 }
 
 
+//' @keywords internal
 arma::vec BoundedQr::rbar_inverse(int nreq) {
   
   int np   = n_cov_;
@@ -333,7 +340,6 @@ arma::vec BoundedQr::rbar_inverse(int nreq) {
   arma::vec rinv = arma::vec(pos + 1).fill(NA_REAL);
   
   for(int row = nreq - 1; row > 0; --row) {
-    
     if(!lindep_[row]) {
       
       int start = (row - 1) * (np + np - row) / 2;
@@ -351,15 +357,15 @@ arma::vec BoundedQr::rbar_inverse(int nreq) {
           }
           ++pos1;
         }
+        
         rinv[pos] = total - rbar_[pos1];
         --pos;
+        
       }
     } else {
       pos -= nreq - row;
     }
   }
-  
   return rinv;
-  
 }
 
