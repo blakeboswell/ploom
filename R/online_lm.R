@@ -1,6 +1,9 @@
 
 
-#'
+#' Linear model that uses only `p^2` memory for `p` variables.
+#' It can be updated with more data using `update` allowing for linear
+#' regression on data sets larger than memory.
+#' 
 #' @param data
 #' @param formula
 #' @param weights
@@ -65,16 +68,18 @@ online_lm <- function(data,
 }
 
 
+#' @export
 coef.online_lm <- function(obj, ...) {
-  beta        <- coef(obj$qr)
-  names(beta) <- obj$names
-  beta
+  betas        <- coef(obj$qr)
+  names(betas) <- obj$names
+  betas
 }
 
 
+#' @export
 vcov.online_lm <- function(obj, ...) {
   
-  ## cpp implementation / sandwich not supported ---------------------
+  ## cpp implementation / HC not supported ---------------------------
   # V <- vcov(obj$qr)
   # dimnames(V) <- list(obj$names, obj$names)
   # 
@@ -123,67 +128,59 @@ vcov.online_lm <- function(obj, ...) {
 }
 
 
-# vcov.online_lm <- function(object, ...) {
-# 
-#   if (!object$qr$tol_set) {
-#     object$qr$singchk()
-#   }
-# 
-#   p         <- length(object$qr$D)
-#   R         <- diag(p)
-#   R[row(R) > col(R)] <- object$qr$rbar
-#   R         <- t(R)
-#   R         <- sqrt(object$qr$D) * R
-#   ok        <- object$qr$D != 0
-#   R[ok, ok] <- chol2inv(R[ok, ok, drop = FALSE])
-#   R[!ok, ]  <- NA
-#   R[, !ok]  <- NA
-#   dimnames(R) <- list(object$names, object$names)
-# 
-#   if (!is.null(object$sandwich)) {
-# 
-#     object$sandwich$xy$singchk()
-# 
-#     rxy  <- diag(p * (p + 1))
-#     rxy[row(rxy) > col(rxy)] <- object$sandwich$xy$rbar
-#     rxy <- t(rxy)
-#     rxy <- sqrt(object$sandwich$xy$D) * rxy
-#     M   <- t(rxy) %*% rxy
-# 
-#     beta <- coef(object)
-#     beta[!ok] <- 0
-#     bbeta <- kronecker(diag(p), beta)
-# 
-#     ##FIXME: singularities in beta
-#     Vcenter <-
-#       M[1:p, 1:p, drop = FALSE] + t(bbeta) %*% M[-(1:p), -(1:p), drop = FALSE] %*%
-#       bbeta -
-#       t(bbeta) %*% M[-(1:p), 1:p, drop = FALSE] - M[1:p, -(1:p), drop =
-#                                                       FALSE] %*% bbeta
-# 
-#     V <- matrix(NA, p, p)
-#     V[ok, ok] <-
-#       R[ok, ok, drop = FALSE] %*% Vcenter[ok, ok, drop = FALSE] %*% R[ok, ok, drop =
-#                                                                         FALSE]
-#     dimnames(V) <- list(object$names, object$names)
-#     attr(V, "model-based") <- R * object$qr$sserr / (object$n - p + sum(!ok))
-# 
-#   } else {
-#     V <- R * object$qr$sserr / (object$n - p + sum(!ok))
-#   }
-# 
-#   V
-# }
+#' @export
+deviance.online_lm <- function(obj, ...) {
+  obj$qr$sserr
+}
 
 
+#' @export
+print.online_lm <- function(obj, ...) {
+  cat("Online linear regression model: ")
+  print(obj$call)
+  cat("Observations included = ", obj$n, "\n")
+  invisible(obj)
+}
 
 
-# print.online_lm <- function(x, ...) {
-#   cat("Online linear regression model: ")
-#   print(x$call)
-#   cat("Observations included = ", x$n, "\n")
-#   invisible(x)
-# }
+#' @export
+summary.online_lm <- function(obj, ...) {
+  beta <- coef(obj)
+  se   <- sqrt(diag(vcov(obj)))
+  mat  <- cbind(
+    `Coef` = beta,
+    `(95%` = beta - 2 * se,
+    `CI)`  = beta + 2 * se,
+    `SE`   = se,
+    `p`    = 2 * pnorm(abs(beta / se), lower.tail = FALSE)
+  )
+  rownames(mat) <- obj$names
+  rval <- list(obj = obj, mat = mat)
+  if (attr(obj$terms, "intercept")) {
+    rval$nullrss <-
+      obj$qr$sserr + sum(obj$qr$D[-1] * obj$qr$thetab[-1] ^ 2)
+  } else {
+    rval$nullrss <-
+      obj$qr$sserr + sum(c(obj$qr$D) * c(obj$qr$thetab) ^ 2)
+  }
+
+  rval$rsq    <- 1 - deviance(obj) / rval$nullrss
+  class(rval) <- "summary.online_lm"
+  rval
+
+}
+
+
+#' @export
+print.summary.online_lm <- function(obj, digits = getOption("digits") - 3, ...) {
+  print(obj$obj)
+  print(round(obj$mat, digits))
+  if (!is.null(obj$obj$sandwich)) {
+    cat("Sandwich (model-robust) standard errors\n")
+  }
+  invisible(obj)
+}
+
 
 
 # update.online_lm <- function(object, moredata, ...) {
@@ -224,38 +221,5 @@ vcov.online_lm <- function(obj, ...) {
 #   object
 # }
 
-# summary.online_lm <- function(object, ...) {
-#   beta <- coef(object)
-#   se   <- sqrt(diag(vcov(object)))
-#   mat  <- cbind(
-#     `Coef` = beta,
-#     `(95%` = beta - 2 * se,
-#     `CI)`  = beta + 2 * se,
-#     `SE`   = se,
-#     `p`    = 2 * pnorm(abs(beta / se), lower.tail = FALSE)
-#   )
-#   rownames(mat) <- object$names
-#   rval <- list(obj = object, mat = mat)
-#   if (attr(object$terms, "intercept")) {
-#     rval$nullrss <-
-#       object$qr$sserr + sum(object$qr$D[-1] * object$qr$thetab[-1] ^ 2)
-#   } else {
-#     rval$nullrss <-
-#       object$qr$sserr + sum(c(object$qr$D) * c(object$qr$thetab) ^ 2)
-#   }
-#   
-#   rval$rsq    <- 1 - deviance(object) / rval$nullrss
-#   class(rval) <- "summary.online_lm"
-#   rval
-#   
-# }
 
-
-# print.summary.online_lm <- function(x, digits = getOption("digits") - 3, ...) {
-#   print(x$obj)
-#   print(round(x$mat, digits))
-#   if (!is.null(x$obj$sandwich))
-#     cat("Sandwich (model-robust) standard errors\n")
-#   invisible(x)
-# }
 
