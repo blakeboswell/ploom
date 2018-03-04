@@ -1,12 +1,17 @@
 
 #' Linear model that uses only `p^2` memory for `p` variables.
-#' It can be updated with more data using `update` allowing for linear
-#' regression on data sets larger than memory.
 #' 
-#' @param data
-#' @param formula
-#' @param weights
-#' @param sandwich
+#' @param data an optional data frame, list or environment
+#'   (or object coercible by as.data.frame to a data frame)
+#' @param formula A model formula: a symbolic description of the
+#'   model to be fitted.
+#' @param weights A one-sided, single term formula specifying weights
+#' @param sandwich TRUE to compute the Huber/White sandwich covariance matrix
+#'   (uses p^4 memory rather than p^2)
+#' @details The model formula must not contain any data-dependent terms, as
+#'   these will not be consistent when updated. Factors are permitted, but 
+#'   the levels of the factor must be the same across all data chunks 
+#'   (empty factor levels are ok). Offsets are allowed.
 #' @export
 online_lm <- function(data,
                       formula,
@@ -67,6 +72,11 @@ online_lm <- function(data,
 }
 
 
+#' fit `online_lm` model to new batch of observations
+#'
+#' @param data an optional data frame, list or environment
+#'   (or object coercible by as.data.frame to a data frame)
+#' @param object online_lm object
 #' @export
 update.online_lm <- function(data, obj, ...) {
 

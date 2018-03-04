@@ -2,7 +2,6 @@
 #'
 #' @param np int number of independent parameters in model
 #'   including the intercept when model has intercept
-#' @return
 #' @keywords internal
 new_bounded_qr <- function(np) {
   

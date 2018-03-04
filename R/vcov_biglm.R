@@ -2,7 +2,9 @@
 #' vcov implementation for updating linear model
 #' (Miller AS274 QR factorization) as implemented
 #' in package `biglm`
-#' 
+#' @param np number of parameters in model
+#' @param D diagonals of cross products matrix
+#' @param rbar the off diagonal portion of the R matrix
 #' @keywords internal
 rvcov_biglm <- function(np, D, rbar, ok) {
   
@@ -24,7 +26,12 @@ rvcov_biglm <- function(np, D, rbar, ok) {
 #' Hubert/White sandwich vcov implementation for updating linear
 #' model (Miller AS274 QR factorization) as implemented 
 #' in package `biglm`
-#' 
+#' @param np number of parameters in model
+#' @param D diagonals of cross products matrix for sandwich estimator
+#' @param rbar the off diagonal portion of the R matrix for sandwich estimator
+#' @param R cov matrix for model
+#' @param betas model coefficients
+#' @param ok boolean indicator of linear independence among coefficients
 #' @keywords internal
 sandwich_rcov_biglm <- function(np, D, rbar, R, betas, ok) {
   
