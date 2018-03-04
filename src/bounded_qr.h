@@ -25,6 +25,7 @@ private:
   void residual_sumsquares();
   void set_tolerance();
   arma::vec rbar_inverse(int nreq);
+  void check_singularity();
   
 public:
   
@@ -64,11 +65,13 @@ public:
   
   void include(arma::vec &xrow, double yelem, double weight);
   void update(arma::mat &X, arma::vec &y, arma::vec &w);
-  void check_singularity();
-  arma::vec rss();
   arma::vec vcov(int nreq);
   arma::mat vcov_sugar(int nreq);
   arma::vec betas();
+  
+  // accessors
+  arma::vec rss();
+  arma::vec lindep();
   
 };
 
@@ -93,8 +96,7 @@ RCPP_MODULE(BoundedQrModule) {
     .method("betas",   &BoundedQr::betas)
     .method("vcov",    &BoundedQr::vcov)
     .method("rss",     &BoundedQr::rss)
-    .method("vcov_sugar", &BoundedQr::vcov_sugar)
-    .method("singcheck",  &BoundedQr::check_singularity)
+    .method("lindep",  &BoundedQr::lindep)
     ;
   
 }

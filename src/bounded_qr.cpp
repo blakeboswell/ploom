@@ -1,6 +1,35 @@
 #include "bounded_qr.h"
 #include <string>
 
+
+//' access up-to-date residual sum of squares
+//' 
+//' @external
+arma::vec BoundedQr::rss() {
+  
+  if(!rssset_) {
+    residual_sumsquares();  
+  }
+  
+  return rss_;
+  
+}
+
+
+//' access up-to-date linear dependence indicator
+//'
+//' @external
+arma::vec BoundedQr::lindep() {
+  
+  if(!singchecked_) {
+    check_singularity();
+  }
+  
+  return lindep_;
+  
+}
+
+
 //' @keywords internal
 void BoundedQr::update(arma::mat &X,
                        arma::vec &y,
@@ -18,7 +47,6 @@ void BoundedQr::update(arma::mat &X,
     include(xrow, y[i], w[i]);
     
   }
-  
 }
 
 
@@ -243,15 +271,14 @@ arma::vec BoundedQr::betas() {
 }
 
 
-
 //' Calculate the sum of squared errors for the full regression
 //' and all subsets in the following manner:
 //' 
-//'   ResidualSumOfSquares_allNvars,
-//'   ResidualSumOfSquares_FirstNvars-1,
-//'   ResidualSumOfSquares_FirstNvars-2,
+//'   rss all vars,
+//'   rss n-1 vars,
+//'   rss n-2 vars,
 //'   ...,
-//'   ResidualSumOfSquares_FirstVariable
+//'   rss 1 var
 //'
 //' @keywords internal
 void BoundedQr::residual_sumsquares() {
@@ -267,20 +294,6 @@ void BoundedQr::residual_sumsquares() {
   }
   
   rssset_ = true;
-  
-}
-
-
-//' access up-to-date residual sum of squares
-//' 
-//' @external
-arma::vec BoundedQr::rss() {
-  
-  if(!rssset_) {
-    residual_sumsquares();  
-  }
-
-  return rss_;
   
 }
 

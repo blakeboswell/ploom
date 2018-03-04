@@ -138,12 +138,10 @@ vcov.online_lm <- function(obj, ...) {
   
   # biglm implementation --------------------------------------------
   
-  obj$qr$singcheck()
-  
   nobs  <- obj$qr$nobs
   np    <- obj$qr$np
   sserr <- obj$qr$sserr
-  ok    <- obj$qr$D != 0
+  ok    <- !obj$qr$lindep()
   
   R  <- rvcov_biglm(
     np,
@@ -216,14 +214,30 @@ print.online_lm <- function(obj,
 
 
 #' @export
-summary.online_lm <- function(x, ...) {
+summary.online_lm <- function(x,
+                              correlation  = FALSE,
+                              symbolic.cor = FALSE,
+                              ...) {
   # https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
   
+  np      <- x$qr$np
+  nobs    <- x$qr$nobs
+  rdf     <- nobs - np
+  rss_all <- x$qr$rss()
+  rssr    <- rss_all[1]
+  rssf    <- rss_all[length(rss_all)]
+  resvar  <- rssf / rdf
+  sigma   <- sqrt(resvar)
+  sserr   <- x$qr$sserr
   beta    <- coef(x)
-  se      <- sqrt(diag(vcov(x)))
+  cov_mat <- vcov(x)
+  se      <- sqrt(diag(cov_mat))
   tval    <- beta / se
-  rdf     <- x$qr$nobs - x$qr$np
-
+  
+  lindep        <- x$qr$lindep()
+  names(lindep) <- x$names
+  
+  
   mat <- cbind(
     "Estimate"   = beta,
     "Std. Error" = se,
@@ -233,29 +247,40 @@ summary.online_lm <- function(x, ...) {
   
   rownames(mat) <- x$names
   
-  df.int  <- if (attr(x$terms, "intercept")) 1L else 0L
-  rss_all <- x$qr$rss()
-  rss     <- rss_all[length(rss_all)]
-  resvar  <- rss / rdf
-  sigma   <- sqrt(resvar)
-  r.squared     <- 1 - deviance(x) / rss_all[1]
-  adj.r.squared <- 1 - (1 - r.squared) * ((x$qr$nobs - df.int) / rdf)
+  if (np != attr(z$terms, "intercept")) {
+    df.int  <- if (attr(x$terms, "intercept")) 1L else 0L
+    r.squared <- 1 - deviance(x) / rssr
+    adj.r.squared <- 1 - (1 - r.squared) * ((nobs - df.int) / rdf)
+    fstatistic <- c(
+      value = (rssr - rssf) / (np - df.int) / resvar,
+		  numdf = np - df.int,
+		  dendf = rdf
+    )
+  } else {
+    r.squared <- adj.rsquared <- 0
+    fstatistic <- NULL
+  }
   
   rval <- list(
-    obj       = x,
-    mat       = mat,
-    rdf       = rdf,
-    sigma     = sigma,
-    rss       = rss,
-    rss_all   = rss_all,
-    r.squared = r.squared,
-    adj.r.squared = adj.r.squared
+    obj           = x,
+    coefficients  = mat,
+    aliased       = as.logical(lindep),
+    df            = c(np - sum(lindep), rdf, np),
+    fstatistic    = fstatistic,
+    sigma         = sigma,
+    r.squared     = r.squared,
+    adj.r.squared = adj.r.squared,
+    cov.unscaled  = cov_mat * (nobs - np + sum(lindep)) / sserr
   )
   
+  if (correlation) {
+    rval$correlation <- (rval$cov.unscaled * resvar) / outer(se, se)
+    dimnames(rval$correlation ) <- dimnames(rval$cov.unscaled)
+    rval$symbolic.cor <- symbolic.cor
+  }
+  
   class(rval) <- "summary.online_lm"
-  
   rval
-  
 }
 
 
@@ -263,6 +288,7 @@ summary.online_lm <- function(x, ...) {
 #' @export
 print.summary.online_lm <- function(x,
                                     digits = max(3L, getOption("digits") - 3L),
+                                    symbolic.cor = x$symbolic.cor,
                                     signif.stars = getOption("show.signif.stars"),
                                     ...) {
   
@@ -270,7 +296,7 @@ print.summary.online_lm <- function(x,
       paste(deparse(x$obj$call), sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
 
-  printCoefmat(x$mat,
+  printCoefmat(x$coefficients,
                digits = digits,
                signif.stars = signif.stars,
                na.print = "NA",
@@ -283,7 +309,7 @@ print.summary.online_lm <- function(x,
   cat("\nResidual standard error:",
       format(signif(x$sigma, digits)),
       "on",
-      x$rdf,
+      x$df[2L],
       "degrees of freedom")
   cat("\n")
   
@@ -292,27 +318,41 @@ print.summary.online_lm <- function(x,
   #   cat("  (",mess, ")\n", sep = "")
   # }
 
-  # if (!is.null(x$fstatistic)) {
+  if (!is.null(x$fstatistic)) {
+    cat("Multiple R-squared: ", formatC(x$r.squared, digits = digits))
+    cat(",\tAdjusted R-squared: ",
+        formatC(x$adj.r.squared, digits = digits),
+        "\nF-statistic:",
+        formatC(x$fstatistic[1L], digits = digits),
+        "on",
+        x$fstatistic[2L],
+        "and",
+        x$fstatistic[3L],
+        "DF,  p-value:",
+        format.pval(pf(x$fstatistic[1L],
+                       x$fstatistic[2L],
+                       x$fstatistic[3L],
+                       lower.tail = FALSE), digits = digits))
+  }
   
-  cat("Multiple R-squared: ", formatC(x$r.squared, digits = digits))
-  cat(",\tAdjusted R-squared: ",
-      formatC(x$adj.r.squared, digits = digits))
-  
-  #       "\nF-statistic:",
-  #       formatC(x$fstatistic[1L], digits = digits),
-  #       "on",
-  #       x$fstatistic[2L],
-  #       "and",
-  #       x$fstatistic[3L],
-  #       "DF,  p-value:",
-  #       format.pval(pf(x$fstatistic[1L],
-  #                      x$fstatistic[2L],
-  #                      x$fstatistic[3L],
-  #                      lower.tail = FALSE), digits = digits))
-
-    cat("\n")
-
-  # }
+  cat("\n")
+    
+  correl <- x$correlation
+  if (!is.null(correl)) {
+    p <- ncol(correl)
+    if (p > 1L) {
+      cat("\nCorrelation of Coefficients:\n")
+      if(is.logical(symbolic.cor) && symbolic.cor) {
+	      print(symnum(correl, abbr.colnames = NULL))
+      } else {
+        correl <- format(round(correl, 2), nsmall = 2, digits = digits)
+        correl[!lower.tri(correl)] <- ""
+        print(correl[-1, -p, drop=FALSE], quote = FALSE)
+      }
+    }
+  }
+    
+  cat("\n")
 
   invisible(x)
 
