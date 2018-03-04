@@ -69,6 +69,49 @@ online_lm <- function(data,
 
 
 #' @export
+update.online_lm <- function(data, obj, ...) {
+
+  mf <- model.frame(obj$terms, data)
+  mm <- model.matrix(obj$terms, mf)
+
+  if (is.null(obj$weights)) {
+    w <- NULL
+  } else {
+    w <- model.frame(obj$weights, moredata)[[1]]
+  }
+
+  if (!identical(obj$assign, attr(mm, "assign"))) {
+    stop("model matrices incompatible")
+  }
+
+  if (is.null(off <- model.offset(mf))) {
+    off <- 0
+  }
+
+  update(obj$qr, mm, model.response(mf) - off, w)
+  obj$n <- obj$n + nrow(mm)
+
+  if (!is.null(obj$sandwich)) {
+
+    p  <- ncol(mm)
+    n  <- nrow(mm)
+    xx <- matrix(nrow = n, ncol = p * (p + 1))
+    xx[, 1:p] <- mm * (model.response(mf) - off)
+    for (i in 1:p) {
+      xx[, p * i + (1:p)] <- mm * mm[, i]
+    }
+    xyqr <- update(obj$sandwich$xy, xx, rep(0, n), w * w)
+    obj$sandwich <- list(xy = xyqr)
+
+  }
+  
+  obj
+  
+}
+
+
+
+#' @export
 coef.online_lm <- function(obj, ...) {
   betas        <- coef(obj$qr)
   names(betas) <- obj$names
@@ -89,13 +132,13 @@ vcov.online_lm <- function(obj, ...) {
   
   obj$qr$singcheck()
   
-  ok    <- obj$qr$D != 0.0
   nobs  <- obj$qr$nobs
   np    <- obj$qr$np
   sserr <- obj$qr$sserr
+  ok    <- obj$qr$D != 0
   
   R  <- rvcov_biglm(
-    obj$qr$np,
+    np,
     obj$qr$D,
     obj$qr$rbar,
     ok
@@ -108,10 +151,10 @@ vcov.online_lm <- function(obj, ...) {
     betas <- coef(obj$qr)
     
     V <- sandwich_rcov_biglm(
-      R,
       np,
       obj$sandwich$xy$D,
       obj$sandwich$xy$rbar,
+      R,
       betas,
       ok
     )
@@ -135,25 +178,50 @@ deviance.online_lm <- function(obj, ...) {
 
 
 #' @export
-print.online_lm <- function(obj, ...) {
-  cat("Online linear regression model: ")
-  print(obj$call)
-  cat("Observations included = ", obj$n, "\n")
+print.online_lm <- function(obj,
+                            digits = max(3L, getOption("digits") - 3L),
+                            ...) {
+  
+  cat("\nCall:\n",
+      paste(deparse(obj$call), sep = "\n", collapse = "\n"),
+      "\n\n",
+      sep = "")
+  
+  betas <- coef(obj)
+  
+  if(length(betas)) {
+    cat("Coefficients:\n")
+    print.default(
+      format(betas, digits = digits),
+      print.gap = 2L,
+      quote     = FALSE)
+  } else {
+    cat("No coefficients\n")
+  }
+  
+  cat("\n")
+  cat("Observations included: ", obj$n, "\n")
+
   invisible(obj)
+  
 }
 
 
-#' @export
 summary.online_lm <- function(obj, ...) {
+  # https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
+  
   beta <- coef(obj)
   se   <- sqrt(diag(vcov(obj)))
-  mat  <- cbind(
-    `Coef` = beta,
-    `(95%` = beta - 2 * se,
-    `CI)`  = beta + 2 * se,
-    `SE`   = se,
-    `p`    = 2 * pnorm(abs(beta / se), lower.tail = FALSE)
+  tval <- beta/se
+  rdf  <- obj$qr$nobs - obj$qr$np
+  
+  mat <- cbind(
+    "Estimate"   = beta,
+    "Std. Error" = se,
+    "t value"    = tval,
+    "Pr(>|t|)"   = 2 * pt(abs(tval), rdf, lower.tail = FALSE)
   )
+  
   rownames(mat) <- obj$names
   rval <- list(obj = obj, mat = mat)
   if (attr(obj$terms, "intercept")) {
@@ -163,16 +231,47 @@ summary.online_lm <- function(obj, ...) {
     rval$nullrss <-
       obj$qr$sserr + sum(c(obj$qr$D) * c(obj$qr$thetab) ^ 2)
   }
-
-  rval$rsq    <- 1 - deviance(obj) / rval$nullrss
+  
+  rval$r.squared    <- 1 - deviance(obj) / rval$nullrss
   class(rval) <- "summary.online_lm"
   rval
-
+  
+  
 }
 
 
+#' #' @export
+#' summary.online_lm <- function(obj, ...) {
+#'   beta <- coef(obj)
+#'   se   <- sqrt(diag(vcov(obj)))
+#'   mat  <- cbind(
+#'     `Coef` = beta,
+#'     `(95%` = beta - 2 * se,
+#'     `CI)`  = beta + 2 * se,
+#'     `SE`   = se,
+#'     `p`    = 2 * pnorm(abs(beta / se), lower.tail = FALSE)
+#'   )
+#'   rownames(mat) <- obj$names
+#'   rval <- list(obj = obj, mat = mat)
+#'   if (attr(obj$terms, "intercept")) {
+#'     rval$nullrss <-
+#'       obj$qr$sserr + sum(obj$qr$D[-1] * obj$qr$thetab[-1] ^ 2)
+#'   } else {
+#'     rval$nullrss <-
+#'       obj$qr$sserr + sum(c(obj$qr$D) * c(obj$qr$thetab) ^ 2)
+#'   }
+#' 
+#'   rval$r.squared    <- 1 - deviance(obj) / rval$nullrss
+#'   class(rval) <- "summary.online_lm"
+#'   rval
+#' 
+#' }
+
+
 #' @export
-print.summary.online_lm <- function(obj, digits = getOption("digits") - 3, ...) {
+print.summary.online_lm <- function(obj,
+                                    digits = max(3L, getOption("digits") - 3L),
+                                    ...) {
   print(obj$obj)
   print(round(obj$mat, digits))
   if (!is.null(obj$obj$sandwich)) {
@@ -181,45 +280,6 @@ print.summary.online_lm <- function(obj, digits = getOption("digits") - 3, ...) 
   invisible(obj)
 }
 
-
-
-# update.online_lm <- function(object, moredata, ...) {
-#   
-#   mf <- model.frame(object$terms, moredata)
-#   mm <- model.matrix(object$terms, mf)
-#   
-#   if (is.null(object$weights)) {
-#     w <- NULL
-#   } else {
-#     w <- model.frame(object$weights, moredata)[[1]]
-#   }
-#   
-#   if (!identical(object$assign, attr(mm, "assign"))) {
-#     stop("model matrices incompatible")
-#   }
-#   
-#   if (is.null(off <- model.offset(mf))) {
-#     off <- 0
-#   }
-#   
-#   update.online_qr(object$qr, mm, model.response(mf) - off, w)
-#   object$n <- object$n + nrow(mm)
-#   
-#   if (!is.null(object$sandwich)) {
-#     
-#     p  <- ncol(mm)
-#     n  <- nrow(mm)
-#     xx <- matrix(nrow = n, ncol = p * (p + 1))
-#     xx[, 1:p] <- mm * (model.response(mf) - off)
-#     for (i in 1:p) {
-#       xx[, p * i + (1:p)] <- mm * mm[, i]
-#     }
-#     xyqr <- update(object$sandwich$xy, xx, rep(0, n), w * w)
-#     object$sandwich <- list(xy = xyqr)
-#     
-#   }
-#   object
-# }
 
 
 
