@@ -1,5 +1,4 @@
 
-
 #' Linear model that uses only `p^2` memory for `p` variables.
 #' It can be updated with more data using `update` allowing for linear
 #' regression on data sets larger than memory.
@@ -110,7 +109,6 @@ update.online_lm <- function(data, obj, ...) {
 }
 
 
-
 #' @export
 coef.online_lm <- function(obj, ...) {
   betas        <- coef(obj$qr)
@@ -182,7 +180,7 @@ print.online_lm <- function(obj,
                             digits = max(3L, getOption("digits") - 3L),
                             ...) {
   
-  cat("\nCall:\n",
+  cat("\nOut-of-memory Linear Model:\n",
       paste(deparse(obj$call), sep = "\n", collapse = "\n"),
       "\n\n",
       sep = "")
@@ -207,14 +205,15 @@ print.online_lm <- function(obj,
 }
 
 
-summary.online_lm <- function(obj, ...) {
+#' @export
+summary.online_lm <- function(x, ...) {
   # https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
   
-  beta <- coef(obj)
-  se   <- sqrt(diag(vcov(obj)))
-  tval <- beta/se
-  rdf  <- obj$qr$nobs - obj$qr$np
-  
+  beta    <- coef(x)
+  se      <- sqrt(diag(vcov(x)))
+  tval    <- beta / se
+  rdf     <- x$qr$nobs - x$qr$np
+
   mat <- cbind(
     "Estimate"   = beta,
     "Std. Error" = se,
@@ -222,64 +221,89 @@ summary.online_lm <- function(obj, ...) {
     "Pr(>|t|)"   = 2 * pt(abs(tval), rdf, lower.tail = FALSE)
   )
   
-  rownames(mat) <- obj$names
-  rval <- list(obj = obj, mat = mat)
-  if (attr(obj$terms, "intercept")) {
-    rval$nullrss <-
-      obj$qr$sserr + sum(obj$qr$D[-1] * obj$qr$thetab[-1] ^ 2)
-  } else {
-    rval$nullrss <-
-      obj$qr$sserr + sum(c(obj$qr$D) * c(obj$qr$thetab) ^ 2)
-  }
+  rownames(mat) <- x$names
   
-  rval$r.squared    <- 1 - deviance(obj) / rval$nullrss
+  df.int  <- if (attr(x$terms, "intercept")) 1L else 0L
+  rss_all <- x$qr$rss()
+  rss     <- rss_all[length(rss_all)]
+  resvar  <- rss / rdf
+  sigma   <- sqrt(resvar)
+  r.squared     <- 1 - deviance(x) / rss_all[1]
+  adj.r.squared <- 1 - (1 - r.squared) * ((x$qr$nobs - df.int) / rdf)
+  
+  rval <- list(
+    obj       = x,
+    mat       = mat,
+    rdf       = rdf,
+    sigma     = sigma,
+    rss       = rss,
+    rss_all   = rss_all,
+    r.squared = r.squared,
+    adj.r.squared = adj.r.squared
+  )
+  
   class(rval) <- "summary.online_lm"
-  rval
   
+  rval
   
 }
 
-
-#' #' @export
-#' summary.online_lm <- function(obj, ...) {
-#'   beta <- coef(obj)
-#'   se   <- sqrt(diag(vcov(obj)))
-#'   mat  <- cbind(
-#'     `Coef` = beta,
-#'     `(95%` = beta - 2 * se,
-#'     `CI)`  = beta + 2 * se,
-#'     `SE`   = se,
-#'     `p`    = 2 * pnorm(abs(beta / se), lower.tail = FALSE)
-#'   )
-#'   rownames(mat) <- obj$names
-#'   rval <- list(obj = obj, mat = mat)
-#'   if (attr(obj$terms, "intercept")) {
-#'     rval$nullrss <-
-#'       obj$qr$sserr + sum(obj$qr$D[-1] * obj$qr$thetab[-1] ^ 2)
-#'   } else {
-#'     rval$nullrss <-
-#'       obj$qr$sserr + sum(c(obj$qr$D) * c(obj$qr$thetab) ^ 2)
-#'   }
-#' 
-#'   rval$r.squared    <- 1 - deviance(obj) / rval$nullrss
-#'   class(rval) <- "summary.online_lm"
-#'   rval
-#' 
-#' }
 
 
 #' @export
-print.summary.online_lm <- function(obj,
+print.summary.online_lm <- function(x,
                                     digits = max(3L, getOption("digits") - 3L),
+                                    signif.stars = getOption("show.signif.stars"),
                                     ...) {
-  print(obj$obj)
-  print(round(obj$mat, digits))
-  if (!is.null(obj$obj$sandwich)) {
-    cat("Sandwich (model-robust) standard errors\n")
+  
+  cat("\nOut-of-memory Linear Model:\n",
+      paste(deparse(x$obj$call), sep = "\n", collapse = "\n"),
+      "\n\n", sep = "")
+
+  printCoefmat(x$mat,
+               digits = digits,
+               signif.stars = signif.stars,
+               na.print = "NA",
+               ...)
+  
+  if (!is.null(x$obj$sandwich)) {
+    cat("Sandwich (model-robust) standard errors.\n")
   }
-  invisible(obj)
+  
+  cat("\nResidual standard error:",
+      format(signif(x$sigma, digits)),
+      "on",
+      x$rdf,
+      "degrees of freedom")
+  cat("\n")
+  
+  # 
+  # if(nzchar(mess <- naprint(x$na.action))) {
+  #   cat("  (",mess, ")\n", sep = "")
+  # }
+
+  # if (!is.null(x$fstatistic)) {
+  
+  cat("Multiple R-squared: ", formatC(x$r.squared, digits = digits))
+  cat(",\tAdjusted R-squared: ",
+      formatC(x$adj.r.squared, digits = digits))
+  
+  #       "\nF-statistic:",
+  #       formatC(x$fstatistic[1L], digits = digits),
+  #       "on",
+  #       x$fstatistic[2L],
+  #       "and",
+  #       x$fstatistic[3L],
+  #       "DF,  p-value:",
+  #       format.pval(pf(x$fstatistic[1L],
+  #                      x$fstatistic[2L],
+  #                      x$fstatistic[3L],
+  #                      lower.tail = FALSE), digits = digits))
+
+    cat("\n")
+
+  # }
+
+  invisible(x)
+
 }
-
-
-
-

@@ -91,6 +91,7 @@ void BoundedQr::include(arma::vec &xrow,
   sserr_ += w * y * y;
   singchecked_ = false;
   tolset_      = false;
+  rssset_      = false;
   
 }
 
@@ -242,6 +243,16 @@ arma::vec BoundedQr::betas() {
 }
 
 
+
+//' Calculate the sum of squared errors for the full regression
+//' and all subsets in the following manner:
+//' 
+//'   ResidualSumOfSquares_allNvars,
+//'   ResidualSumOfSquares_FirstNvars-1,
+//'   ResidualSumOfSquares_FirstNvars-2,
+//'   ...,
+//'   ResidualSumOfSquares_FirstVariable
+//'
 //' @keywords internal
 void BoundedQr::residual_sumsquares() {
   
@@ -256,6 +267,20 @@ void BoundedQr::residual_sumsquares() {
   }
   
   rssset_ = true;
+  
+}
+
+
+//' access up-to-date residual sum of squares
+//' 
+//' @external
+arma::vec BoundedQr::rss() {
+  
+  if(!rssset_) {
+    residual_sumsquares();  
+  }
+
+  return rss_;
   
 }
 
