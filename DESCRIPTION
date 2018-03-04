@@ -1,11 +1,20 @@
 Package: ploom
-Type: Package
-Title: Bounded memory linear models
 Version: 0.0
+Title: Out-of-memory Linear and Generalized Linear Models 
+Description: A collection of tools for out-of-memory linear model fitting and
+    inference. Implements `lm` and `glm` analogs using Alan Miller's AS274
+    updating QR factorization algorithm. Collects and reports an array of
+    pertinent fit statistics. Provides flexible and easy to use mechanisms
+    to stream in data and stream out results during fitting.
 Date: 2018-02-25
-Author: Blake Boswell
-Maintainer: Blake Boswell <j.blake.boswell@gmail.com>
-Description: Currently a direct translation of biglm
+Authors@R: c(
+    person("Boswell", "Blake", email = "j.blake.boswell@gmail.com",
+           role = c("aut", "cre")),
+    person("Lumley", "Thomas", role = "ctb",
+           comment = "general design influence and vcov code adapted from biglm"),
+    person("R Core Team", role = "ctb",
+           comment = "oomlm and oomglm interfaces adapted from R"))
+Encoding: UTF-8
 License: GPL
 Depends:
   R (>= 3.1.2),
@@ -13,5 +22,6 @@ Depends:
 LinkingTo:
   Rcpp (>= 0.12.15),
   RcppArmadillo
-Suggests: 
+Suggests:
     testthat
+BugReports: https://github.com/bboswell/ploom/issues
