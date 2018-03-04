@@ -234,7 +234,7 @@ summary.online_lm <- function(x,
   se      <- sqrt(diag(cov_mat))
   tval    <- beta / se
   
-  lindep        <- x$qr$lindep()
+  lindep        <- as.logical(x$qr$lindep())
   names(lindep) <- x$names
   
   
@@ -262,9 +262,10 @@ summary.online_lm <- function(x,
   }
   
   rval <- list(
-    obj           = x,
+    call          = x$call,
+    terms         = x$terms,
     coefficients  = mat,
-    aliased       = as.logical(lindep),
+    aliased       = lindep,
     df            = c(np - sum(lindep), rdf, np),
     fstatistic    = fstatistic,
     sigma         = sigma,
@@ -293,7 +294,7 @@ print.summary.online_lm <- function(x,
                                     ...) {
   
   cat("\nOut-of-memory Linear Model:\n",
-      paste(deparse(x$obj$call), sep = "\n", collapse = "\n"),
+      paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
 
   printCoefmat(x$coefficients,
@@ -302,9 +303,9 @@ print.summary.online_lm <- function(x,
                na.print = "NA",
                ...)
   
-  if (!is.null(x$obj$sandwich)) {
-    cat("Sandwich (model-robust) standard errors.\n")
-  }
+  # if (!is.null(x$obj$sandwich)) {
+  #   cat("Sandwich (model-robust) standard errors.\n")
+  # }
   
   cat("\nResidual standard error:",
       format(signif(x$sigma, digits)),
