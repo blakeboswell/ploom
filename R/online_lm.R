@@ -1,10 +1,11 @@
 
-#' @export
+
 #'
 #' @param data
 #' @param formula
 #' @param weights
 #' @param sandwich
+#' @export
 online_lm <- function(data,
                       formula,
                       weights  = NULL,
@@ -47,21 +48,15 @@ online_lm <- function(data,
   )
 
   if (sandwich) {
+    xx        <- matrix(nrow = n, ncol = p * (p + 1))
+    xx[, 1:p] <- model_data * model_response
+    for (i in 1:p) {
+      xx[, p * i + (1:p)] <- model_data * model_data[, i]
+    }
     
-    stop("sandwich not implemented")
-    
-    # xx        <- matrix(nrow = n, ncol = p * (p + 1))
-    # xx[, 1:p] <- model_data * model_response
-    # 
-    # for (i in 1:p) {
-    #   xx[, p * i + (1:p)] <- model_data * model_data[, i]
-    # }
-    # 
-    # sandwich_qr <- update(new_bounded_qr(p * (p + 1)),
-    #                       xx, rep(0, n), weights ^ 2)
-    # 
-    # rval$sandwich <- list(xy = sandwich_qr)
-
+    sandwich_qr <- update(new_bounded_qr(p * (p + 1)),
+                          xx, rep(0, n), weights ^ 2)
+    rval$sandwich <- list(xy = sandwich_qr)
   }
 
   class(rval) <- "online_lm"
@@ -79,35 +74,61 @@ coef.online_lm <- function(obj, ...) {
 
 vcov.online_lm <- function(obj, ...) {
   
+  ## cpp implementation / sandwich not supported ---------------------
+  # V <- vcov(obj$qr)
+  # dimnames(V) <- list(obj$names, obj$names)
+  # 
+  # V
+  
+  # biglm implementation --------------------------------------------
+  
+  obj$qr$singcheck()
+  
+  ok    <- obj$qr$D != 0.0
+  nobs  <- obj$qr$nobs
+  np    <- obj$qr$np
+  sserr <- obj$qr$sserr
+  
+  R  <- rvcov_biglm(
+    obj$qr$np,
+    obj$qr$D,
+    obj$qr$rbar,
+    ok
+  )
+  
+  dimnames(R) <- list(obj$names, obj$names)
+  
   if(!is.null(obj$sandwich)) {
-    stop("sandwich not implemented")
+    
+    betas <- coef(obj$qr)
+    
+    V <- sandwich_rcov_biglm(
+      R,
+      np,
+      obj$sandwich$xy$D,
+      obj$sandwich$xy$rbar,
+      betas,
+      ok
+    )
+    
+    dimnames(V) <- list(obj$names, obj$names)
+    attr(V, "model-based") <- R * sserr / (nobs - np + sum(!ok))
+    
+  } else {
+    V <- R * sserr / (nobs - np + sum(!ok))
   }
   
-  cov_vec <- vcov(obj$qr)
-  k       <- length(cov_vec)
-  np      <- length(obj$qr$D)
-  pos     <- 1
-  V       <- matrix(nrow = np, ncol = np)
-
-  for(col in 1:np) {
-    V[col, 1:col] <- cov_vec[pos:(pos + col - 1)]
-    pos <- pos + col
-  }
-
-  V[upper.tri(V)] <- t(V)[upper.tri(V)]
-  dimnames(V)     <- list(obj$names, obj$names)
-
   V
-  
+
 }
 
 
 # vcov.online_lm <- function(object, ...) {
-#   
+# 
 #   if (!object$qr$tol_set) {
 #     object$qr$singchk()
 #   }
-#   
+# 
 #   p         <- length(object$qr$D)
 #   R         <- diag(p)
 #   R[row(R) > col(R)] <- object$qr$rbar
@@ -118,39 +139,39 @@ vcov.online_lm <- function(obj, ...) {
 #   R[!ok, ]  <- NA
 #   R[, !ok]  <- NA
 #   dimnames(R) <- list(object$names, object$names)
-#   
+# 
 #   if (!is.null(object$sandwich)) {
-#     
+# 
 #     object$sandwich$xy$singchk()
-#     
+# 
 #     rxy  <- diag(p * (p + 1))
 #     rxy[row(rxy) > col(rxy)] <- object$sandwich$xy$rbar
 #     rxy <- t(rxy)
 #     rxy <- sqrt(object$sandwich$xy$D) * rxy
 #     M   <- t(rxy) %*% rxy
-#     
+# 
 #     beta <- coef(object)
 #     beta[!ok] <- 0
 #     bbeta <- kronecker(diag(p), beta)
-#     
+# 
 #     ##FIXME: singularities in beta
 #     Vcenter <-
 #       M[1:p, 1:p, drop = FALSE] + t(bbeta) %*% M[-(1:p), -(1:p), drop = FALSE] %*%
 #       bbeta -
 #       t(bbeta) %*% M[-(1:p), 1:p, drop = FALSE] - M[1:p, -(1:p), drop =
 #                                                       FALSE] %*% bbeta
-#     
+# 
 #     V <- matrix(NA, p, p)
 #     V[ok, ok] <-
 #       R[ok, ok, drop = FALSE] %*% Vcenter[ok, ok, drop = FALSE] %*% R[ok, ok, drop =
 #                                                                         FALSE]
 #     dimnames(V) <- list(object$names, object$names)
 #     attr(V, "model-based") <- R * object$qr$sserr / (object$n - p + sum(!ok))
-#     
+# 
 #   } else {
 #     V <- R * object$qr$sserr / (object$n - p + sum(!ok))
 #   }
-#   
+# 
 #   V
 # }
 

@@ -260,6 +260,58 @@ void BoundedQr::residual_sumsquares() {
 }
 
 
+arma::mat BoundedQr::vcov_sugar(int nreq) {
+  
+  if(n_obs_ <= nreq) {
+    // TODO: handle error appropriately
+    return arma::vec(1).fill(NA_REAL);
+  }
+  
+  if(!singchecked_) {
+    check_singularity();
+  }
+  
+  int p = n_cov_;
+  
+  double rnk = 0.0;
+  for (int i = 0; i < nreq; ++i) {
+    if(!lindep_[i]) {
+      ++rnk;
+    }
+  }
+
+  arma::mat R = arma::eye(p, p);
+
+  // R * rbar_
+  int pos = 0;
+  for(int i = 0; i < p - 1; ++i) {
+    for(int j = i + 1; j < p; ++j) {
+      R(j, i) = rbar_[pos];
+      ++pos;
+    }
+  }
+  
+  R = arma::trans(R);
+  arma::vec work = arma::sqrt(D_);
+  
+  // R * sqrt(D_)
+  for(int i = 0; i < p; ++i) {
+    for(int j = 0; j < p; ++j) {
+      R(i, j) = R(i, j) * work[i];
+    }
+  }
+  
+  // chol2inv = solve(crossproduct(R, R))
+  arma::mat RCI = arma::solve(
+    arma::trans(arma::trimatu(R)) * arma::trimatu(R),
+    arma::eye(p, p)
+  );
+  
+  return RCI * (sserr_ / (n_obs_ - rnk));
+  
+}
+
+
 //' @keywords internal
 arma::vec BoundedQr::vcov(int nreq) {
   
@@ -279,7 +331,7 @@ arma::vec BoundedQr::vcov(int nreq) {
   double rnk = 0.0;
   for (int i = 0; i < nreq; ++i) {
     if(!lindep_[i]) {
-      rnk++;
+      ++rnk;
     }
   }
   

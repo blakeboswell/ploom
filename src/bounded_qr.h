@@ -24,7 +24,6 @@ private:
   bool singchecked_;
   
   void set_tolerance();
-  void check_singularity();
   void residual_sumsquares();
   arma::vec rbar_inverse(int nreq);
   
@@ -66,7 +65,9 @@ public:
   
   void include(arma::vec &xrow, double yelem, double weight);
   void update(arma::mat &X, arma::vec &y, arma::vec &w);
+  void check_singularity();
   arma::vec vcov(int nreq);
+  arma::mat vcov_sugar(int nreq);
   arma::vec betas();
   
 };
@@ -86,10 +87,13 @@ RCPP_MODULE(BoundedQrModule) {
     .field("thetab",  &BoundedQr::thetab_)
     .field("tol",     &BoundedQr::tol_)
     .field("sserr",   &BoundedQr::sserr_)
+    .field("nobs",    &BoundedQr::n_obs_)
     
     .method("update",  &BoundedQr::update)
     .method("betas",   &BoundedQr::betas)
     .method("vcov",    &BoundedQr::vcov)
+    .method("vcov_sugar", &BoundedQr::vcov_sugar)
+    .method("singcheck",  &BoundedQr::check_singularity)
     ;
   
 }

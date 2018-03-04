@@ -66,12 +66,27 @@ coef.Rcpp_BoundedQr <- function(qr, nvar = NULL, ...){
 }
 
 
+
 #' wrapper for `BoundedQr` method `vcov` 
 #'
 #' @param qr BoundedQr object
 #' @keywords internal
 vcov.Rcpp_BoundedQr <- function(qr) {
-  qr$vcov(qr$np)
+  
+  vcov_vec <- qr$vcov(qr$np)
+  k        <- length(cov_vec)
+  np       <- qr$np
+  V        <- matrix(nrow = np, ncol = np)
+  pos      <- 1
+  
+  for(col in 1:np) {
+    V[col, 1:col] <- cov_vec[pos:(pos + col - 1)]
+    pos <- pos + col
+  }
+  
+  V[upper.tri(V)] <- t(V)[upper.tri(V)]
+  
+  V
 }
 
 
