@@ -1,4 +1,3 @@
-
 #' initialize new `BoundedQr` object
 #'
 #' @param np int number of independent parameters in model
@@ -28,6 +27,10 @@ update.Rcpp_BoundedQr <- function(qr, X, y, weights) {
     stop("Invalid column dimension for `X`")
   }
   
+  if (length(weights) == 0) {
+    weights <- rep(1.0, length(y))
+  }
+  
   if(!all.equal.numeric(nrow(X),
                         length(y),
                         length(weights))) {
@@ -55,16 +58,15 @@ coef.Rcpp_BoundedQr <- function(qr, nvar = NULL, ...){
     stop("Invalid value of `nvar`")
   }
   
-  # TODO: replicate this error handle
-  # if (tmp$ier!=0) stop("Error in REGCF: can't happen")
-  
   beta              <- qr$betas()
   beta[qr$D == 0.0] <- NA
+  
+  # TODO: replicate this error handle
+  # if (tmp$ier!=0) stop("Error in REGCF: can't happen")
   
   beta
   
 }
-
 
 
 #' wrapper for `BoundedQr` method `vcov` 
@@ -88,6 +90,3 @@ vcov.Rcpp_BoundedQr <- function(qr) {
   
   V
 }
-
-
-
