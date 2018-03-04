@@ -4,7 +4,7 @@
 #' in package `biglm`
 #' 
 #' @keywords internal
-rvcov_biglm <- function(np, D, rbar) {
+rvcov_biglm <- function(np, D, rbar, ok) {
   
   R         <- diag(np)
   R[row(R) > col(R)] <- rbar
@@ -26,7 +26,7 @@ rvcov_biglm <- function(np, D, rbar) {
 #' in package `biglm`
 #' 
 #' @keywords internal
-sandwich_rcov_biglm <- function(np, D, rbar, R, betas) {
+sandwich_rcov_biglm <- function(np, D, rbar, R, betas, ok) {
   
   rxy  <- diag(np * (np + 1))
   rxy[row(rxy) > col(rxy)] <- rbar
@@ -34,8 +34,8 @@ sandwich_rcov_biglm <- function(np, D, rbar, R, betas) {
   rxy <- sqrt(D) * rxy
   M   <- t(rxy) %*% rxy
   
-  ok      <- D != 0.0
-  bbeta   <- kronecker(diag(np), betas[ok])
+  betas[!ok] <- 0
+  bbeta      <- kronecker(diag(np), betas)
   
   ##FIXME: singularities in beta
   Vcenter <- (
