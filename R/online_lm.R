@@ -247,7 +247,7 @@ summary.online_lm <- function(x,
   
   rownames(mat) <- x$names
   
-  if (np != attr(z$terms, "intercept")) {
+  if (np != attr(x$terms, "intercept")) {
     df.int  <- if (attr(x$terms, "intercept")) 1L else 0L
     r.squared <- 1 - deviance(x) / rssr
     adj.r.squared <- 1 - (1 - r.squared) * ((nobs - df.int) / rdf)
