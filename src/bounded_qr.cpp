@@ -74,7 +74,9 @@ void BoundedQr::include(arma::vec &xrow,
   int nextr = 0;
   
   rssset_ = false;
-  
+  sumysq_ += y * y;
+  sumy_   += y;
+
   for(int i = 0; i < np; ++i) {
   //  Skip unnecessary transformations.   Test on exact zeroes must be
   //  used or stability can be destroyed.

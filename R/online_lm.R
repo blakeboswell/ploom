@@ -7,7 +7,7 @@
 #'   model to be fitted.
 #' @param weights A one-sided, single term formula specifying weights
 #' @param sandwich TRUE to compute the Huber/White sandwich covariance matrix
-#'   (uses p^4 memory rather than p^2)
+#'   (uses `p^4` memory rather than `p^2`)
 #' @details The model formula must not contain any data-dependent terms, as
 #'   these will not be consistent when updated. Factors are permitted, but 
 #'   the levels of the factor must be the same across all data chunks 
@@ -19,50 +19,52 @@ online_lm <- function(data,
                       sandwich = FALSE) {
 
   model_terms <- terms(formula)
-  model_data  <- model.frame(model_terms, data)
+  batch_data  <- model.frame(model_terms, data)
   
-  if(is.null(offset <- model.offset(model_data))) {
+  if(is.null(offset <- model.offset(batch_data))) {
     offset <- 0
   }
   
-  model_response <- model.response(model_data) - offset
-  model_data     <- model.matrix(model_terms, model_data)
+  batch_response <- model.response(batch_data) - offset
+  batch_data     <- model.matrix(model_terms, batch_data)
   
-  p <- ncol(model_data)
-  n <- nrow(model_data) 
+  p <- ncol(batch_data)
+  n <- nrow(batch_data) 
 
   if(is.null(weights)) {
-    weights <- rep(1.0, n)
+    batch_weights <- rep(1.0, n)
   } else {
     if(!inherits(weights, "formula")) {
       stop("`weights` must be a formula")
     }
-    weights <- model.frame(weights, data)[[1]]
+    batch_weights <- model.frame(weights, data)[[1]]
   }
   
   model_qr <- update(new_bounded_qr(p),
-                     model_data, model_response, weights)
+                     batch_data,
+                     batch_response,
+                     batch_weights)
 
   rval <- list(
     call     = sys.call(),
     qr       = model_qr,
-    assign   = attr(model_data, "assign"),
+    assign   = attr(batch_data, "assign"),
     terms    = model_terms,
     n        = n,
-    names    = colnames(model_data),
+    names    = colnames(batch_data),
     weights  = weights,
-    df.resid = n - length(model_qr$D)
+    df.resid = n - p
   )
 
   if (sandwich) {
     xx        <- matrix(nrow = n, ncol = p * (p + 1))
-    xx[, 1:p] <- model_data * model_response
+    xx[, 1:p] <- batch_data * batch_response
     for (i in 1:p) {
-      xx[, p * i + (1:p)] <- model_data * model_data[, i]
+      xx[, p * i + (1:p)] <- batch_data * batch_data[, i]
     }
     
     sandwich_qr <- update(new_bounded_qr(p * (p + 1)),
-                          xx, rep(0, n), weights ^ 2)
+                          xx, rep(0, n), batch_weights ^ 2)
     rval$sandwich <- list(xy = sandwich_qr)
   }
 
@@ -183,6 +185,10 @@ deviance.online_lm <- function(obj, ...) {
 }
 
 
+#' mimic base `print.lm` as closely as possible
+#' (unofficial reference .. may go away)
+#' https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
+#' 
 #' @export
 print.online_lm <- function(obj,
                             digits = max(3L, getOption("digits") - 3L),
@@ -213,18 +219,25 @@ print.online_lm <- function(obj,
 }
 
 
+#' mimic base `summary.lm` as closely as possible
+#' (unofficial reference .. may go away)
+#' https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
+#' 
 #' @export
 summary.online_lm <- function(x,
                               correlation  = FALSE,
                               symbolic.cor = FALSE,
                               ...) {
-  # https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
+  
+  lindep        <- as.logical(x$qr$lindep())
+  names(lindep) <- x$names
   
   np      <- x$qr$np
   nobs    <- x$qr$nobs
+  sumsqy  <- x$qr$sumsqy
   rdf     <- nobs - np
   rss_all <- x$qr$rss()
-  rssr    <- rss_all[1]
+  rssr    <- if (attr(x$terms, "intercept")) rss_all[1] else sumsqy
   rssf    <- rss_all[length(rss_all)]
   resvar  <- rssf / rdf
   sigma   <- sqrt(resvar)
@@ -233,10 +246,6 @@ summary.online_lm <- function(x,
   cov_mat <- vcov(x)
   se      <- sqrt(diag(cov_mat))
   tval    <- beta / se
-  
-  lindep        <- as.logical(x$qr$lindep())
-  names(lindep) <- x$names
-  
   
   mat <- cbind(
     "Estimate"   = beta,
@@ -248,14 +257,18 @@ summary.online_lm <- function(x,
   rownames(mat) <- x$names
   
   if (np != attr(x$terms, "intercept")) {
+    
     df.int  <- if (attr(x$terms, "intercept")) 1L else 0L
+    
     r.squared <- 1 - deviance(x) / rssr
     adj.r.squared <- 1 - (1 - r.squared) * ((nobs - df.int) / rdf)
+    
     fstatistic <- c(
       value = (rssr - rssf) / (np - df.int) / resvar,
-		  numdf = np - df.int,
-		  dendf = rdf
+      numdf = np - df.int,
+      dendf = rdf
     )
+    
   } else {
     r.squared <- adj.rsquared <- 0
     fstatistic <- NULL
@@ -286,6 +299,10 @@ summary.online_lm <- function(x,
 
 
 
+#' mimic base `summary.lm` as closely as possible
+#' (unofficial reference .. may go away)
+#' https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
+#' 
 #' @export
 print.summary.online_lm <- function(x,
                                     digits = max(3L, getOption("digits") - 3L),
@@ -330,10 +347,12 @@ print.summary.online_lm <- function(x,
         "and",
         x$fstatistic[3L],
         "DF,  p-value:",
-        format.pval(pf(x$fstatistic[1L],
-                       x$fstatistic[2L],
-                       x$fstatistic[3L],
-                       lower.tail = FALSE), digits = digits))
+        format.pval(
+          pf(x$fstatistic[1L],
+             x$fstatistic[2L],
+             x$fstatistic[3L],
+             lower.tail = FALSE),
+          digits = digits))
   }
   
   cat("\n")

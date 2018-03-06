@@ -39,6 +39,8 @@ public:
   arma::vec rss_;
   
   double sserr_;
+  double sumysq_;
+  double sumy_;
 
   BoundedQr(int np) {
     
@@ -54,7 +56,9 @@ public:
     rss_     = arma::zeros(n_cov_);
     
     sserr_   = zero_;
-
+    sumy_    = zero_;
+    sumysq_  = zero_;
+    
     tolset_      = false;    
     rssset_      = false;
     singchecked_ = false;
@@ -89,8 +93,9 @@ RCPP_MODULE(BoundedQrModule) {
     .field("rbar",    &BoundedQr::rbar_)
     .field("thetab",  &BoundedQr::thetab_)
     .field("tol",     &BoundedQr::tol_)
-    .field("sserr",   &BoundedQr::sserr_)
     .field("nobs",    &BoundedQr::n_obs_)
+    .field("sserr",   &BoundedQr::sserr_)
+    .field("sumsqy",  &BoundedQr::sumysq_)
     
     .method("update",  &BoundedQr::update)
     .method("betas",   &BoundedQr::betas)
