@@ -80,40 +80,48 @@ online_lm <- function(data,
 #'   (or object coercible by as.data.frame to a data frame)
 #' @param object online_lm object
 #' @export
-update.online_lm <- function(data, obj, ...) {
+update_online_lm <- function(data, obj, ...) {
 
-  mf <- model.frame(obj$terms, data)
-  mm <- model.matrix(obj$terms, mf)
-
-  if (is.null(obj$weights)) {
-    w <- NULL
-  } else {
-    w <- model.frame(obj$weights, moredata)[[1]]
+  batch_data  <- model.frame(obj$terms, data)
+  
+  if(is.null(offset <- model.offset(batch_data))) {
+    offset <- 0
   }
-
-  if (!identical(obj$assign, attr(mm, "assign"))) {
+  
+  batch_response <- model.response(batch_data) - offset
+  batch_data     <- model.matrix(obj$terms, batch_data)
+  
+  if(is.null(obj$weights)) {
+    batch_weights <- NULL
+  } else {
+    batch_weights <- model.frame(obj$weights, data)[[1]]
+  }
+  
+  if (!identical(obj$assign, attr(batch_data, "assign"))) {
     stop("model matrices incompatible")
   }
 
-  if (is.null(off <- model.offset(mf))) {
-    off <- 0
-  }
-
-  update(obj$qr, mm, model.response(mf) - off, w)
-  obj$n <- obj$n + nrow(mm)
+  update(obj$qr,
+         batch_data,
+         batch_response,
+         batch_weights)
+  
+  obj$n <- obj$n + nrow(batch_data)
 
   if (!is.null(obj$sandwich)) {
 
-    p  <- ncol(mm)
-    n  <- nrow(mm)
+    p <- ncol(batch_data)
+    n <- nrow(batch_data) 
+    
     xx <- matrix(nrow = n, ncol = p * (p + 1))
-    xx[, 1:p] <- mm * (model.response(mf) - off)
+    xx[, 1:p] <- batch_data * batch_response
     for (i in 1:p) {
-      xx[, p * i + (1:p)] <- mm * mm[, i]
+      xx[, p * i + (1:p)] <- batch_data * batch_data[, i]
     }
-    xyqr <- update(obj$sandwich$xy, xx, rep(0, n), w * w)
-    obj$sandwich <- list(xy = xyqr)
-
+    sandwich_qr <- update(obj$sandwich$xy,
+                          xx, rep(0, n), batch_weights ^ 2)
+    obj$sandwich <- list(xy = sandwich_qr)
+    
   }
   
   obj
