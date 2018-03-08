@@ -278,7 +278,7 @@ summary.online_lm <- function(x,
     )
     
   } else {
-    r.squared <- adj.rsquared <- 0
+    r.squared  <- adj.rsquared <- 0
     fstatistic <- NULL
   }
   
