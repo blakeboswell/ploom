@@ -1,4 +1,4 @@
-context("test-lm_model.R")
+context("test-static-lm_model.R")
 
 
 expect_summary_equal <- function(sy, sx) {
