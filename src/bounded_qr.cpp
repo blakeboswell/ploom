@@ -7,7 +7,7 @@
 //' @external
 arma::vec BoundedQr::rss() {
   
-  if(!rssset_) {
+  if(!rss_set_) {
     residual_sumsquares();  
   }
   
@@ -21,7 +21,7 @@ arma::vec BoundedQr::rss() {
 //' @external
 arma::vec BoundedQr::lindep() {
   
-  if(!singchecked_) {
+  if(!sing_checked_) {
     check_singularity();
   }
   
@@ -35,7 +35,7 @@ void BoundedQr::update(arma::mat &X,
                        arma::vec &y,
                        arma::vec &w) {
   
-  const int np = n_cov_;
+  const int np = num_params_;
   arma::vec xrow = arma::vec(np);
   
   for(int i = 0; i < X.n_rows; ++i) {
@@ -64,16 +64,16 @@ void BoundedQr::include(arma::vec &xrow,
                         double yelem,
                         double weight) {
 
-  const int np = n_cov_;
+  const int np = num_params_;
   
   double w = weight;
   double y = yelem;
   double xk;
   
-  ++n_obs_;
+  ++num_obs_;
   int nextr = 0;
   
-  rssset_ = false;
+  rss_set_ = false;
   sumysq_ += w * (y * y);
   sumy_   += w * y;
 
@@ -81,12 +81,12 @@ void BoundedQr::include(arma::vec &xrow,
   //  Skip unnecessary transformations.   Test on exact zeroes must be
   //  used or stability can be destroyed.
   
-    if(::abs(w) <= near_zero_) {
+    if(::abs(w) <= NEAR_ZERO_) {
       return;
     }
     
     double xi = xrow[i];
-    if(::abs(xi) <= near_zero_) {
+    if(::abs(xi) <= NEAR_ZERO_) {
       nextr += np - i - 1;
       continue;
     }
@@ -95,7 +95,7 @@ void BoundedQr::include(arma::vec &xrow,
     double wxi = w * xi;
     double dpi = di + wxi * xi;
     
-    if(dpi <= near_zero_) { /* TODO: div by zero? */};
+    if(dpi <= NEAR_ZERO_) { /* TODO: div by zero? */};
     
     double cbar = di / dpi;
     double sbar = wxi / dpi;
@@ -119,9 +119,9 @@ void BoundedQr::include(arma::vec &xrow,
   // `yelem` * `sqrt(weight)` is now equal to Brown & Durbin's recursive residual.
   
   sserr_ += w * y * y;
-  singchecked_ = false;
-  tolset_      = false;
-  rssset_      = false;
+  sing_checked_ = false;
+  tol_set_      = false;
+  rss_set_      = false;
   
 }
 
@@ -133,7 +133,7 @@ void BoundedQr::include(arma::vec &xrow,
 //' @keywords internal
 void BoundedQr::set_tolerance() {
 
-    const int np = n_cov_;
+    const int np = num_params_;
   
 //  EPS is a machine-dependent constant.   For compilers which use
 //  the IEEE format for floating-point numbers, recommended values
@@ -160,7 +160,7 @@ void BoundedQr::set_tolerance() {
       
     }
     
-    tolset_ = true;
+    tol_set_ = true;
 
 }
 
@@ -172,10 +172,10 @@ void BoundedQr::set_tolerance() {
 //' @keywords internal
 void BoundedQr::check_singularity() {
 
-  const int np   = n_cov_;
+  const int np   = num_params_;
   arma::vec work = arma::sqrt(D_);
   
-  if(!tolset_) {
+  if(!tol_set_) {
     set_tolerance();
   }
   
@@ -189,7 +189,7 @@ void BoundedQr::check_singularity() {
     
     for(int row = 0; row < col - 1; ++row) {
       if(::abs(rbar_[pos]) * work[row] < temp) {
-        rbar_[pos] = zero_;
+        rbar_[pos] = ZERO_;
       }
       pos += np - row - 2;
     }
@@ -211,26 +211,26 @@ void BoundedQr::check_singularity() {
         
         for(int k = col + 1; k < np; ++k, ++pos2) {
           x[k]       = rbar_[pos2];
-          rbar_[pos2] = zero_;
+          rbar_[pos2] = ZERO_;
         }
         
         double y = thetab_[col];
         double w = D_[col];
         
-        D_[col] = zero_;
-        thetab_[col] = zero_;
+        D_[col] = ZERO_;
+        thetab_[col] = ZERO_;
         
         include(x, w, y);
         
-        // undo n_obs_ increment performed in include
-        --n_obs_;
+        // undo num_obs_ increment performed in include
+        --num_obs_;
         
       } else {
         sserr_ += D_[col] * thetab_[col] * thetab_[col];
       }
     }
   }
-  singchecked_ = true;
+  sing_checked_ = true;
 }
 
 
@@ -242,9 +242,9 @@ void BoundedQr::check_singularity() {
 //' @keywords internal
 arma::vec BoundedQr::betas() {
   
-  const int np = n_cov_;
+  const int np = num_params_;
 
-  if(!singchecked_) {
+  if(!sing_checked_) {
     check_singularity();
   }
   
@@ -254,8 +254,8 @@ arma::vec BoundedQr::betas() {
   for(int i = np - 1; i > -1; --i) {
     
     if(work[i] < tol_[i]) {
-      beta[i] = zero_;
-      D_[i]   = zero_;
+      beta[i] = ZERO_;
+      D_[i]   = ZERO_;
     } else {
       
       beta[i] = thetab_[i];
@@ -285,7 +285,7 @@ arma::vec BoundedQr::betas() {
 //' @keywords internal
 void BoundedQr::residual_sumsquares() {
   
-  int np = n_cov_;
+  int np = num_params_;
   
   double total = sserr_;
   rss_[np - 1] = sserr_;
@@ -295,23 +295,23 @@ void BoundedQr::residual_sumsquares() {
     rss_[i - 1] = total;
   }
   
-  rssset_ = true;
+  rss_set_ = true;
   
 }
 
 
 arma::mat BoundedQr::vcov_sugar(int nreq) {
   
-  if(n_obs_ <= nreq) {
+  if(num_obs_ <= nreq) {
     // TODO: handle error appropriately
     return arma::vec(1).fill(NA_REAL);
   }
   
-  if(!singchecked_) {
+  if(!sing_checked_) {
     check_singularity();
   }
   
-  int p = n_cov_;
+  int np = num_params_;
   
   double rnk = 0.0;
   for (int i = 0; i < nreq; ++i) {
@@ -320,12 +320,12 @@ arma::mat BoundedQr::vcov_sugar(int nreq) {
     }
   }
 
-  arma::mat R = arma::eye(p, p);
+  arma::mat R = arma::eye(np, np);
 
   // R * rbar_
   int pos = 0;
-  for(int i = 0; i < p - 1; ++i) {
-    for(int j = i + 1; j < p; ++j) {
+  for(int i = 0; i < np - 1; ++i) {
+    for(int j = i + 1; j < np; ++j) {
       R(j, i) = rbar_[pos];
       ++pos;
     }
@@ -335,8 +335,8 @@ arma::mat BoundedQr::vcov_sugar(int nreq) {
   arma::vec work = arma::sqrt(D_);
   
   // R * sqrt(D_)
-  for(int i = 0; i < p; ++i) {
-    for(int j = 0; j < p; ++j) {
+  for(int i = 0; i < np; ++i) {
+    for(int j = 0; j < np; ++j) {
       R(i, j) = R(i, j) * work[i];
     }
   }
@@ -344,10 +344,10 @@ arma::mat BoundedQr::vcov_sugar(int nreq) {
   // chol2inv = solve(crossproduct(R, R))
   arma::mat RCI = arma::solve(
     arma::trans(arma::trimatu(R)) * arma::trimatu(R),
-    arma::eye(p, p)
+    arma::eye(np, np)
   );
   
-  return RCI * (sserr_ / (n_obs_ - rnk));
+  return RCI * (sserr_ / (num_obs_ - rnk));
   
 }
 
@@ -355,16 +355,16 @@ arma::mat BoundedQr::vcov_sugar(int nreq) {
 //' @keywords internal
 arma::vec BoundedQr::vcov(int nreq) {
   
-  if(n_obs_ <= nreq) {
+  if(num_obs_ <= nreq) {
     // TODO: handle error appropriately
     return arma::vec(1).fill(NA_REAL);
   }
   
-  if(!singchecked_) {
+  if(!sing_checked_) {
     check_singularity();
   }
   
-  if(!rssset_) {
+  if(!rss_set_) {
     residual_sumsquares();
   }
   
@@ -375,7 +375,7 @@ arma::vec BoundedQr::vcov(int nreq) {
     }
   }
   
-  double var       = rss_[nreq - 1] / (n_obs_ - rnk);
+  double var       = rss_[nreq - 1] / (num_obs_ - rnk);
   arma::vec rinv   = rbar_inverse(nreq);
   arma::vec covmat = arma::vec(nreq * (nreq + 1) / 2).fill(NA_REAL);
   
@@ -423,7 +423,7 @@ arma::vec BoundedQr::vcov(int nreq) {
 //' @keywords internal
 arma::vec BoundedQr::rbar_inverse(int nreq) {
   
-  int np   = n_cov_;
+  int np   = num_params_;
   int pos  = nreq * (nreq - 1) / 2 - 1;
   int pos1 = -1;
   int pos2 = -1;

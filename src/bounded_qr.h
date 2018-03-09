@@ -9,19 +9,64 @@ using namespace Rcpp;
 // [[Rcpp::depends(RcppArmadillo)]]
 
 
+//'  Algorithm AS 274: Least Squares Routines to Supplement Those of Gentleman
+//'  Author(s): Alan J. Miller
+//'  Source: Journal of the Royal Statistical Society.
+//'  Series Applied Statistics, Vol. 41, No. 2
+//'  (1992), pp. 458-478
+//'
+//'  num_obs_
+//'  the latest count of observations processed.
+//'  
+//'  num_params_ 
+//'  the total number of dependent variables,
+//'  including the constant if present
+//'
+//'  rbar_dim_
+//'  the dimension of the upper triangular matrix rbar_
+//'  
+//'  tol_set_
+//'  a logical variable which is set when subroutine tolset() has
+//'  been called to calculate tolerances for use in testing for
+//'  singularities.
+//'  
+//'  rss_set_
+//'  a logical variable indicating whether residual sums of squares
+//'  are available.
+//'  
+//'  D_
+//'  array of row multipliers for the Cholesky factorization.
+//'  
+//'  thetab_
+//'  vector of projections (after scaling by sqrt(D))
+//'
+//'  rbar_
+//'  upper-triangular matrix excluding the implicit 1's on the diagonal,
+//'  representing the Cholesky factorization.
+//'
+//'  tol_
+//'  array of tolerances used in testing for singularities
+//'  
+//'  rss_
+//'  array of residual sums of squares
+//'
+//'  sserr_
+//'  residual sum of squares with all of the variables included
+//'  
 //' @keywords internal
 class BoundedQr {
   
 private:
-  const double zero_      = 0.0;
-  const double near_zero_ = 1.e-69;
+  const double ZERO_      = 0.0;
+  const double NEAR_ZERO_ = 1.e-69;
   
-  int r_dim_;     // size of upper triangle of R in QR-factorization
+  int rbar_dim_;
   arma::vec lindep_;
   
-  bool rssset_;
-  bool tolset_;
-  bool singchecked_;
+  bool rss_set_;
+  bool tol_set_;
+  bool sing_checked_;
+  
   void residual_sumsquares();
   void set_tolerance();
   arma::vec rbar_inverse(int nreq);
@@ -29,39 +74,39 @@ private:
   
 public:
   
-  int n_cov_;     // number of covariates in model including intercept if present
-  int n_obs_;     // online count of number of observations processed
+  int num_params_;
+  int num_obs_;
   
   arma::vec D_;
   arma::vec rbar_;
   arma::vec thetab_;
   arma::vec tol_;
-  arma::vec rss_;
   
+  arma::vec rss_;
   double sserr_;
-  double sumysq_;
   double sumy_;
+  double sumysq_;
 
   BoundedQr(int np) {
     
-    n_cov_ = np;
-    n_obs_ = 0;
-    r_dim_ = np * (np - 1) / 2;
+    num_params_ = np;
+    num_obs_    = 0;
+    rbar_dim_   = np * (np - 1) / 2;
     
-    D_       = arma::zeros(n_cov_);
-    rbar_    = arma::zeros(r_dim_);
-    thetab_  = arma::zeros(n_cov_);
-    tol_     = arma::zeros(n_cov_);
-    lindep_  = arma::vec(n_cov_).fill(false);
-    rss_     = arma::zeros(n_cov_);
+    D_       = arma::zeros(num_params_);
+    rbar_    = arma::zeros(rbar_dim_);
+    thetab_  = arma::zeros(num_params_);
+    tol_     = arma::zeros(num_params_);
+    lindep_  = arma::vec(num_params_).fill(false);
     
-    sserr_   = zero_;
-    sumy_    = zero_;
-    sumysq_  = zero_;
+    rss_     = arma::zeros(num_params_);
+    sserr_   = ZERO_;
+    sumy_    = ZERO_;
+    sumysq_  = ZERO_;
     
-    tolset_      = false;    
-    rssset_      = false;
-    singchecked_ = false;
+    tol_set_      = false;    
+    rss_set_      = false;
+    sing_checked_ = false;
     
   };
   
@@ -89,11 +134,12 @@ RCPP_MODULE(BoundedQrModule) {
     .constructor<int>()
     
     .field("D",       &BoundedQr::D_)
-    .field("np",      &BoundedQr::n_cov_)
     .field("rbar",    &BoundedQr::rbar_)
     .field("thetab",  &BoundedQr::thetab_)
     .field("tol",     &BoundedQr::tol_)
-    .field("nobs",    &BoundedQr::n_obs_)
+
+    .field("np",      &BoundedQr::num_params_)
+    .field("nobs",    &BoundedQr::num_obs_)
     .field("sserr",   &BoundedQr::sserr_)
     .field("sumsqy",  &BoundedQr::sumysq_)
     

@@ -16,7 +16,8 @@
 online_lm <- function(data,
                       formula,
                       weights  = NULL,
-                      sandwich = FALSE) {
+                      sandwich = FALSE,
+                      ...) {
 
   model_terms <- terms(formula)
   batch_data  <- model.frame(model_terms, data)
