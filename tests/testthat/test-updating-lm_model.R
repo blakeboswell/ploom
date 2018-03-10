@@ -5,17 +5,17 @@ iter_model <- function(df, eqn, weights = NULL) {
   
   
   if(is.null(weights)){
-    x <- ploom::online_lm(df[1, ],
+    x <- ploom::oomlm(df[1, ],
                           formula = eqn)
   }
   else {
-    x <- ploom::online_lm(df[1, ],
+    x <- ploom::oomlm(df[1, ],
                           formula = eqn,
                           weights = weights)
   }
   
   for(i in 2:nrow(df)) {
-      x <- update_online_lm(df[i, ], x)
+      x <- update_oomlm(df[i, ], x)
   }
   
   x
@@ -38,7 +38,7 @@ expect_summary_equal <- function(sy, sx) {
 }
 
 
-test_that("updating online_lm", {
+test_that("updating oomlm", {
   
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = mtcars)
@@ -54,7 +54,7 @@ test_that("updating online_lm", {
 })
 
 
-test_that("weighted updating online_lm", {
+test_that("weighted updating oomlm", {
 
   df      <- mtcars
   w       <- runif(nrow(mtcars))
@@ -74,7 +74,7 @@ test_that("weighted updating online_lm", {
 })
 
 
-test_that("updating online_lm without intercept", {
+test_that("updating oomlm without intercept", {
   
   df <- mtcars
   f  <- mpg ~ 0 + cyl + disp + hp + wt
@@ -92,21 +92,21 @@ test_that("updating online_lm without intercept", {
 })
 
 
-# test_that("weighted updating online_lm without intercept", {
-#   
-#   df      <- mtcars
-#   w       <- runif(nrow(mtcars))
-#   df['w'] <- w / sum(w)
-#   
-#   f <- mpg ~ 0 + cyl + disp + hp + wt
-#   
-#   y <- lm(f, data = df, weights = w)
-#   x <- iter_model(df, f, weights = ~w)
-#   
-#   expect_equal(vcov(x), vcov(y))
-#   expect_summary_equal(
-#     summary(y, correlation = TRUE),
-#     summary(x, correlation = TRUE)
-#   )
-#   
-# })
+test_that("weighted updating oomlm without intercept", {
+
+  df      <- mtcars
+  w       <- runif(nrow(mtcars))
+  df['w'] <- w / sum(w)
+
+  f <- mpg ~ 0 + cyl + disp + hp + wt
+
+  y <- lm(f, data = df, weights = w)
+  x <- iter_model(df, f, weights = ~w)
+
+  expect_equal(vcov(x), vcov(y))
+  expect_summary_equal(
+    summary(y, correlation = TRUE),
+    summary(x, correlation = TRUE)
+  )
+
+})
