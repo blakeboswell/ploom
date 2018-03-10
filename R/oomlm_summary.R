@@ -1,27 +1,40 @@
+# mimic base `lm` as closely as possible
+# (unofficial reference ..)
+# https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
 
-#' mimic base `summary.lm` as closely as possible
-#' (unofficial reference .. may go away)
-#' https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
-#' 
+
 #' @export
 summary.oomlm <- function(x,
                           correlation  = FALSE,
                           symbolic.cor = FALSE,
                           ...) {
 
+  if(!inherits(x, "oomlm")) {
+    stop("not an oolm object.")
+  }
+  
+  rank <- x$qr$rank()
+  if(rank == 0) {
+    # TODO
+  }
+  
+  if(is.null(x$terms)) {
+    # TODO
+  }
+  
   has_intercept  <- attr(x$terms, "intercept") > 0
   lindep         <- as.logical(x$qr$lindep())
   names(lindep)  <- x$names
   
   num_params     <- x$qr$num_params
   num_obs        <- x$qr$num_obs
-  intercept_only <- num_params == attr(x$terms, "intercept")
+  intercept_only <- rank == attr(x$terms, "intercept")
   
   sumsqy     <- x$qr$sumsqy
   rss        <- x$qr$rss()
   rss_full   <- rss[length(rss)]
   rss_red    <- if(has_intercept) rss[1] else sumsqy
-  res_dof    <- num_obs - num_params
+  res_dof    <- num_obs - rank
   res_var    <- rss_full / res_dof
   res_std    <- sqrt(res_var)
   
@@ -46,8 +59,8 @@ summary.oomlm <- function(x,
     adj_r_squared <- 1 - (1 - r_squared) * ((num_obs - df_int) / res_dof)
     
     fstatistic <- c(
-      value = (rss_red - rss_full) / (num_params - df_int) / res_var,
-      numdf = num_params - df_int,
+      value = (rss_red - rss_full) / (rank - df_int) / res_var,
+      numdf = rank - df_int,
       dendf = res_dof
     )
     
@@ -61,12 +74,12 @@ summary.oomlm <- function(x,
     terms         = x$terms,
     coefficients  = coef_mat,
     aliased       = lindep,
-    df            = c(num_params - sum(lindep), res_dof, num_params),
+    df            = c(rank, res_dof, num_params),
     fstatistic    = fstatistic,
     sigma         = res_std,
     r.squared     = r_squared,
     adj.r.squared = adj_r_squared,
-    cov.unscaled  = cov_mat * (num_obs - num_params + sum(lindep)) / rss_full
+    cov.unscaled  = cov_mat * (num_obs - rank) / rss_full
   )
   
   if (correlation) {
@@ -82,10 +95,6 @@ summary.oomlm <- function(x,
 }
 
 
-#' mimic base `summary.lm` as closely as possible
-#' (unofficial reference .. may go away)
-#' https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
-#' 
 #' @export
 print.summary.oomlm <- function(x,
                                 digits = max(3L, getOption("digits") - 3L),
