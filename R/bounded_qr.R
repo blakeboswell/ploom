@@ -22,7 +22,7 @@ new_bounded_qr <- function(np) {
 #' @keywords internal
 update.Rcpp_BoundedQr <- function(qr, X, y, weights) {
   
-  if(ncol(X) != qr$np) {
+  if(ncol(X) != qr$num_params) {
     stop("Invalid column dimension for `X`")
   }
   
@@ -50,14 +50,14 @@ update.Rcpp_BoundedQr <- function(qr, X, y, weights) {
 coef.Rcpp_BoundedQr <- function(qr, nvar = NULL, ...){
   
   if (is.null(nvar)) {
-    nvar <- qr$np
+    nvar <- qr$num_params
   }
     
-  if (nvar < 1 | nvar > qr$np) {
+  if (nvar < 1 | nvar > qr$num_params) {
     stop("Invalid value of `nvar`")
   }
   
-  beta              <- qr$betas()
+  beta              <- qr$beta()
   beta[qr$D == 0.0] <- NA
   
   # TODO: replicate this error handle
@@ -74,9 +74,9 @@ coef.Rcpp_BoundedQr <- function(qr, nvar = NULL, ...){
 #' @keywords internal
 vcov.Rcpp_BoundedQr <- function(qr) {
   
-  vcov_vec <- qr$vcov(qr$np)
+  vcov_vec <- qr$vcov(qr$num_params)
   k        <- length(cov_vec)
-  np       <- qr$np
+  np       <- qr$num_params
   V        <- matrix(nrow = np, ncol = np)
   pos      <- 1
   
