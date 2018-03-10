@@ -29,6 +29,26 @@ arma::vec BoundedQr::lindep() {
   
 }
 
+//' access up-to-date rank 
+//'
+//' @external
+double BoundedQr::rank() {
+  
+  if(!sing_checked_) {
+    check_singularity();
+  }
+  
+  double rnk = 0.0;
+  for (int i = 0; i < num_params_; ++i) {
+    if(!lindep_[i]) {
+      ++rnk;
+    }
+  }
+  
+  return rnk;
+  
+}
+
 
 //' @keywords internal
 void BoundedQr::update(arma::mat &X,
@@ -240,7 +260,7 @@ void BoundedQr::check_singularity() {
 //'  for the first NREQ variables, given an orthogonal reduction from
 //'  AS75.1.
 //' @keywords internal
-arma::vec BoundedQr::betas() {
+arma::vec BoundedQr::beta() {
   
   const int np = num_params_;
 

@@ -52,6 +52,7 @@ using namespace Rcpp;
 //'
 //'  sserr_
 //'  residual sum of squares with all of the variables included
+//'  equal to last element in rss_
 //'  
 //' @keywords internal
 class BoundedQr {
@@ -116,11 +117,12 @@ public:
   void update(arma::mat &X, arma::vec &y, arma::vec &w);
   arma::vec vcov(int nreq);
   arma::mat vcov_sugar(int nreq);
-  arma::vec betas();
+  arma::vec beta();
   
   // accessors
   arma::vec rss();
   arma::vec lindep();
+  double rank();
   
 };
 
@@ -138,16 +140,18 @@ RCPP_MODULE(BoundedQrModule) {
     .field("thetab",  &BoundedQr::thetab_)
     .field("tol",     &BoundedQr::tol_)
 
-    .field("np",      &BoundedQr::num_params_)
-    .field("nobs",    &BoundedQr::num_obs_)
-    .field("sserr",   &BoundedQr::sserr_)
-    .field("sumsqy",  &BoundedQr::sumysq_)
+    .field("num_params", &BoundedQr::num_params_)
+    .field("num_obs",    &BoundedQr::num_obs_)
+
+    .field("rss_full", &BoundedQr::sserr_)
+    .field("sumsqy",   &BoundedQr::sumysq_)
     
     .method("update",  &BoundedQr::update)
-    .method("betas",   &BoundedQr::betas)
+    .method("beta",    &BoundedQr::beta)
     .method("vcov",    &BoundedQr::vcov)
     .method("rss",     &BoundedQr::rss)
     .method("lindep",  &BoundedQr::lindep)
+    .method("rank",    &BoundedQr::rank)
     ;
   
 }
