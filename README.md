@@ -38,25 +38,51 @@ The core of `ploom` consists of the updating Linear Models `oomlm` and
 feeding observations into the models and online logging of model
 statistics.
 
-#### `oomlm` and `oomglm`
-
-The linear modeling functions `oomlm` and `oomglm` are the updating
-analog of base R `lm` and `glm`.
+### `oomlm` and `oomglm`
 
 ``` r
 library(ploom)
+
+chunks <- purrr::map(1:nrow(mtcars), function(i) mtcars[i, ])
 ```
 
-``` r
-mdl <- ploom::oomlm(mtcars[1, ], mpg ~ cyl + disp + hp + wt)
-purrr::walk(2:nrow(mtcars), ~update_oomlm(mtcars[., ], mdl))
+The functions `oomlm` and `oomglm` are the analogs of base R `lm` and
+`glm`.
 
-summary(mdl)
+Initialize a new `oomlm` with data, and then loop update. …
+
+``` r
+x  <- oomlm(chunks[[1]], mpg ~ cyl + disp + hp + wt)
+for(chunk in chunks[2:length(chunks)]) {
+  x <- update_oomlm(chunk, x)
+}
+```
+
+Or initialize with formula only, and then loop to update. …
+
+``` r
+y  <- oomlm(mpg ~ cyl + disp + hp + wt)
+for(chunk in chunks) {
+  y <- update_oomlm(chunk, y)
+}
+```
+
+Or use `reduce` to initialize and update.
+
+``` r
+z <- purrr::reduce(chunks, update_oomlm,
+                   .init = oomlm(mpg ~ cyl + disp + hp + wt))
+```
+
+All approaches produce the same result.
+
+``` r
+summary(z)
 ```
 
     ## 
     ## Out-of-memory Linear Model:
-    ## ploom::oomlm(mtcars[1, ], mpg ~ cyl + disp + hp + wt)
+    ## oomlm_init(data, obj)
     ## 
     ##             Estimate Std. Error t value Pr(>|t|)    
     ## (Intercept) 40.82854    2.75747  14.807 1.76e-14 ***
@@ -71,7 +97,7 @@ summary(mdl)
     ## Multiple R-squared:  0.8486, Adjusted R-squared:  0.8262 
     ## F-statistic: 37.84 on 4 and 27 DF,  p-value: 1.061e-10
 
-#### `streams`
+### `streams`
 
 ## Alternatives
 

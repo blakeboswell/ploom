@@ -10,27 +10,114 @@
 #'   (uses `p^4` memory rather than `p^2`)
 #' @details The model formula must not contain any data-dependent terms, as
 #'   these will not be consistent when updated. Factors are permitted, but 
-#'   the levels of the factor must be the same across all data chunks 
-#'   (empty factor levels are ok). Offsets are allowed.
+#'   the levels of the factor must be the same across all data chunks. 
+#'   Empty factor levels are accepted.
 #' @export
-oomlm <- function(data,
-                  formula,
-                  weights  = NULL,
-                  sandwich = FALSE,
-                  ...) {
+#' @return `oomlm` model object that can be updated with more data
+#'   via [update_oomlm][ploom::update_oomlm]
+#' @examples
+#' # Like base `lm`, `oomlm` accepts any data object coercible
+#' # to data.frame
+#' x <- oomlm(mtcars[1:15, ], mpg ~ cyl + disp + hp + wt)
+#' 
+#' # In-memory data can be passed to `oomlm` in chunks:
+#' x <- update_oomlm(mtcars[16:nrow(mtcars), ], x)
+#' summary(x)
+#' 
+#' # Updates to `oomlm` objects happen as side effects, so assignment from
+#' # `update_oomlm` is not required
+#' x <- oomlm(mtcars[1, ], mpg ~ cycl + disp + hp + wt)
+#' purrr::walk(2:nrow(mtcars), ~ update_oomlm(mtcars[., ], x))
+#' summary(x)
+#' 
+oomlm <- function(x, ...) {
+  UseMethod("oomlm")
+}
+
+
+oomlm.formula <- function(x, ...) {
+  oomlm_formula(x)
+}
+
+
+oomlm.default<- function(x, ...) {
+  oomlm_data(x, ...)
+}
+
+
+#' Initilize empty `oomlm`` without data
+#'
+#' @keywords internal
+oomlm_formula <- function(formula,
+                          weights  = NULL,
+                          sandwich = FALSE) {
 
   model_terms <- terms(formula)
+
+  if(!is.null(weights) && !inherits(weights, "formula")) {
+    stop("`weights` must be a formula")
+  }
+
+  if(sandwich) {
+    xy <- list(xy = NULL)
+  } else {
+    xy <- NULL
+  }
+
+  rval <- list(
+    call     = sys.call(),
+    qr       = NULL,
+    assign   = NULL,
+    terms    = model_terms,
+    n        = NULL,
+    names    = NULL,
+    weights  = weights,
+    df.resid = NULL,
+    sandwich = xy,
+    has_data = FALSE
+  )
+
+  class(rval) <- "oomlm"
+  rval
+
+}
+
+
+#' Initialize `oomlm`` with data
+#'
+#' @keywords internal
+oomlm_data <- function(data,
+                       formula,
+                       weights  = NULL,
+                       sandwich = FALSE,
+                       ...) {
+
+  obj <- oomlm_formula(formula, weights, sandwich)
+  oomlm_init(data, obj)
+
+}
+
+
+#' data and formula are known, init a "complete" `oomlm` object
+#' 
+#' @keywords internal
+oomlm_init <- function(data, obj) {
+
+  model_terms <- obj$terms
+  weights     <- obj$weights
+  sandwich    <- obj$sandwich
+
   batch_data  <- model.frame(model_terms, data)
-  
+
   if(is.null(offset <- model.offset(batch_data))) {
     offset <- 0
   }
-  
+
   batch_response <- model.response(batch_data) - offset
   batch_data     <- model.matrix(model_terms, batch_data)
-  
+
   p <- ncol(batch_data)
-  n <- nrow(batch_data) 
+  n <- nrow(batch_data)
 
   if(is.null(weights)) {
     batch_weights <- rep(1.0, n)
@@ -40,64 +127,84 @@ oomlm <- function(data,
     }
     batch_weights <- model.frame(weights, data)[[1]]
   }
-  
+
   model_qr <- update(new_bounded_qr(p),
                      batch_data,
                      batch_response,
                      batch_weights)
 
-  rval <- list(
-    call     = sys.call(),
-    qr       = model_qr,
-    assign   = attr(batch_data, "assign"),
-    terms    = model_terms,
-    n        = n,
-    names    = colnames(batch_data),
-    weights  = weights,
-    df.resid = n - p
-  )
+  obj$call     <- sys.call()
+  obj$qr       <- model_qr
+  obj$assign   <- attr(batch_data, "assign")
+  obj$n        <- n
+  obj$names    <- colnames(batch_data)
+  obj$weights  <- weights
+  obj$df.resid <- n - p
+  obj$has_data <- TRUE
 
-  if (sandwich) {
+  if (!is.null(sandwich)) {
     xx        <- matrix(nrow = n, ncol = p * (p + 1))
     xx[, 1:p] <- batch_data * batch_response
     for (i in 1:p) {
       xx[, p * i + (1:p)] <- batch_data * batch_data[, i]
     }
-    
+
     sandwich_qr <- update(new_bounded_qr(p * (p + 1)),
                           xx, rep(0, n), batch_weights ^ 2)
-    rval$sandwich <- list(xy = sandwich_qr)
+    obj$sandwich$xy <- sandwich_qr
   }
 
-  class(rval) <- "oomlm"
-  rval
+  obj
 
 }
 
 
-#' fit `online_lm` model to new batch of observations
+#' @export
+update_oomlm <- function(x, ...) {
+  UseMethod("update_oomlm")
+}
+
+
+#' @export
+update_oomlm.default <- function(x, ...) {
+  chunk_include(data = x, ...)
+}
+
+
+#' @export
+update_oomlm.oomlm <- function(x, ...) {
+  chunk_include(..., obj = x)
+}
+
+
+#' fit `oomlm` model to new batch of observations
 #'
 #' @param data an optional data frame, list or environment
 #'   (or object coercible by as.data.frame to a data frame)
-#' @param object online_lm object
-#' @export
-update_oomlm <- function(data, obj, ...) {
+#' @param oomlm model object
+#' @keywords internal
+chunk_include <- function(data, obj) {
+
+  if(!obj$has_data) {
+    obj <- oomlm_init(data, obj)
+    return(obj)
+  }
 
   batch_data  <- model.frame(obj$terms, data)
-  
+
   if(is.null(offset <- model.offset(batch_data))) {
     offset <- 0
   }
-  
+
   batch_response <- model.response(batch_data) - offset
   batch_data     <- model.matrix(obj$terms, batch_data)
-  
+
   if(is.null(obj$weights)) {
     batch_weights <- NULL
   } else {
     batch_weights <- model.frame(obj$weights, data)[[1]]
   }
-  
+
   if (!identical(obj$assign, attr(batch_data, "assign"))) {
     stop("model matrices incompatible")
   }
@@ -106,14 +213,14 @@ update_oomlm <- function(data, obj, ...) {
          batch_data,
          batch_response,
          batch_weights)
-  
+
   obj$n <- obj$n + nrow(batch_data)
 
   if (!is.null(obj$sandwich)) {
 
     p <- ncol(batch_data)
-    n <- nrow(batch_data) 
-    
+    n <- nrow(batch_data)
+
     xx <- matrix(nrow = n, ncol = p * (p + 1))
     xx[, 1:p] <- batch_data * batch_response
     for (i in 1:p) {
@@ -122,49 +229,40 @@ update_oomlm <- function(data, obj, ...) {
     sandwich_qr <- update(obj$sandwich$xy,
                           xx, rep(0, n), batch_weights ^ 2)
     obj$sandwich <- list(xy = sandwich_qr)
-    
+
   }
-  
+
   obj
-  
+
 }
 
 
-#' mimic base `print.lm` as closely as possible
-#' (unofficial reference .. may go away)
-#' https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
-#' 
 #' @export
 print.oomlm <- function(obj,
                         digits = max(3L, getOption("digits") - 3L),
                         ...) {
-  
+
   cat("\nOut-of-memory Linear Model:\n",
       paste(deparse(obj$call), sep = "\n", collapse = "\n"),
       "\n\n",
       sep = "")
-  
-  betas <- coef(obj)
-  
-  if(length(betas)) {
+
+  beta <- coef(obj)
+
+  if(length(beta)) {
     cat("Coefficients:\n")
     print.default(
-      format(betas, digits = digits),
+      format(beta, digits = digits),
       print.gap = 2L,
       quote     = FALSE)
   } else {
     cat("No coefficients\n")
   }
-  
+
   cat("\n")
   cat("Observations included: ", obj$n, "\n")
 
   invisible(obj)
-  
+
 }
-
-
-
-
-
 

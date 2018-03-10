@@ -35,22 +35,50 @@ devtools::install_github("bboswell/ploom")
 
 The core of `ploom` consists of the updating Linear Models `oomlm` and `oomglm` and the data reading and writing objects, `streams`, for feeding observations into the models and online logging of model statistics.
 
-#### `oomlm` and `oomglm`
-
-The linear modeling functions `oomlm` and `oomglm` are the updating analog of base R `lm` and `glm`.
+### `oomlm` and `oomglm`
 
 ```{r, eval = TRUE, message=FALSE, warning=FALSE}
 library(ploom)
+
+chunks <- purrr::map(1:nrow(mtcars), function(i) mtcars[i, ])
 ```
+
+The functions `oomlm` and `oomglm` are the analogs of base R `lm` and `glm`.
+
+Initialize a new `oomlm` with data, and then loop update. ...
 
 ```{r, eval = TRUE}
-mdl <- ploom::oomlm(mtcars[1, ], mpg ~ cyl + disp + hp + wt)
-purrr::walk(2:nrow(mtcars), ~update_oomlm(mtcars[., ], mdl))
-
-summary(mdl)
+x  <- oomlm(chunks[[1]], mpg ~ cyl + disp + hp + wt)
+for(chunk in chunks[2:length(chunks)]) {
+  x <- update_oomlm(chunk, x)
+}
 ```
 
-#### `streams`
+Or initialize with formula only, and then loop to update. ...
+
+```{r, eval = TRUE}
+y  <- oomlm(mpg ~ cyl + disp + hp + wt)
+for(chunk in chunks) {
+  y <- update_oomlm(chunk, y)
+}
+```
+
+Or use `reduce` to initialize and update.
+
+```{r, eval = TRUE}
+z <- purrr::reduce(chunks, update_oomlm,
+                   .init = oomlm(mpg ~ cyl + disp + hp + wt))
+```
+
+All approaches produce the same result.
+
+```{r, eval = TRUE}
+summary(z)
+```
+
+
+
+### `streams`
 
 ```{r, eval = FALSE}
 
