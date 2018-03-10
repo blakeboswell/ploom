@@ -25,7 +25,7 @@ A collection of tools for out-of-memory linear model fitting and inference. Impl
 
 ## Installation
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, message=FALSE}
 # the early development version from GitHub:
 # install.packages("devtools")
 devtools::install_github("bboswell/ploom")
@@ -33,7 +33,29 @@ devtools::install_github("bboswell/ploom")
 
 ## Usage
 
-> forthcoming
+The core of `ploom` consists of the updating Linear Models `oomlm` and `oomglm` and the data reading and writing objects, `streams`, for feeding observations into the models and online logging of model statistics.
+
+#### `oomlm` and `oomglm`
+
+The linear modeling functions `oomlm` and `oomglm` are the updating analog of base R `lm` and `glm`.
+
+```{r, eval = TRUE, message=FALSE, warning=FALSE}
+library(ploom)
+```
+
+```{r, eval = TRUE}
+mdl <- ploom::oomlm(mtcars[1, ], mpg ~ cyl + disp + hp + wt)
+purrr::walk(2:nrow(mtcars), ~update_oomlm(mtcars[., ], mdl))
+
+summary(mdl)
+```
+
+#### `streams`
+
+```{r, eval = FALSE}
+
+```
+
 
 ## Alternatives
 
