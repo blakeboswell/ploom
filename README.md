@@ -82,7 +82,7 @@ summary(z)
 
     ## 
     ## Out-of-memory Linear Model:
-    ## oomlm_init(data, obj)
+    ## oomlm(`data`, formula = mpg ~ cyl + disp + hp + wt)
     ## 
     ##             Estimate Std. Error t value Pr(>|t|)    
     ## (Intercept) 40.82854    2.75747  14.807 1.76e-14 ***

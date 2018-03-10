@@ -95,6 +95,26 @@ summary.oomlm <- function(x,
 }
 
 
+#' temporary hack.. should use generic signature
+#' @keywords internal
+call_format <- function(x) {
+  
+  f <- paste(", formula =", deparse(formula(x)))
+  w <- s <- ""
+  
+  if(!is.null(x$weights)) {
+    w <- paste(", weights =", deparse(x$weights))
+  }
+  
+  if(!is.null(x$sandwich)) {
+    s <- ", sandwich = TRUE"
+  }
+  
+  call_format <- paste0('oomlm(`data`', f, w, s, ')')
+  
+}
+
+
 #' @export
 print.summary.oomlm <- function(x,
                                 digits = max(3L, getOption("digits") - 3L),
@@ -102,8 +122,11 @@ print.summary.oomlm <- function(x,
                                 signif.stars = getOption("show.signif.stars"),
                                 ...) {
   
+
+  # deparse(x$call)
+  
   cat("\nOut-of-memory Linear Model:\n",
-      paste(deparse(x$call), sep = "\n", collapse = "\n"),
+      paste(call_format(x), sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
   
   printCoefmat(x$coefficients,
