@@ -33,53 +33,54 @@ devtools::install_github("bboswell/ploom")
 
 ## Usage
 
-The core of `ploom` consists of
-
-- __`oomlm`__ and __`oomglm`__ for fitting linear and generalized linear models to data
-- __`oomfeeds`__ that provide a flexible interface for streaming data to and from `oomlm` and `oomglm`
-
 ```{r, eval = TRUE, include=FALSE}
 library(ploom)
+library(purrr)
 ```
 
-The functions `oomlm` and `oomglm` work as you would expect when fitting in-memory data.
+### Model Initializing and Updating
+
+The functions `oomlm` and `oomglm` are similar to base `lm` and `glm` for fitting in-memory data.
 
 ```{r, eval = TRUE}
 w <- oomlm(mpg ~ cyl + disp, data = mtcars)
 ```
 
-Similar to `biglm`, `ploom` can be updated with new data after being initially fit.
+Models are initalized with a call to `oomlm` and updated with `update_oomlm`.   The recommended pattern is to initialize models without referencing the data, then call `update_oomlm` on each data chunk in the exact same way.
 
 ```{r, eval = TRUE}
-# proxy for big data feed
-chunks <- purrr::pmap(mtcars, list)
+# proxy for big data feed (`purrr::pmap`)
+chunks  <- pmap(mtcars, list)
 
-# initial fit
-x  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
+# initialize the model
+x <- oomlm(mpg ~ cyl + disp)
 
-# iteratively update model with more data
-for(chunk in chunks[2:length(chunks)]) {
-  x <- update_oomlm(x, data = chunk)
-}
-```
-
-`ploom` models can also be initialized with a formula only, providing flexibility for initial updates.
-
-```{r, eval = TRUE}
-# no index loop
-y <- oomlm(mpg ~ cyl + disp)
+# iteratively update model with data chunks
 for(chunk in chunks) {
-  update_oomlm(y, chunk)
+  update_oomlm(x, chunk)
 }
-
-# or avoiding loops altogether with `reduce`
-z <- purrr::reduce(
-  chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp)
-  )
 ```
 
+Separating model initialization and processing of the first data chunk enables functional patterns like `reduce` to take the place of loops.  The below example is equivalent to the above `for` loop.
 
-### `streams`
+```{r, eval = TRUE}
+# avoid loops altogether with `purrr::reduce`
+y <- reduce(chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp))
+```
+
+For maximum flexibility, `ploom` also supports providing data on initialization similar to [`biglm`](https://github.com/cran/biglm).
+
+```{r, eval = TRUE}
+# initial fit
+z  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
+
+# iteratively update model with additional data chunks
+for(chunk in tail(chunks, -1)) {
+  z <- update_oomlm(x, data = chunk)
+}
+```
+
+### Using Feeds for a Variety of OOM Data Formats
 
 ```{r, eval = FALSE}
 
