@@ -33,49 +33,50 @@ devtools::install_github("bboswell/ploom")
 
 ## Usage
 
-The core of `ploom` consists of the updating Linear Models `oomlm` and `oomglm` and the data reading and writing objects, `streams`, for feeding observations into the models and online logging of model statistics.
+The core of `ploom` consists of
 
-### `oomlm` and `oomglm`
+- __`oomlm`__ and __`oomglm`__ for fitting linear and generalized linear models to data
+- __`oomfeeds`__ that provide a flexible interface for streaming data to and from `oomlm` and `oomglm`
 
-```{r, eval = TRUE, message=FALSE, warning=FALSE}
+```{r, eval = TRUE, include=FALSE}
 library(ploom)
-
-chunks <- purrr::map(1:nrow(mtcars), function(i) mtcars[i, ])
 ```
 
-The functions `oomlm` and `oomglm` are the analogs of base R `lm` and `glm`.
-
-Initialize a new `oomlm` with data, and then loop update. ...
+The functions `oomlm` and `oomglm` work as you would expect when fitting in-memory data.
 
 ```{r, eval = TRUE}
-x  <- oomlm(chunks[[1]], mpg ~ cyl + disp + hp + wt)
+w <- oomlm(mpg ~ cyl + disp, data = mtcars)
+```
+
+Similar to `biglm`, `ploom` can be updated with new data after being initially fit.
+
+```{r, eval = TRUE}
+# proxy for big data feed
+chunks <- purrr::pmap(mtcars, list)
+
+# initial fit
+x  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
+
+# iteratively update model with more data
 for(chunk in chunks[2:length(chunks)]) {
-  x <- update_oomlm(chunk, x)
+  x <- update_oomlm(x, data = chunk)
 }
 ```
 
-Or initialize with formula only, and then loop to update. ...
+`ploom` models can also be initialized with a formula only, providing flexibility for initial updates.
 
 ```{r, eval = TRUE}
-y  <- oomlm(mpg ~ cyl + disp + hp + wt)
+# no index loop
+y <- oomlm(mpg ~ cyl + disp)
 for(chunk in chunks) {
-  y <- update_oomlm(chunk, y)
+  update_oomlm(y, chunk)
 }
+
+# or avoiding loops altogether with `reduce`
+z <- purrr::reduce(
+  chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp)
+  )
 ```
-
-Or use `reduce` to initialize and update.
-
-```{r, eval = TRUE}
-z <- purrr::reduce(chunks, update_oomlm,
-                   .init = oomlm(mpg ~ cyl + disp + hp + wt))
-```
-
-All approaches produce the same result.
-
-```{r, eval = TRUE}
-summary(z)
-```
-
 
 
 ### `streams`

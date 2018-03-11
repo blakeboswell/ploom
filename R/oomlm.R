@@ -1,10 +1,10 @@
 
 #' Linear model that uses only `p^2` memory for `p` variables.
 #' 
-#' @param data an optional data frame, list or environment
-#'   (or object coercible by as.data.frame to a data frame)
 #' @param formula A model formula: a symbolic description of the
 #'   model to be fitted.
+#' @param data an optional data frame, list or environment
+#'   (or object coercible by as.data.frame to a data frame)
 #' @param weights A one-sided, single term formula specifying weights
 #' @param sandwich TRUE to compute the Huber/White sandwich covariance matrix
 #'   (uses `p^4` memory rather than `p^2`)
@@ -12,7 +12,6 @@
 #'   these will not be consistent when updated. Factors are permitted, but 
 #'   the levels of the factor must be the same across all data chunks. 
 #'   Empty factor levels are accepted.
-#' @export
 #' @return `oomlm` model object that can be updated with more data
 #'   via [update_oomlm][ploom::update_oomlm]
 #' @examples
@@ -30,23 +29,19 @@
 #' purrr::walk(2:nrow(mtcars), ~ update_oomlm(mtcars[., ], x))
 #' summary(x)
 #' 
-oomlm <- function(x, ...) {
-  UseMethod("oomlm")
+#' @export
+oomlm <- function(formula,
+                  data     = NULL,
+                  weights  = NULL,
+                  sandwich = FALSE) {
+  if(is.null(data)) {
+    return(oomlm_formula(formula, weights, sandwich))
+  }
+  oomlm_data(formula, data, weights, sandwich)
 }
 
 
-oomlm.formula <- function(x, ...) {
-  oomlm_formula(x)
-}
-
-
-oomlm.default<- function(x, ...) {
-  oomlm_data(x, ...)
-}
-
-
-#' Initilize empty `oomlm`` without data
-#'
+#' initilize empty `oomlm`` without data
 #' @keywords internal
 oomlm_formula <- function(formula,
                           weights  = NULL,
@@ -83,11 +78,10 @@ oomlm_formula <- function(formula,
 }
 
 
-#' Initialize `oomlm`` with data
-#'
+#' initialize `oomlm` with data
 #' @keywords internal
-oomlm_data <- function(data,
-                       formula,
+oomlm_data <- function(formula,
+                       data,
                        weights  = NULL,
                        sandwich = FALSE,
                        ...) {
@@ -99,7 +93,6 @@ oomlm_data <- function(data,
 
 
 #' data and formula are known, init a "complete" `oomlm` object
-#' 
 #' @keywords internal
 oomlm_init <- function(data, obj) {
 
@@ -159,31 +152,31 @@ oomlm_init <- function(data, obj) {
 }
 
 
-#' @export
-update_oomlm <- function(x, ...) {
-  UseMethod("update_oomlm")
-}
-
-
-#' @export
-update_oomlm.default <- function(x, ...) {
-  chunk_include(data = x, ...)
-}
-
-
-#' @export
-update_oomlm.oomlm <- function(x, ...) {
-  chunk_include(..., obj = x)
-}
+#' #' @export
+#' update_oomlm <- function(x, ...) {
+#'   UseMethod("update_oomlm")
+#' }
+#' 
+#' 
+#' #' @export
+#' update_oomlm.default <- function(x, ...) {
+#'   chunk_include(data = x, ...)
+#' }
+#' 
+#' 
+#' #' @export
+#' update_oomlm.oomlm <- function(x, ...) {
+#'   chunk_include(..., obj = x)
+#' }
 
 
 #' fit `oomlm` model to new batch of observations
 #'
+#' @param oomlm model object
 #' @param data an optional data frame, list or environment
 #'   (or object coercible by as.data.frame to a data frame)
-#' @param oomlm model object
-#' @keywords internal
-chunk_include <- function(data, obj) {
+#' @export
+update_oomlm <- function(obj, data) {
 
   if(!obj$has_data) {
     obj <- oomlm_init(data, obj)

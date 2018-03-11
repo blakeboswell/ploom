@@ -5,17 +5,14 @@ iter_model <- function(df, eqn, weights = NULL) {
   
   
   if(is.null(weights)){
-    x <- ploom::oomlm(df[1, ],
-                          formula = eqn)
+    x <- ploom::oomlm(formula = eqn, data = df[1, ])
   }
   else {
-    x <- ploom::oomlm(df[1, ],
-                          formula = eqn,
-                          weights = weights)
+    x <- ploom::oomlm(formula = eqn, data = df[1, ], weights = weights)
   }
   
   for(i in 2:nrow(df)) {
-      x <- update_oomlm(df[i, ], x)
+      x <- update_oomlm(x, df[i, ])
   }
   
   x

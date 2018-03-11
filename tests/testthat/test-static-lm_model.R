@@ -21,7 +21,7 @@ test_that("oomlm", {
   
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = mtcars)
-  x <- oomlm(mtcars, f)
+  x <- oomlm(f, mtcars)
   
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -41,7 +41,7 @@ test_that("weighted oomlm", {
   
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = df, weights = w)
-  x <- oomlm(df, f, weights = ~w)
+  x <- oomlm(f, df, weights = ~w)
   
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -59,7 +59,7 @@ test_that("oomlm without intercept", {
   f  <- mpg ~ 0 + cyl + disp + hp + wt
   
   y <- lm(f, data = df)
-  x <- oomlm(df, f)
+  x <- oomlm(f, df)
   
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -80,7 +80,7 @@ test_that("weighted oomlm without intercept", {
   f <- mpg ~ 0 + cyl + disp + hp + wt
   
   y <- lm(f, data = df, weights = w)
-  x <- oomlm(df, f, weights = ~w)
+  x <- oomlm(f, df, weights = ~w)
   
   expect_equal(vcov(x), vcov(y))
   expect_summary_equal(

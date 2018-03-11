@@ -33,69 +33,51 @@ devtools::install_github("bboswell/ploom")
 
 ## Usage
 
-The core of `ploom` consists of the updating Linear Models `oomlm` and
-`oomglm` and the data reading and writing objects, `streams`, for
-feeding observations into the models and online logging of model
-statistics.
+The core of `ploom` consists of
 
-### `oomlm` and `oomglm`
+  - **`oomlm`** and **`oomglm`** for fitting linear and generalized
+    linear models to data
+  - **`oomfeeds`** that provide a flexible interface for streaming data
+    to and from `oomlm` and `oomglm`
+
+The functions `oomlm` and `oomglm` work as you would expect when fitting
+in-memory data.
 
 ``` r
-library(ploom)
-
-chunks <- purrr::map(1:nrow(mtcars), function(i) mtcars[i, ])
+w <- oomlm(mpg ~ cyl + disp, data = mtcars)
 ```
 
-The functions `oomlm` and `oomglm` are the analogs of base R `lm` and
-`glm`.
-
-Initialize a new `oomlm` with data, and then loop update. …
+Similar to `biglm`, `ploom` can be updated with new data after being
+initially fit.
 
 ``` r
-x  <- oomlm(chunks[[1]], mpg ~ cyl + disp + hp + wt)
+# proxy for big data feed
+chunks <- purrr::pmap(mtcars, list)
+
+# initial fit
+x  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
+
+# iteratively update model with more data
 for(chunk in chunks[2:length(chunks)]) {
-  x <- update_oomlm(chunk, x)
+  x <- update_oomlm(x, data = chunk)
 }
 ```
 
-Or initialize with formula only, and then loop to update. …
+`ploom` models can also be initialized with a formula only, providing
+flexibility for initial updates.
 
 ``` r
-y  <- oomlm(mpg ~ cyl + disp + hp + wt)
+# no index loop
+y <- oomlm(mpg ~ cyl + disp)
 for(chunk in chunks) {
-  y <- update_oomlm(chunk, y)
+  update_oomlm(y, chunk)
 }
+
+# or avoiding loops altogether with `reduce`
+z <- purrr::reduce(
+  chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp)
+  )
 ```
-
-Or use `reduce` to initialize and update.
-
-``` r
-z <- purrr::reduce(chunks, update_oomlm,
-                   .init = oomlm(mpg ~ cyl + disp + hp + wt))
-```
-
-All approaches produce the same result.
-
-``` r
-summary(z)
-```
-
-    ## 
-    ## Out-of-memory Linear Model:
-    ## oomlm(`data`, formula = mpg ~ cyl + disp + hp + wt)
-    ## 
-    ##             Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept) 40.82854    2.75747  14.807 1.76e-14 ***
-    ## cyl         -1.29332    0.65588  -1.972 0.058947 .  
-    ## disp         0.01160    0.01173   0.989 0.331386    
-    ## hp          -0.02054    0.01215  -1.691 0.102379    
-    ## wt          -3.85390    1.01547  -3.795 0.000759 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 2.513 on 27 degrees of freedom
-    ## Multiple R-squared:  0.8486, Adjusted R-squared:  0.8262 
-    ## F-statistic: 37.84 on 4 and 27 DF,  p-value: 1.061e-10
 
 ### `streams`
 
