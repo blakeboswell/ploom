@@ -28,7 +28,7 @@ to stream in data and stream out results during fitting.
 ``` r
 # the early development version from GitHub:
 # install.packages("devtools")
-devtools::install_github("bboswell/ploom")
+devtools::install_github("blakeboswell/ploom")
 ```
 
 ## Usage

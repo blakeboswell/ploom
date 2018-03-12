@@ -28,7 +28,7 @@ A collection of tools for out-of-memory linear model fitting and inference. Impl
 ```{r, eval = FALSE, message=FALSE}
 # the early development version from GitHub:
 # install.packages("devtools")
-devtools::install_github("bboswell/ploom")
+devtools::install_github("blakeboswell/ploom")
 ```
 
 ## Usage
