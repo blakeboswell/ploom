@@ -1,5 +1,8 @@
 
-#' Linear model that uses only `p^2` memory for `p` variables.
+#' Updating Linear Regression model
+#' 
+#' @description
+#' 
 #' 
 #' @param formula A model formula: a symbolic description of the
 #'   model to be fitted.
@@ -15,33 +18,60 @@
 #' @return `oomlm` model object that can be updated with more data
 #'   via [update_oomlm][ploom::update_oomlm]
 #' @examples
-#' # Like base `lm`, `oomlm` accepts any data object coercible
-#' # to data.frame
-#' x <- oomlm(mtcars[1:15, ], mpg ~ cyl + disp + hp + wt)
+#' # The function `oomlm` is similar to base `lm` for fitting in-memory data.
+#'
+#' w <- oomlm(mpg ~ cyl + disp, data = mtcars)
+#'
+#' # Models are initalized with a call to `oomlm` and updated with
+#' # `update_oomlm`. The recommended pattern is to initialize models without
+#' # referencing the data, then call `update_oomlm` on each data chunk in the 
+#' # exact same way.
 #' 
-#' # In-memory data can be passed to `oomlm` in chunks:
-#' x <- update_oomlm(mtcars[16:nrow(mtcars), ], x)
-#' summary(x)
+#' # proxy for big data feed (`purrr::pmap`)
+#' chunks  <- purrr::pmap(mtcars, list)
 #' 
-#' # Updates to `oomlm` objects happen as side effects, so assignment from
-#' # `update_oomlm` is not required
-#' x <- oomlm(mtcars[1, ], mpg ~ cycl + disp + hp + wt)
-#' purrr::walk(2:nrow(mtcars), ~ update_oomlm(mtcars[., ], x))
-#' summary(x)
+#' # initialize the model
+#' x <- oomlm(mpg ~ cyl + disp)
 #' 
+#' # iteratively update model with data chunks
+#' for(chunk in chunks) {
+#'   update_oomlm(x, chunk)
+#' }
+#'
+#' # Separating model initialization and processing of the first data chunk
+#' # enables functional patterns like `reduce` to take the place of loops.
+#' # The below example is equivalent to the above `for` loop.
+#' 
+#' # avoid loops altogether with `purrr::reduce`
+#' y <- purrr::reduce(chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp))
+#' 
+#' # For maximum flexibility, `ploom` also supports providing data on
+#' # initialization similar to [`biglm`](https://github.com/cran/biglm).
+#'
+#' # initial fit
+#' z  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
+#' 
+#' # iteratively update model with additional data chunks
+#' for(chunk in tail(chunks, -1)) {
+#'   z <- update_oomlm(x, data = chunk)
+#' }
+#'
 #' @export
 oomlm <- function(formula,
                   data     = NULL,
                   weights  = NULL,
                   sandwich = FALSE) {
+  
   if(is.null(data)) {
     return(oomlm_formula(formula, weights, sandwich))
   }
+  
   oomlm_data(formula, data, weights, sandwich)
+
 }
 
 
-#' initilize empty `oomlm`` without data
+#' partially initialize oomlm independent of data
 #' @keywords internal
 oomlm_formula <- function(formula,
                           weights  = NULL,
@@ -60,7 +90,7 @@ oomlm_formula <- function(formula,
   }
 
   rval <- list(
-    call     = sys.call(),
+    call     = sys.call(-1),
     qr       = NULL,
     assign   = NULL,
     terms    = model_terms,
@@ -78,7 +108,7 @@ oomlm_formula <- function(formula,
 }
 
 
-#' initialize `oomlm` with data
+#' initialize `oomlm` with data, formula is required
 #' @keywords internal
 oomlm_data <- function(formula,
                        data,
@@ -92,7 +122,7 @@ oomlm_data <- function(formula,
 }
 
 
-#' data and formula are known, init a "complete" `oomlm` object
+#' complete `oomlm` initialization
 #' @keywords internal
 oomlm_init <- function(data, obj) {
 
@@ -126,7 +156,7 @@ oomlm_init <- function(data, obj) {
                      batch_response,
                      batch_weights)
 
-  obj$call     <- sys.call()
+  obj$call     <- sys.call(-1)
   obj$qr       <- model_qr
   obj$assign   <- attr(batch_data, "assign")
   obj$n        <- n
@@ -150,24 +180,6 @@ oomlm_init <- function(data, obj) {
   obj
 
 }
-
-
-#' #' @export
-#' update_oomlm <- function(x, ...) {
-#'   UseMethod("update_oomlm")
-#' }
-#' 
-#' 
-#' #' @export
-#' update_oomlm.default <- function(x, ...) {
-#'   chunk_include(data = x, ...)
-#' }
-#' 
-#' 
-#' #' @export
-#' update_oomlm.oomlm <- function(x, ...) {
-#'   chunk_include(..., obj = x)
-#' }
 
 
 #' fit `oomlm` model to new batch of observations
@@ -219,14 +231,12 @@ update_oomlm <- function(obj, data) {
     for (i in 1:p) {
       xx[, p * i + (1:p)] <- batch_data * batch_data[, i]
     }
-    sandwich_qr <- update(obj$sandwich$xy,
-                          xx, rep(0, n), batch_weights ^ 2)
-    obj$sandwich <- list(xy = sandwich_qr)
+
+    obj$sandwich$xy <- update(obj$sandwich$xy,
+                              xx, rep(0, n), batch_weights ^ 2)
 
   }
-
   obj
-
 }
 
 
@@ -258,4 +268,3 @@ print.oomlm <- function(obj,
   invisible(obj)
 
 }
-
