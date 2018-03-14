@@ -23,7 +23,7 @@ oomfeed <- function(data,
     cursor <<- cursor + min(chunksize, n - cursor)
     
     if(cursor == n){
-      reset <- TRUE
+      reset <<- TRUE
     }
     
     data[start:cursor, ]
