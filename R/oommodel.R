@@ -1,9 +1,9 @@
 
 #' @keywords internal
-unpack_oomchunk <- function(obj, chunk) {
+unpack_oomchunk <- function(obj, data) {
   
   model_terms  <- obj$terms
-  chunk_data   <- model.frame(model_terms, chunk)
+  chunk_data   <- model.frame(model_terms, data)
   chunk_assign <- attr(chunk_data, "assign")
   
   if(!is.null(obj$assign)) {
@@ -25,7 +25,7 @@ unpack_oomchunk <- function(obj, chunk) {
   if(is.null(obj$weights)) {
     chunk_weights <- rep(1.0, n)
   } else {
-    chunk_weights <- model.frame(obj$weights, chunk_data)[[1]]
+    chunk_weights <- model.frame(obj$weights, data)[[1]]
   }
   
   list(
@@ -67,10 +67,11 @@ update_sandwich <- function(qr, chunk) {
 
 
 #' @keywords internal
-update_oommodel <- function(transform) {
+update_oommodel <- function(response_transform) {
   
-  function(obj, chunk) {
-    chunk <- unpack_oomchunk(obj, chunk)
+  function(obj, data) {
+
+    chunk <- unpack_oomchunk(obj, data)
     
     if(is.null(obj$assign)) {
       obj$assign <- chunk$assign
@@ -82,7 +83,7 @@ update_oommodel <- function(transform) {
       qr <- obj$qr
     }
     
-    trans  <- transform(obj, chunk)
+    trans  <- response_transform(obj, chunk)
     obj$qr <- update(qr, chunk$data, trans$z - chunk$offset, trans$w)
     
     if(!is.null(obj$sandwich)) {
@@ -100,8 +101,8 @@ update_oommodel <- function(transform) {
 
 
 
-#' @keywords  internal
-model_init <- function(model_class) {
+#' @keywords internal
+init_model <- function(model_class) {
   
   function(formula,
            family   = NULL,

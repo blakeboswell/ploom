@@ -122,11 +122,8 @@ print.summary.oomlm <- function(x,
                                 signif.stars = getOption("show.signif.stars"),
                                 ...) {
   
-
-  # deparse(x$call)
-  
   cat("\nOut-of-memory Linear Model:\n",
-      paste(call_format(x), sep = "\n", collapse = "\n"),
+      paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
   
   printCoefmat(x$coefficients,

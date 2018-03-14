@@ -100,3 +100,33 @@ vcov.oomlm <- function(obj, ...) {
   V
   
 }
+
+
+#' @export
+print.oomlm <- function(obj,
+                        digits = max(3L, getOption("digits") - 3L),
+                        ...) {
+  
+  cat("\nOut-of-memory Linear Model:\n",
+      paste(deparse(obj$call), sep = "\n", collapse = "\n"),
+      "\n\n",
+      sep = "")
+  
+  beta <- coef(obj)
+  
+  if(length(beta)) {
+    cat("Coefficients:\n")
+    print.default(
+      format(beta, digits = digits),
+      print.gap = 2L,
+      quote     = FALSE)
+  } else {
+    cat("No coefficients\n")
+  }
+  
+  cat("\n")
+  cat("Observations included: ", obj$n, "\n")
+  
+  invisible(obj)
+  
+}

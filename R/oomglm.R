@@ -1,6 +1,7 @@
+#' @include oommodel.R
 
 #' @keywords internal
-init_oomglm <- model_init(model_class = c('oomglm', 'oomlm'))
+init_oomglm <- init_model(model_class = c('oomglm', 'oomlm'))
 
 
 #' @keywords internal
@@ -34,7 +35,7 @@ glm_transform <- function(obj, chunk) {
 
 
 #' @export
-update_oomglm <- update_oommodel(transform = glm_transform)
+update_oomglm <- update_oommodel(response_transform = glm_transform)
 
 
 #' @export
