@@ -1,31 +1,10 @@
 
-
-#' @export
-oomglm <- function(formula,
-                   data     = NULL,
-                   family   = gaussian(),
-                   weights  = NULL,
-                   sandwich = FALSE) {
-  
-  obj <- model_init(formula, family, weights, sandwich)
-
-  if(!is.null(data)) {
-    obj <- model_update(data, obj, glm_func)
-  }
-  
-  obj
-  
-}
-
-
-#' @export
-update_oomglm <- function(obj, data) {
-  model_update(data, obj, glm_func)
-}
+#' @keywords internal
+init_oomglm <- model_init(model_class = c('oomglm', 'oomlm'))
 
 
 #' @keywords internal
-glm_func <- function(chunk, obj) {
+glm_transform <- function(obj, chunk) {
   
   mm     <- chunk$data
   y      <- chunk$response
@@ -52,3 +31,27 @@ glm_func <- function(chunk, obj) {
   )
   
 }
+
+
+#' @export
+update_oomglm <- update_oommodel(transform = glm_transform)
+
+
+#' @export
+oomglm <- function(formula,
+                   data     = NULL,
+                   family   = gaussian(),
+                   weights  = NULL,
+                   sandwich = FALSE) {
+  
+  obj <- init_oomglm(formula, family, weights, sandwich)
+
+  if(!is.null(data)) {
+    obj <- update_oomglm(obj, data)
+  }
+  
+  obj
+  
+}
+
+

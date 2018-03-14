@@ -1,43 +1,6 @@
 
-
 #' @keywords internal
-etafun <- function(x, beta) {
-  if (is.null(beta)) {
-    rep(0, nrow(x))
-  } else {
-    x %*% beta
-  }
-}
-
-
-#' @keywords internal
-glm_func <- function(chunk, obj) {
-  
-  mm     <- chunk$data
-  y      <- chunk$response
-  w      <- chunk$weights
-  offset <- chunk$offset
-  
-  family <- obj$family
-  beta   <- obj$fitstats$beta
-  
-  eta <- etafun(mm, beta) + offset
-  mu  <- family$linkinv(eta)
-  dmu <- family$mu.eta(eta)
-  z   <- eta + (y - mu) / dmu
-  w   <- w * dmu * dmu / family$variance(mu)
-  
-  list(
-    z = z,
-    w = w
-  )
-  
-}
-
-
-
-#' @keywords internal
-chunk_unpack <- function(chunk, obj) {
+unpack_oomchunk <- function(obj, chunk) {
   
   model_terms  <- obj$terms
   chunk_data   <- model.frame(model_terms, chunk)
@@ -79,7 +42,7 @@ chunk_unpack <- function(chunk, obj) {
 
 
 #' @keywords internal
-sandwich_update <- function(chunk, qr) {
+update_sandwich <- function(qr, chunk) {
   
   mm <- chunk$data
   y  <- chunk$response
@@ -104,31 +67,74 @@ sandwich_update <- function(chunk, qr) {
 
 
 #' @keywords internal
-model_update <- function(data, obj, func) {
+update_oommodel <- function(transform) {
   
-  chunk <- chunk_unpack(data, obj)
-  
-  if(is.null(obj$assign)) {
-    obj$assign <- chunk$assign
+  function(obj, chunk) {
+    chunk <- unpack_oomchunk(obj, chunk)
+    
+    if(is.null(obj$assign)) {
+      obj$assign <- chunk$assign
+    }
+    
+    if(is.null(obj$qr)) {
+      qr <- new_bounded_qr(chunk$p)
+    } else {
+      qr <- obj$qr
+    }
+    
+    trans  <- transform(obj, chunk)
+    obj$qr <- update(qr, chunk$data, trans$z - chunk$offset, trans$w)
+    
+    if(!is.null(obj$sandwich)) {
+      obj$sandwich$xy <- update_sandwich(obj$sandwich$xy, chunk)
+    }
+    
+    obj$n           <- obj$n + chunk$n
+    obj$names       <- colnames(chunk$data)
+    obj$df.resid    <- obj$n - chunk$p
+    
+    obj
   }
-  
-  if(is.null(obj$qr)) {
-    qr <- new_bounded_qr(chunk$p)
-  } else {
-    qr <- obj$qr
-  }
-  
-  link   <- func(chunk, obj)
-  obj$qr <- update(qr, chunk$data, link$z - chunk$offset, link$w)
- 
-  if(!is.null(obj$sandwich)) {
-    obj$sandwich$xy <- sandwich_update(chunk, obj$sandwich$xy)
-  }
-  
-  obj$n           <- obj$n + chunk$n
-  obj$names       <- colnames(chunk$data)
-  obj$df.resid    <- obj$n - chunk$p
 
-  obj
+}
+
+
+
+#' @keywords  internal
+model_init <- function(model_class) {
   
+  function(formula,
+           family   = NULL,
+           weights  = NULL,
+           sandwich = FALSE) {
+    
+    if(!is.null(weights) && !inherits(weights, "formula")) {
+      stop("`weights` must be a formula")
+    }
+    
+    if(sandwich) {
+      xy <- list(xy = NULL)
+    } else {
+      xy <- NULL
+    }
+    
+    obj <- list(
+      call     = sys.call(-1),
+      qr       = NULL,
+      family   = family,
+      assign   = NULL,
+      terms    = terms(formula),
+      n        = 0,
+      p        = NULL,
+      names    = NULL,
+      weights  = weights,
+      df.resid = NULL,
+      sandwich = xy
+    )
+    
+    class(obj) <- model_class
+    obj
+    
+  }
+
 }
