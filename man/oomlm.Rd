@@ -37,12 +37,12 @@ The model formula must not contain any data-dependent terms, as
 w <- oomlm(mpg ~ cyl + disp, data = mtcars)
 
 # Models are initalized with a call to `oomlm` and updated with
-# [`update_oomlm`][ploom::update_oolm]. The recommended pattern is to
-# initialize models without referencing the data, then call `update_oomlm`
-# on each data chunk in the exact same way.
+# `update_oomlm`. The recommended pattern is to initialize models without
+# referencing the data, then call `update_oomlm` on each data chunk in the 
+# exact same way.
 
 # proxy for big data feed (`purrr::pmap`)
-chunks  <- pmap(mtcars, list)
+chunks  <- purrr::pmap(mtcars, list)
 
 # initialize the model
 x <- oomlm(mpg ~ cyl + disp)
@@ -57,7 +57,7 @@ for(chunk in chunks) {
 # The below example is equivalent to the above `for` loop.
 
 # avoid loops altogether with `purrr::reduce`
-y <- reduce(chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp))
+y <- purrr::reduce(chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp))
 
 # For maximum flexibility, `ploom` also supports providing data on
 # initialization similar to [`biglm`](https://github.com/cran/biglm).

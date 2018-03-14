@@ -26,3 +26,15 @@ Suggests:
     testthat
 BugReports: https://github.com/bboswell/ploom/issues
 RoxygenNote: 6.0.1
+Collate: 
+    'RcppExports.R'
+    'biglm_vcov.R'
+    'bounded_qr.R'
+    'feed.R'
+    'oommodel.R'
+    'oomglm.R'
+    'oomlm.R'
+    'oomlm_methods.R'
+    'oomlm_summary.R'
+    'ploom.R'
+    'zzz.R'
