@@ -1,20 +1,76 @@
 #' @include oommodel.R
 
 #' @keywords internal
-init_oomlm <- init_model(model_class = c('oomlm'))
-
-
-#' @keywords internal
-lm_transform <- function(obj, chunk) {
-  list(
-    z = chunk$response,
-    w = chunk$weights
+init_oomlm <- function(formula,
+                       weights  = NULL,
+                       sandwich = FALSE) {
+  
+  if(!is.null(weights) && !inherits(weights, "formula")) {
+    stop("`weights` must be a formula")
+  }
+  
+  if(sandwich) {
+    xy <- list(xy = NULL)
+  } else {
+    xy <- NULL
+  }
+  
+  obj <- list(
+    call     = sys.call(-1),
+    qr       = NULL,
+    assign   = NULL,
+    terms    = terms(formula),
+    n        = 0,
+    p        = NULL,
+    names    = NULL,
+    weights  = weights,
+    df.resid = NULL,
+    sandwich = xy
   )
+  
+  class(obj) <- 'oomlm'
+  obj
+  
 }
 
 
 #' @export
-update_oomlm <- update_oommodel(response_transform = lm_transform)
+update_oomlm <- function(obj, data) {
+  
+  chunk <- unpack_oomchunk(obj, data)
+  
+  if(is.null(obj$assign)) {
+    obj$assign <- chunk$assign
+  }
+  
+  if(is.null(obj$qr)) {
+    qr <- new_bounded_qr(chunk$p)
+  } else {
+    qr <- obj$qr
+  }
+  
+  obj$qr <- update(qr,
+                   chunk$data,
+                   chunk$response - chunk$offset,
+                   chunk$weights)
+  
+  if(!is.null(obj$sandwich)) {
+    obj$sandwich$xy <-
+      update_sandwich(obj$sandwich$xy,
+                      chunk$data,
+                      chunk$n,
+                      chunk$p,
+                      chunk$response,
+                      chunk$weights)
+  }
+  
+  obj$n        <- obj$n + chunk$n
+  obj$names    <- colnames(chunk$data)
+  obj$df.resid <- obj$n - chunk$p
+  
+  obj
+  
+}
 
 
 #' Updating Linear Regression model
@@ -80,9 +136,7 @@ oomlm <- function(formula,
                   weights  = NULL,
                   sandwich = FALSE) {
   
-  family <- NULL
-  
-  obj <- init_oomlm(formula, family, weights, sandwich)
+  obj <- init_oomlm(formula, weights, sandwich)
   
   if(!is.null(data)) {
     obj <- update_oomlm(obj, data)
@@ -91,5 +145,3 @@ oomlm <- function(formula,
   obj
   
 }
-
-

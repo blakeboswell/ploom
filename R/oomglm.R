@@ -1,41 +1,159 @@
-#' @include oommodel.R
+#' #' @include oommodel.R
 
 #' @keywords internal
-init_oomglm <- init_model(model_class = c('oomglm', 'oomlm'))
-
-
-#' @keywords internal
-glm_transform <- function(obj, chunk) {
+init_oomglm <- function(formula,
+                        family,
+                        weights  = NULL,
+                        sandwich = FALSE) {
   
+  if(!is.null(weights) && !inherits(weights, "formula")) {
+    stop("`weights` must be a formula")
+  }
+  
+  if(sandwich) {
+    xy <- list(xy = NULL)
+  } else {
+    xy <- NULL
+  }
+  
+  iwls <- list(
+    beta = NULL,
+    rss  = 0.0,
+    deviance   = 0.0
+  )
+  
+  obj <- list(
+    call       = sys.call(-1),
+    qr         = NULL,
+    assign     = NULL,
+    terms      = terms(formula),
+    n          = 0,
+    p          = NULL,
+    names      = NULL,
+    weights    = weights,
+    df.resid   = NULL,
+    sandwich   = xy,
+    family     = family,
+    iwls       = iwls,
+    converged  = FALSE,
+    iterations = 0L
+  )
+  
+  class(obj) <- c('oomglm', 'oomlm')
+  obj
+  
+}
+
+
+
+#' @keywords internal
+glm_adjust <- function(obj, chunk) {
+
   mm     <- chunk$data
   y      <- chunk$response
   w      <- chunk$weights
   offset <- chunk$offset
-  
-  family <- obj$family
-  beta   <- obj$fitstats$beta
-  
+
+  fam    <- obj$family
+
+  beta   <- obj$iwls$beta
+  rss    <- obj$iwls$rss
+  dev    <- obj$iwls$deviance
+
   if(is.null(beta)) {
-    eta <- rep(0, nrow(mm)) + offset
+    eta <- rep(0.0, nrow(mm)) + offset
   } else {
     eta <- mm %*% beta + offset
   }
-  
-  mu  <- family$linkinv(eta)
-  dmu <- family$mu.eta(eta)
-  z   <- eta + (y - mu) / dmu
-  w   <- w * dmu * dmu / family$variance(mu)
-  
+
+  g       <- fam$linkinv(eta)
+  gprime  <- fam$mu.eta(eta)
+  z       <- eta + (y - g) / gprime
+  fam_var <- fam$variance(g)
+  w       <- w * gprime ^ 2 / fam_var
+
+  if(!is.null(beta)) {
+    rss <-
+      rss + sum((y - g) ^ 2 / (w * fam_var)) * (sum(w) / length(w))
+    dev <-
+      dev + sum(fam$dev.resids(y, g, w))
+  }
+
   list(
     z = z,
-    w = w
+    w = w,
+    g = g,
+    deviance = dev,
+    rss      = rss
   )
+
+}
+
+
+#' @export
+update_oomglm <- function(obj, data) {
+  
+  chunk <- unpack_oomchunk(obj, data)
+  
+  if(is.null(obj$assign)) {
+    obj$assign <- chunk$assign
+  }
+  
+  if(is.null(obj$qr)) {
+    qr <- new_bounded_qr(chunk$p)
+  } else {
+    qr <- obj$qr
+  }
+  
+  trans  <- glm_adjust(obj, chunk)
+  
+  obj$qr <- update(qr,
+                   chunk$data,
+                   trans$z - chunk$offset,
+                   trans$w)
+  
+  if(!is.null(obj$sandwich)) {
+    obj$sandwich$xy <-
+      update_sandwich(obj$sandwich$xy,
+                      chunk$data,
+                      chunk$n,
+                      chunk$p,
+                      trans$z,
+                      trans$w)
+  }
+  
+  obj$n        <- obj$n + chunk$n
+  obj$names    <- colnames(chunk$data)
+  obj$df.resid <- obj$n - chunk$p
+  
+  obj$iwls$rss      <- trans$rss
+  obj$iwls$deviance <- trans$deviance
+  obj$iwls$beta     <- coef(obj)
+  
+  obj
   
 }
 
 
 #' @export
-update_oomglm <- update_oommodel(response_transform = glm_transform)
+reweight_oomglm <- function(obj, data) {
+  
+  if(obj$converged) {
+    return(invisible())
+  }
+  
+  beta_old <- obj$iwls$beta 
+  obj      <- update_oomglm(obj, data)
+  obj$iterations <- obj$iterations + 1L
+  
+  if(!is.null(beta_old)) {
+    delta <- (beta_old - obj$iwls$beta) / sqrt(diag(vcov(obj)))
+    obj$converged <- TRUE
+  }
+  
+  obj  
+  
+}
 
 
 #' @export
@@ -44,15 +162,13 @@ oomglm <- function(formula,
                    family   = gaussian(),
                    weights  = NULL,
                    sandwich = FALSE) {
-  
+
   obj <- init_oomglm(formula, family, weights, sandwich)
 
   if(!is.null(data)) {
     obj <- update_oomglm(obj, data)
   }
-  
+
   obj
-  
+
 }
-
-
