@@ -1,5 +1,6 @@
 #' #' @include oommodel.R
 
+
 #' @keywords internal
 init_oomglm <- function(formula,
                         family,
@@ -43,7 +44,6 @@ init_oomglm <- function(formula,
   obj
   
 }
-
 
 
 #' @keywords internal
@@ -136,22 +136,27 @@ update_oomglm <- function(obj, data) {
 
 
 #' @export
-reweight_oomglm <- function(obj, data) {
+reweight_oomglm <- function(obj, data, num_iterations = 1L) {
   
-  if(obj$converged) {
-    return(invisible())
+  for(i in 1:num_iterations) {
+    
+    if(obj$converged) {
+      return(obj)
+    }
+    
+    beta_old <- obj$iwls$beta 
+    obj      <- update_oomglm(obj, data)
+    obj$iterations <- obj$iterations + 1L
+    
+    if(!is.null(beta_old)) {
+      delta <- (beta_old - obj$iwls$beta) / sqrt(diag(vcov(obj)))
+      obj$converged <- TRUE
+      break
+    }
+
   }
   
-  beta_old <- obj$iwls$beta 
-  obj      <- update_oomglm(obj, data)
-  obj$iterations <- obj$iterations + 1L
-  
-  if(!is.null(beta_old)) {
-    delta <- (beta_old - obj$iwls$beta) / sqrt(diag(vcov(obj)))
-    obj$converged <- TRUE
-  }
-  
-  obj  
+  obj
   
 }
 
