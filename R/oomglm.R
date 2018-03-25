@@ -1,4 +1,4 @@
-#' #' @include oommodel.R
+#' #' @include oom_shared.R
 
 
 #' @keywords internal

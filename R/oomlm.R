@@ -1,5 +1,16 @@
-#' @include oommodel.R
+#' @include oom_shared.R
 
+
+#' Initialize Updating Linear Regression Model
+#' 
+#' @description
+#' Performs the details of intializing `oomlm` object called by
+#' `oomlm` function.
+#' 
+#' @param formula a symbolic description of the model to be fitted of class `formula`
+#' @param weights A one-sided, single term `formula` specifying weights
+#' @param sandwich TRUE to compute the Huber/White sandwich covariance matrix
+#' 
 #' @keywords internal
 init_oomlm <- function(formula,
                        weights  = NULL,
@@ -34,6 +45,14 @@ init_oomlm <- function(formula,
 }
 
 
+#' Update Updating Linear Regression Model with more data
+#' 
+#' @description
+#' Update `oomlm` linear model fit with new data 
+#' 
+#' @param obj `oomlm` object to be updated
+#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`
+#' 
 #' @export
 update_oomlm <- function(obj, data) {
   
@@ -73,16 +92,15 @@ update_oomlm <- function(obj, data) {
 }
 
 
-#' Updating Linear Regression model
+#' Initialize Updating Linear Regression model
 #' 
 #' @description
+#' Apply Alan Miller's bounded memory QR factorization algorithm to perform
+#' linear regression on `p` covariates using only `p^2` memory.
 #' 
-#' 
-#' @param formula A model formula: a symbolic description of the
-#'   model to be fitted.
-#' @param data an optional data frame, list or environment
-#'   (or object coercible by as.data.frame to a data frame)
-#' @param weights A one-sided, single term formula specifying weights
+#' @param formula a symbolic description of the model to be fitted of class `formula`
+#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`
+#' @param weights A one-sided, single term `formula` specifying weights
 #' @param sandwich TRUE to compute the Huber/White sandwich covariance matrix
 #'   (uses `p^4` memory rather than `p^2`)
 #' @details The model formula must not contain any data-dependent terms, as
@@ -97,11 +115,11 @@ update_oomlm <- function(obj, data) {
 #' w <- oomlm(mpg ~ cyl + disp, data = mtcars)
 #'
 #' # Models are initalized with a call to `oomlm` and updated with
-#' # `update_oomlm`. The recommended pattern is to initialize models without
-#' # referencing the data, then call `update_oomlm` on each data chunk in the 
-#' # exact same way.
+#' # `update_oomlm`. The intended pattern is to initialize a model with the formula
+#' # only and then to reference the data through iterative (identical) calls over
+#' # subsets of the data to be fitted.
 #' 
-#' # proxy for big data feed (`purrr::pmap`)
+#' # proxy for data feed
 #' chunks  <- purrr::pmap(mtcars, list)
 #' 
 #' # initialize the model
@@ -119,10 +137,10 @@ update_oomlm <- function(obj, data) {
 #' # avoid loops altogether with `purrr::reduce`
 #' y <- purrr::reduce(chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp))
 #' 
-#' # For maximum flexibility, `ploom` also supports providing data on
-#' # initialization similar to [`biglm`](https://github.com/cran/biglm).
+#' # For maximum flexibility, `ploom` also supports processing the first chunk of 
+#' # data on initialization similar to [`biglm`](https://github.com/cran/biglm).
 #'
-#' # initial fit
+#' # initialize model and process first chunk of data
 #' z  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
 #' 
 #' # iteratively update model with additional data chunks

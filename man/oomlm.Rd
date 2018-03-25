@@ -2,18 +2,16 @@
 % Please edit documentation in R/oomlm.R
 \name{oomlm}
 \alias{oomlm}
-\title{Updating Linear Regression model}
+\title{Initialize Updating Linear Regression model}
 \usage{
 oomlm(formula, data = NULL, weights = NULL, sandwich = FALSE)
 }
 \arguments{
-\item{formula}{A model formula: a symbolic description of the
-model to be fitted.}
+\item{formula}{a symbolic description of the model to be fitted of class `formula`}
 
-\item{data}{an optional data frame, list or environment
-(or object coercible by as.data.frame to a data frame)}
+\item{data}{an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`}
 
-\item{weights}{A one-sided, single term formula specifying weights}
+\item{weights}{A one-sided, single term `formula` specifying weights}
 
 \item{sandwich}{TRUE to compute the Huber/White sandwich covariance matrix
 (uses `p^4` memory rather than `p^2`)}
@@ -23,7 +21,8 @@ model to be fitted.}
   via [update_oomlm][ploom::update_oomlm]
 }
 \description{
-
+Apply Alan Miller's bounded memory QR factorization algorithm to perform
+linear regression on `p` covariates using only `p^2` memory.
 }
 \details{
 The model formula must not contain any data-dependent terms, as
@@ -37,11 +36,11 @@ The model formula must not contain any data-dependent terms, as
 w <- oomlm(mpg ~ cyl + disp, data = mtcars)
 
 # Models are initalized with a call to `oomlm` and updated with
-# `update_oomlm`. The recommended pattern is to initialize models without
-# referencing the data, then call `update_oomlm` on each data chunk in the 
-# exact same way.
+# `update_oomlm`. The intended pattern is to initialize a model with the formula
+# only and then to reference the data through iterative (identical) calls over
+# subsets of the data to be fitted.
 
-# proxy for big data feed (`purrr::pmap`)
+# proxy for data feed
 chunks  <- purrr::pmap(mtcars, list)
 
 # initialize the model
@@ -59,10 +58,10 @@ for(chunk in chunks) {
 # avoid loops altogether with `purrr::reduce`
 y <- purrr::reduce(chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp))
 
-# For maximum flexibility, `ploom` also supports providing data on
-# initialization similar to [`biglm`](https://github.com/cran/biglm).
+# For maximum flexibility, `ploom` also supports processing the first chunk of 
+# data on initialization similar to [`biglm`](https://github.com/cran/biglm).
 
-# initial fit
+# initialize model and process first chunk of data
 z  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
 
 # iteratively update model with additional data chunks
