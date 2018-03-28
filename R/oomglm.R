@@ -90,9 +90,15 @@ glm_adjust <- function(obj, chunk) {
 }
 
 
-#' @export
 update_oomglm <- function(obj, data) {
-  
+  UseMethod("update_oomglm", data)
+}
+setGeneric("update_oomglm", signature=c("obj", "data"))
+
+
+#' @export
+update_oomglm.data.frame <- function(obj, data) {
+
   chunk <- unpack_oomchunk(obj, data)
   
   if(is.null(obj$assign)) {
@@ -123,12 +129,12 @@ update_oomglm <- function(obj, data) {
   }
   
   obj$n        <- obj$n + chunk$n
+  obj$p        <- chunk$p
   obj$names    <- colnames(chunk$data)
   obj$df.resid <- obj$n - chunk$p
   
   obj$iwls$rss      <- trans$rss
   obj$iwls$deviance <- trans$deviance
-  obj$iwls$beta     <- coef(obj)
   
   obj
   
@@ -136,16 +142,45 @@ update_oomglm <- function(obj, data) {
 
 
 #' @export
+update_oomglm.function <- function(obj, data) {
+  
+  while(!is.null(chunk <- data())){
+    obj <- update_oomglm(obj, chunk)
+  }
+  
+  obj
+  
+}
+
+
+#' @keywords internal
+reset_oomglm <- function(obj) {
+  
+  obj$qr   <- NULL
+  obj$n    <- 0L
+  obj$iwls$rss      <- 0.0
+  obj$iwls$deviance <- 0.0
+
+  if(!is.null(obj$sandwich)) {
+    obj$sandwich <- list(xy = NULL)
+  }
+ 
+}
+
+
+#' @export
 reweight_oomglm <- function(obj, data, num_iterations = 1L) {
+  
+  if(obj$converged) {
+    return(obj)
+  }
   
   for(i in 1:num_iterations) {
     
-    if(obj$converged) {
-      return(obj)
-    }
-    
     beta_old <- obj$iwls$beta 
-    obj      <- update_oomglm(obj, data)
+    
+    obj <- reset_oomglm(obj)
+    obj <- update_oomglm(obj, data)
     obj$iterations <- obj$iterations + 1L
     
     if(!is.null(beta_old)) {
