@@ -154,22 +154,24 @@ update_oomglm.function <- function(obj, data) {
 
 
 #' @keywords internal
-reset_oomglm <- function(obj) {
+reset_oomglm <- function(obj, beta_old) {
   
-  obj$qr   <- NULL
-  obj$n    <- 0L
   obj$iwls$rss      <- 0.0
   obj$iwls$deviance <- 0.0
+  obj$qr   <- NULL
+  obj$n    <- 0L
 
   if(!is.null(obj$sandwich)) {
     obj$sandwich <- list(xy = NULL)
   }
+  
+  obj
  
 }
 
 
 #' @export
-reweight_oomglm <- function(obj, data, num_iterations = 1L) {
+reweight_oomglm <- function(obj, data, num_iterations = 1L, tolerance=1e-7) {
   
   if(obj$converged) {
     return(obj)
@@ -177,16 +179,19 @@ reweight_oomglm <- function(obj, data, num_iterations = 1L) {
   
   for(i in 1:num_iterations) {
     
-    beta_old <- obj$iwls$beta 
+    beta_old <- coef(obj)
+    obj      <- reset_oomglm(obj)
     
-    obj <- reset_oomglm(obj)
-    obj <- update_oomglm(obj, data)
+    obj            <- update_oomglm(obj, data)
+    obj$iwls$beta  <- coef(obj)
     obj$iterations <- obj$iterations + 1L
     
     if(!is.null(beta_old)) {
       delta <- (beta_old - obj$iwls$beta) / sqrt(diag(vcov(obj)))
-      obj$converged <- TRUE
-      break
+      if (max(abs(delta)) < tolerance){
+        obj$converged <- TRUE
+        break
+      }
     }
 
   }
