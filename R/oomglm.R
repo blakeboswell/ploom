@@ -1,11 +1,24 @@
-#' #' @include oom_shared.R
+#' @include oom_shared.R
 
 
 #' @keywords internal
 init_oomglm <- function(formula,
                         family,
-                        weights  = NULL,
-                        sandwich = FALSE) {
+                        weights,
+                        etastart,
+                        mustart,
+                        sandwich) {
+  
+  if(is.character(family)) {
+    family <- get(family, mode = "function", envir = parent.frame())
+  }
+  if(is.function(family)) {
+    family <- family()
+  }
+  if(is.null(family$family)) {
+    print(family)
+    stop("'family' not recognized")
+  }
   
   if(!is.null(weights) && !inherits(weights, "formula")) {
     stop("`weights` must be a formula")
@@ -24,20 +37,20 @@ init_oomglm <- function(formula,
   )
   
   obj <- list(
-    call       = sys.call(-1),
-    qr         = NULL,
-    assign     = NULL,
-    terms      = terms(formula),
-    n          = 0,
-    p          = NULL,
-    names      = NULL,
-    weights    = weights,
-    df.resid   = NULL,
-    sandwich   = xy,
-    family     = family,
-    iwls       = iwls,
-    converged  = FALSE,
-    iterations = 0L
+    call          = sys.call(-1),
+    qr            = NULL,
+    assign        = NULL,
+    terms         = terms(formula),
+    n             = 0,
+    names         = NULL,
+    weights       = weights,
+    df.residual   = NULL,
+    df.null       = NULL,
+    sandwich      = xy,
+    family        = family,
+    iwls          = iwls,
+    converged     = FALSE,
+    iter          = 0L
   )
   
   class(obj) <- c('oomglm', 'oomlm')
@@ -128,10 +141,10 @@ update_oomglm.data.frame <- function(obj, data) {
                       trans$w)
   }
   
-  obj$n        <- obj$n + chunk$n
-  obj$p        <- chunk$p
-  obj$names    <- colnames(chunk$data)
-  obj$df.resid <- obj$n - chunk$p
+  obj$n           <- obj$n + chunk$n
+  obj$names       <- colnames(chunk$data)
+  obj$df.residual <- obj$n - chunk$p
+  obj$df.null     <- obj$n - 1
   
   obj$iwls$rss      <- trans$rss
   obj$iwls$deviance <- trans$deviance
@@ -184,7 +197,7 @@ reweight_oomglm <- function(obj, data, num_iterations = 1L, tolerance=1e-7) {
     
     obj            <- update_oomglm(obj, data)
     obj$iwls$beta  <- coef(obj)
-    obj$iterations <- obj$iterations + 1L
+    obj$iter <- obj$iter + 1L
     
     if(!is.null(beta_old)) {
       delta <- (beta_old - obj$iwls$beta) / sqrt(diag(vcov(obj)))
@@ -206,9 +219,16 @@ oomglm <- function(formula,
                    data     = NULL,
                    family   = gaussian(),
                    weights  = NULL,
+                   etastart = NULL,
+                   mustart  = NULL,
                    sandwich = FALSE) {
 
-  obj <- init_oomglm(formula, family, weights, sandwich)
+  obj <- init_oomglm(formula,
+                     family,
+                     weights,
+                     etastart,
+                     mustart,
+                     sandwich)
 
   if(!is.null(data)) {
     obj <- update_oomglm(obj, data)

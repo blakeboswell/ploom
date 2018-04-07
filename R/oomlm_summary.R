@@ -32,8 +32,8 @@ summary.oomlm <- function(x,
   
   sumsqy     <- x$qr$sumsqy
   rss        <- x$qr$rss()
-  rss_full   <- rss[length(rss)]
-  rss_red    <- if(has_intercept) rss[1] else sumsqy
+  rss_full   <- tail(rss, 1)
+  rss_red    <- if(has_intercept) head(rss, 1) else sumsqy
   res_dof    <- num_obs - rank
   res_var    <- rss_full / res_dof
   res_std    <- sqrt(res_var)
@@ -91,26 +91,6 @@ summary.oomlm <- function(x,
   
   class(rval) <- "summary.oomlm"
   rval
-  
-}
-
-
-#' temporary hack.. should use generic signature
-#' @keywords internal
-call_format <- function(x) {
-  
-  f <- paste(", formula =", deparse(formula(x)))
-  w <- s <- ""
-  
-  if(!is.null(x$weights)) {
-    w <- paste(", weights =", deparse(x$weights))
-  }
-  
-  if(!is.null(x$sandwich)) {
-    s <- ", sandwich = TRUE"
-  }
-  
-  call_format <- paste0('oomlm(`data`', f, w, s, ')')
   
 }
 

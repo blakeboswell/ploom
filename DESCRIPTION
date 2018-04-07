@@ -33,6 +33,7 @@ Collate:
     'feed.R'
     'oom_shared.R'
     'oomglm.R'
+    'oomglm_summary.R'
     'oomlm.R'
     'oomlm_methods.R'
     'oomlm_summary.R'

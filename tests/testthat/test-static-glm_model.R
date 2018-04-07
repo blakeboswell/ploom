@@ -2,16 +2,20 @@ context("test-static-glm_model.R")
 
 expect_summary_equal <- function(sy, sx) {
   
-  expect_equal(sy$adj.r.squared, sx$adj.r.squared)
-  expect_equal(sy$aliased, sx$aliased)
+  expect_equal(sy$terms, sx$terms)
+  expect_equal(sy$family, sx$family)
+  expect_equal(sy$deviance, sx$deviance)
+  expect_equal(sy$aic, sx$aic)
+  expect_equal(sy$df.residual, sx$df.residual)
+  # expect_equal(sy$null.deviance, sx$null.deviance)
+  expect_equal(sy$df.null, sx$df.null)
+  expect_equal(sy$iter, sx$iter)
   expect_equal(sy$coefficients, sx$coefficients)
+  expect_equal(sy$aliased, sx$aliased)
+  # expect_equal(sy$dispersion, sx$dispersion)
+  expect_equal(sy$df, sx$df)
   expect_equal(sy$correlation, sx$correlation)
   expect_equal(sy$cov.unscaled, sx$cov.unscaled)
-  expect_equal(sy$df, sx$df)
-  expect_equal(sy$fstatistic, sx$fstatistic)
-  expect_equal(sy$r.squared, sx$r.squared)
-  expect_equal(sy$sigma, sx$sigma)
-  expect_equal(sy$terms, sx$terms)
   
 }
 
@@ -26,10 +30,10 @@ test_that("oomglm", {
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
   
-  # expect_summary_equal(
-  #   summary(y, correlation = TRUE),
-  #   summary(x, correlation = TRUE)
-  # )
+  expect_summary_equal(
+    summary(y, correlation = TRUE),
+    summary(x, correlation = TRUE)
+  )
   
 })
 
@@ -48,10 +52,10 @@ test_that("weighted oomglm", {
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
   
-  # expect_summary_equal(
-  #   summary(y, correlation = TRUE),
-  #   summary(x, correlation = TRUE)
-  # )
+  expect_summary_equal(
+    summary(y, correlation = TRUE),
+    summary(x, correlation = TRUE)
+  )
   
 })
 
@@ -67,10 +71,10 @@ test_that("oomglm without intercept", {
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
   
-  # expect_summary_equal(
-  #   summary(y, correlation = TRUE),
-  #   summary(x, correlation = TRUE)
-  # )
+  expect_summary_equal(
+    summary(y, correlation = TRUE),
+    summary(x, correlation = TRUE)
+  )
   
 })
 
@@ -90,9 +94,9 @@ test_that("weighted oomglm without intercept", {
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
   
-  # expect_summary_equal(
-  #   summary(y, correlation = TRUE),
-  #   summary(x, correlation = TRUE)
-  # )
+  expect_summary_equal(
+    summary(y, correlation = TRUE),
+    summary(x, correlation = TRUE)
+  )
   
 })
