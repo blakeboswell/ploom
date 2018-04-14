@@ -2,3 +2,6 @@
 *.o
 .Rproj.user/
 .Rproj.user
+docs/
+scratch.R
+logo/
