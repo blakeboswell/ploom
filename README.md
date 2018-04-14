@@ -56,7 +56,7 @@ x <- ylm(mpg ~ cyl + disp)
 
 # iteratively update model with data chunks
 for(chunk in chunks) {
-  update(x, chunk)
+  x <- update(x, chunk)
 }
 ```
 
@@ -78,7 +78,7 @@ z  <- ylm(mpg ~ cyl + disp, chunks[[1]])
 
 # iteratively update model with additional data chunks
 for(chunk in tail(chunks, -1)) {
-  z <- update(x, data = chunk)
+  z <- update(x, chunk)
 }
 ```
 
