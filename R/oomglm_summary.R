@@ -44,23 +44,16 @@ print.summary.oomglm <- function(x,
   
   cat("\n")
   
-  # cat("\n(Dispersion parameter for ", x$family$family,
-  #     " family taken to be ", format(x$dispersion), ")\n\n",
-
   cat(
-      apply(cbind(paste(format(c("Null","Residual"), justify="right"),
-                        "deviance:"),
-                  format(unlist(x[c("null.deviance","deviance")]),
-                         digits = max(5L, digits + 1L)), " on",
-                  format(unlist(x[c("df.null","df.residual")])),
-                  " degrees of freedom\n"),
-            1L, paste, collapse = " "), sep = "")
+    apply(cbind(paste(format(c("Residual"), justify="right"),
+                      "deviance:"),
+                format(unlist(x[c("deviance")]),
+                       digits = max(5L, digits + 1L)), " on",
+                format(unlist(x[c("df.residual")])),
+                " degrees of freedom\n"),
+          1L, paste, collapse = " "), sep = "")
   
-  # 
-  # if(nzchar(mess <- naprint(x$na.action))) {
-  #   cat("  (",mess, ")\n", sep = "")
-  # }
-  
+
   cat("AIC: ", format(x$aic, digits = max(4L, digits + 1L)),"\n\n",
       "Number of Fisher Scoring iterations: ", x$iter,
       "\n", sep = "")
