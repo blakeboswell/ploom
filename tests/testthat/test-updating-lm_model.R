@@ -5,14 +5,14 @@ iter_model <- function(df, eqn, weights = NULL) {
   
   
   if(is.null(weights)){
-    x <- ploom::oomlm(formula = eqn, data = df[1, ])
+    x <- yotta::ylm(formula = eqn, data = df[1, ])
   }
   else {
-    x <- ploom::oomlm(formula = eqn, data = df[1, ], weights = weights)
+    x <- yotta::ylm(formula = eqn, data = df[1, ], weights = weights)
   }
   
   for(i in 2:nrow(df)) {
-      x <- update_oomlm(x, df[i, ])
+      x <- update_ylm(x, df[i, ])
   }
   
   x
@@ -35,7 +35,7 @@ expect_summary_equal <- function(sy, sx) {
 }
 
 
-test_that("updating oomlm", {
+test_that("updating ylm", {
   
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = mtcars)
@@ -51,7 +51,7 @@ test_that("updating oomlm", {
 })
 
 
-test_that("weighted updating oomlm", {
+test_that("weighted updating ylm", {
 
   df      <- mtcars
   w       <- runif(nrow(mtcars))
@@ -71,7 +71,7 @@ test_that("weighted updating oomlm", {
 })
 
 
-test_that("updating oomlm without intercept", {
+test_that("updating ylm without intercept", {
   
   df <- mtcars
   f  <- mpg ~ 0 + cyl + disp + hp + wt
@@ -89,7 +89,7 @@ test_that("updating oomlm without intercept", {
 })
 
 
-test_that("weighted updating oomlm without intercept", {
+test_that("weighted updating ylm without intercept", {
 
   df      <- mtcars
   w       <- runif(nrow(mtcars))
