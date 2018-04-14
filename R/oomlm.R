@@ -86,11 +86,12 @@ update_oomlm <- function(obj, data) {
   }
   
   
-  obj$n            <- obj$n + chunk$n
+  zero_wts  <- chunk$weights == 0
+  
+  obj$n            <- obj$n + chunk$n - sum(zero_wts)
   obj$names        <- colnames(chunk$data)
   obj$df.resid     <- obj$n - chunk$p
-  obj$pweights     <- (obj$pweights
-                       + sum(log(chunk$weights[chunk$weights != 0])))
+  obj$pweights     <- obj$pweights + sum(log(chunk$weights[!zero_wts]))
   obj$zero_weights <- obj$zero_weights + sum(chunk$weights == 0)
   
   obj
