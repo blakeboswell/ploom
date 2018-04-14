@@ -1,5 +1,5 @@
 
-# predict.oolm <- function(object,
+# predict.ylm <- function(object,
 #                          newdata,
 #                          se.fit = FALSE,
 #                          scale = NULL,
@@ -13,33 +13,33 @@
 #                          weights = 1,
 #                          ...) { next in line }
 #
-# variable.names.oomlm <- function(object, full = FALSE, ...) { not possible }
+# variable.names.ylm <- function(object, full = FALSE, ...) { not possible }
 #
-# case.names.oomlm <- function(object, full = FALSE, ...) { not possible }
+# case.names.ylm <- function(object, full = FALSE, ...) { not possible }
 #
-# anova.oomlm <- function(object, ...) { not possible }
+# anova.ylm <- function(object, ...) { not possible }
 
 
 #' @export
-formula.oomlm <- function(x, ...) {
+formula.ylm <- function(x, ...) {
   formula(x$terms)
 }
 
 
 #' @export
-family.oomlm <- function(object, ...) {
+family.ylm <- function(object, ...) {
   gaussian() 
 }
 
 
 #' @export
-deviance.oomlm <- function(obj, ...) {
+deviance.ylm <- function(obj, ...) {
   obj$qr$rss_full
 }
 
 
 #' @export
-AIC.oomlm <- function(obj, ..., k = 2) {
+AIC.ylm <- function(obj, ..., k = 2) {
 
   p   <- obj$qr$rank()
   rss <- obj$qr$rss_full
@@ -53,7 +53,7 @@ AIC.oomlm <- function(obj, ..., k = 2) {
 
 
 #' @export
-coef.oomlm <- function(obj, ...) {
+coef.ylm <- function(obj, ...) {
   betas        <- coef(obj$qr)
   names(betas) <- obj$names
   betas
@@ -61,7 +61,7 @@ coef.oomlm <- function(obj, ...) {
 
 
 #' @export
-vcov.oomlm <- function(obj, ...) {
+vcov.ylm <- function(obj, ...) {
   
   ## cpp implementation / HC not supported ---------------------------
   # V <- vcov(obj$qr)
