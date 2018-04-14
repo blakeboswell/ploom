@@ -1,4 +1,4 @@
-Package: ploom
+Package: yotta
 Version: 0.0
 Title: Out-of-memory Linear and Generalized Linear Models 
 Description: A collection of tools for out-of-memory linear model fitting and
@@ -13,7 +13,7 @@ Authors@R: c(
     person("Lumley", "Thomas", role = "ctb",
            comment = "general design influence and vcov code adapted from biglm"),
     person("R Core Team", role = "ctb",
-           comment = "oomlm and oomglm interfaces adapted from R"))
+           comment = "ylm and yglm interfaces adapted from R"))
 Encoding: UTF-8
 License: GPL
 Depends:
@@ -24,18 +24,18 @@ LinkingTo:
   RcppArmadillo
 Suggests:
     testthat
-BugReports: https://github.com/bboswell/ploom/issues
+BugReports: https://github.com/bboswell/yotta/issues
 RoxygenNote: 6.0.1
 Collate: 
     'RcppExports.R'
     'biglm_vcov.R'
     'bounded_qr.R'
     'feed.R'
-    'oom_shared.R'
-    'oomglm.R'
-    'oomglm_summary.R'
-    'oomlm.R'
-    'oomlm_methods.R'
-    'oomlm_summary.R'
-    'ploom.R'
+    'yotta_shared.R'
+    'yglm.R'
+    'yglm_summary.R'
+    'ylm.R'
+    'ylm_summary.R'
+    'yotta.R'
+    'yotta_methods.R'
     'zzz.R'

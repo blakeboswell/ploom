@@ -6,7 +6,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# ploom
+# yotta
 
 <!-- [CRAN_Status_Badge]() -->
 <!-- [Build Status]() -->
@@ -28,36 +28,36 @@ A collection of tools for out-of-memory linear model fitting and inference. Impl
 ```{r, eval = FALSE, message=FALSE}
 # the early development version from GitHub:
 # install.packages("devtools")
-devtools::install_github("blakeboswell/ploom")
+devtools::install_github("blakeboswell/yotta")
 ```
 
 ## Usage
 
 ```{r, eval = TRUE, include=FALSE}
-library(ploom)
+library(yotta)
 library(purrr)
 ```
 
 ### Model Initializing and Updating
 
-The functions `oomlm` and `oomglm` are similar to base `lm` and `glm` for fitting in-memory data.
+The functions `ylm` and `yglm` are similar to base `lm` and `glm` for fitting in-memory data.
 
 ```{r, eval = TRUE}
-w <- oomlm(mpg ~ cyl + disp, data = mtcars)
+w <- ylm(mpg ~ cyl + disp, data = mtcars)
 ```
 
-Models are initalized with a call to `oomlm` and updated with `update_oomlm`.   The recommended pattern is to initialize models without referencing the data, then call `update_oomlm` on each data chunk in the exact same way.
+Models are initalized with a call to `ylm` and updated with `update_ylm`.   The recommended pattern is to initialize models without referencing the data, then call `update_ylm` on each data chunk in the exact same way.
 
 ```{r, eval = TRUE}
 # proxy for big data feed (`purrr::pmap`)
 chunks  <- pmap(mtcars, list)
 
 # initialize the model
-x <- oomlm(mpg ~ cyl + disp)
+x <- ylm(mpg ~ cyl + disp)
 
 # iteratively update model with data chunks
 for(chunk in chunks) {
-  update_oomlm(x, chunk)
+  update_ylm(x, chunk)
 }
 ```
 
@@ -65,18 +65,18 @@ Separating model initialization and processing of the first data chunk enables f
 
 ```{r, eval = TRUE}
 # avoid loops altogether with `purrr::reduce`
-y <- reduce(chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp))
+y <- reduce(chunks, update_ylm, .init = ylm(mpg ~ cyl + disp))
 ```
 
-For maximum flexibility, `ploom` also supports providing data on initialization similar to [`biglm`](https://github.com/cran/biglm).
+For maximum flexibility, `yotta` also supports providing data on initialization similar to [`biglm`](https://github.com/cran/biglm).
 
 ```{r, eval = TRUE}
 # initial fit
-z  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
+z  <- ylm(mpg ~ cyl + disp, chunks[[1]])
 
 # iteratively update model with additional data chunks
 for(chunk in tail(chunks, -1)) {
-  z <- update_oomlm(x, data = chunk)
+  z <- update_ylm(x, data = chunk)
 }
 ```
 

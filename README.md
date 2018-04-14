@@ -1,5 +1,5 @@
 
-# ploom
+# yotta
 
 <!-- [CRAN_Status_Badge]() -->
 
@@ -28,23 +28,23 @@ to stream in data and stream out results during fitting.
 ``` r
 # the early development version from GitHub:
 # install.packages("devtools")
-devtools::install_github("blakeboswell/ploom")
+devtools::install_github("blakeboswell/yotta")
 ```
 
 ## Usage
 
 ### Model Initializing and Updating
 
-The functions `oomlm` and `oomglm` are similar to base `lm` and `glm`
-for fitting in-memory data.
+The functions `ylm` and `yglm` are similar to base `lm` and `glm` for
+fitting in-memory data.
 
 ``` r
-w <- oomlm(mpg ~ cyl + disp, data = mtcars)
+w <- ylm(mpg ~ cyl + disp, data = mtcars)
 ```
 
-Models are initalized with a call to `oomlm` and updated with
-`update_oomlm`. The recommended pattern is to initialize models without
-referencing the data, then call `update_oomlm` on each data chunk in the
+Models are initalized with a call to `ylm` and updated with
+`update_ylm`. The recommended pattern is to initialize models without
+referencing the data, then call `update_ylm` on each data chunk in the
 exact same way.
 
 ``` r
@@ -52,11 +52,11 @@ exact same way.
 chunks  <- pmap(mtcars, list)
 
 # initialize the model
-x <- oomlm(mpg ~ cyl + disp)
+x <- ylm(mpg ~ cyl + disp)
 
 # iteratively update model with data chunks
 for(chunk in chunks) {
-  update_oomlm(x, chunk)
+  update_ylm(x, chunk)
 }
 ```
 
@@ -66,19 +66,19 @@ The below example is equivalent to the above `for` loop.
 
 ``` r
 # avoid loops altogether with `purrr::reduce`
-y <- reduce(chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp))
+y <- reduce(chunks, update_ylm, .init = ylm(mpg ~ cyl + disp))
 ```
 
-For maximum flexibility, `ploom` also supports providing data on
+For maximum flexibility, `yotta` also supports providing data on
 initialization similar to [`biglm`](https://github.com/cran/biglm).
 
 ``` r
 # initial fit
-z  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
+z  <- ylm(mpg ~ cyl + disp, chunks[[1]])
 
 # iteratively update model with additional data chunks
 for(chunk in tail(chunks, -1)) {
-  z <- update_oomlm(x, data = chunk)
+  z <- update_ylm(x, data = chunk)
 }
 ```
 
