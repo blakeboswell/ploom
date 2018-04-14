@@ -177,7 +177,7 @@ print.oomlm <- function(obj,
                         digits = max(3L, getOption("digits") - 3L),
                         ...) {
   
-  cat("\nOut-of-memory Linear Model:\n",
+  cat("\nCall:  ",
       paste(deparse(obj$call), sep = "\n", collapse = "\n"),
       "\n\n",
       sep = "")

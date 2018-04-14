@@ -247,15 +247,15 @@ oomglm <- function(formula,
 }
 
 
-print.oomglm <- function() {
+#' @export
+print.oomglm <- function(x,
+                         digits = max(3L, getOption("digits") - 3L),
+                         ...) {
   
-  cat("\nOut-of-memory Generalized Linear Model:\n",
-      paste(deparse(obj$call), sep = "\n", collapse = "\n"),
-      "\n\n",
-      sep = "")
+  cat("\nCall:  ",
+      paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
   
-  beta <- coef(obj)
-  
+  beta <- coef(x)
   if(length(beta)) {
     cat("Coefficients:\n")
     print.default(
@@ -266,9 +266,16 @@ print.oomglm <- function() {
     cat("No coefficients\n")
   }
   
-  cat("\n")
-  cat("Observations included: ", obj$n, "\n")
+  cat("\nObservations included: ", x$n, "\n")
+  cat("Degrees of Freedom:", x$df.null, "Total (i.e. Null); ",
+      x$df.residual, "Residual\n")
   
-  invisible(obj)
+  # if(nzchar(mess <- naprint(x$na.action))) cat("  (",mess, ")\n", sep = "")
+  
+  cat("Residual Deviance:", format(signif(deviance(x), digits)),
+      "\tAIC:", format(signif(AIC(x), digits)))
+  
+  cat("\n")
+  invisible(x)
   
 }
