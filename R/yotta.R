@@ -1,2 +1,2 @@
-#' @useDynLib ploom
+#' @useDynLib yotta
 NULL

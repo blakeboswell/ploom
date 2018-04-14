@@ -1,13 +1,13 @@
-#' @include oom_shared.R
+#' @include yotta_shared.R
 
 
 #' @keywords internal
-init_oomglm <- function(formula,
-                        family,
-                        weights,
-                        etastart,
-                        mustart,
-                        sandwich) {
+init_yglm <- function(formula,
+                      family,
+                      weights,
+                      etastart,
+                      mustart,
+                      sandwich) {
   
   if(is.character(family)) {
     family <- get(family, mode = "function", envir = parent.frame())
@@ -55,7 +55,7 @@ init_oomglm <- function(formula,
     zero_weights  = 0
   )
   
-  class(obj) <- c('oomglm', 'oomlm')
+  class(obj) <- c('yglm', 'ylm')
   obj
   
 }
@@ -105,14 +105,14 @@ glm_adjust <- function(obj, chunk) {
 }
 
 
-update_oomglm <- function(obj, data) {
-  UseMethod("update_oomglm", data)
+update_yglm <- function(obj, data) {
+  UseMethod("update_yglm", data)
 }
-setGeneric("update_oomglm", signature=c("obj", "data"))
+setGeneric("update_yglm", signature=c("obj", "data"))
 
 
 #' @export
-update_oomglm.data.frame <- function(obj, data) {
+update_yglm.data.frame <- function(obj, data) {
 
   chunk <- unpack_oomchunk(obj, data)
   
@@ -163,10 +163,10 @@ update_oomglm.data.frame <- function(obj, data) {
 
 
 #' @export
-update_oomglm.function <- function(obj, data) {
+update_yglm.function <- function(obj, data) {
   
   while(!is.null(chunk <- data())){
-    obj <- update_oomglm(obj, chunk)
+    obj <- update_yglm(obj, chunk)
   }
   
   obj
@@ -175,7 +175,7 @@ update_oomglm.function <- function(obj, data) {
 
 
 #' @keywords internal
-reset_oomglm <- function(obj, beta_old) {
+reset_yglm <- function(obj, beta_old) {
   
   obj$iwls$rss      <- 0.0
   obj$iwls$deviance <- 0.0
@@ -192,7 +192,7 @@ reset_oomglm <- function(obj, beta_old) {
 
 
 #' @export
-reweight_oomglm <- function(obj, data, num_iterations = 1L, tolerance=1e-7) {
+reweight_yglm <- function(obj, data, num_iterations = 1L, tolerance=1e-7) {
   
   if(obj$converged) {
     return(obj)
@@ -201,9 +201,9 @@ reweight_oomglm <- function(obj, data, num_iterations = 1L, tolerance=1e-7) {
   for(i in 1:num_iterations) {
     
     beta_old <- coef(obj)
-    obj      <- reset_oomglm(obj)
+    obj      <- reset_yglm(obj)
     
-    obj            <- update_oomglm(obj, data)
+    obj            <- update_yglm(obj, data)
     obj$iwls$beta  <- coef(obj)
     obj$iter <- obj$iter + 1L
     
@@ -223,23 +223,23 @@ reweight_oomglm <- function(obj, data, num_iterations = 1L, tolerance=1e-7) {
 
 
 #' @export
-oomglm <- function(formula,
-                   data     = NULL,
-                   family   = gaussian(),
-                   weights  = NULL,
-                   etastart = NULL,
-                   mustart  = NULL,
-                   sandwich = FALSE) {
+yglm <- function(formula,
+                 data     = NULL,
+                 family   = gaussian(),
+                 weights  = NULL,
+                 etastart = NULL,
+                 mustart  = NULL,
+                 sandwich = FALSE) {
 
-  obj <- init_oomglm(formula,
-                     family,
-                     weights,
-                     etastart,
-                     mustart,
-                     sandwich)
+  obj <- init_yglm(formula,
+                   family,
+                   weights,
+                   etastart,
+                   mustart,
+                   sandwich)
 
   if(!is.null(data)) {
-    obj <- update_oomglm(obj, data)
+    obj <- update_yglm(obj, data)
   }
 
   obj
@@ -248,9 +248,9 @@ oomglm <- function(formula,
 
 
 #' @export
-print.oomglm <- function(x,
-                         digits = max(3L, getOption("digits") - 3L),
-                         ...) {
+print.yglm <- function(x,
+                       digits = max(3L, getOption("digits") - 3L),
+                       ...) {
   
   cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")

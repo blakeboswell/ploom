@@ -1,20 +1,20 @@
-#' @include oom_shared.R
+#' @include yotta_shared.R
 
 
 #' Initialize Updating Linear Regression Model
 #' 
 #' @description
-#' Performs the details of intializing `oomlm` object called by
-#' `oomlm` function.
+#' Performs the details of intializing `ylm` object called by
+#' `ylm` function.
 #' 
 #' @param formula a symbolic description of the model to be fitted of class `formula`
 #' @param weights A one-sided, single term `formula` specifying weights
 #' @param sandwich TRUE to compute the Huber/White sandwich covariance matrix
 #' 
 #' @keywords internal
-init_oomlm <- function(formula,
-                       weights  = NULL,
-                       sandwich = FALSE) {
+init_ylm <- function(formula,
+                     weights  = NULL,
+                     sandwich = FALSE) {
   
   if(!is.null(weights) && !inherits(weights, "formula")) {
     stop("`weights` must be a formula")
@@ -41,7 +41,7 @@ init_oomlm <- function(formula,
     zero_weights = 0
   )
   
-  class(obj) <- 'oomlm'
+  class(obj) <- 'ylm'
   obj
   
 }
@@ -50,13 +50,13 @@ init_oomlm <- function(formula,
 #' Update Updating Linear Regression Model with more data
 #' 
 #' @description
-#' Update `oomlm` linear model fit with new data 
+#' Update `ylm` linear model fit with new data 
 #' 
-#' @param obj `oomlm` object to be updated
+#' @param obj `ylm` object to be updated
 #' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`
 #' 
 #' @export
-update_oomlm <- function(obj, data) {
+update_ylm <- function(obj, data) {
   
   chunk <- unpack_oomchunk(obj, data)
   
@@ -114,15 +114,15 @@ update_oomlm <- function(obj, data) {
 #'   these will not be consistent when updated. Factors are permitted, but 
 #'   the levels of the factor must be the same across all data chunks. 
 #'   Empty factor levels are accepted.
-#' @return `oomlm` model object that can be updated with more data
-#'   via [update_oomlm][ploom::update_oomlm]
+#' @return `ylm` model object that can be updated with more data
+#'   via [update_ylm][yotta::update_ylm]
 #' @examples
-#' # The function `oomlm` is similar to base `lm` for fitting in-memory data.
+#' # The function `ylm` is similar to base `lm` for fitting in-memory data.
 #'
-#' w <- oomlm(mpg ~ cyl + disp, data = mtcars)
+#' w <- ylm(mpg ~ cyl + disp, data = mtcars)
 #'
-#' # Models are initalized with a call to `oomlm` and updated with
-#' # `update_oomlm`. The intended pattern is to initialize a model with the formula
+#' # Models are initalized with a call to `ylm` and updated with
+#' # `update_ylm`. The intended pattern is to initialize a model with the formula
 #' # only and then to reference the data through iterative (identical) calls over
 #' # subsets of the data to be fitted.
 #' 
@@ -130,11 +130,11 @@ update_oomlm <- function(obj, data) {
 #' chunks  <- purrr::pmap(mtcars, list)
 #' 
 #' # initialize the model
-#' x <- oomlm(mpg ~ cyl + disp)
+#' x <- ylm(mpg ~ cyl + disp)
 #' 
 #' # iteratively update model with data chunks
 #' for(chunk in chunks) {
-#'   update_oomlm(x, chunk)
+#'   update_ylm(x, chunk)
 #' }
 #'
 #' # Separating model initialization and processing of the first data chunk
@@ -142,29 +142,29 @@ update_oomlm <- function(obj, data) {
 #' # The below example is equivalent to the above `for` loop.
 #' 
 #' # avoid loops altogether with `purrr::reduce`
-#' y <- purrr::reduce(chunks, update_oomlm, .init = oomlm(mpg ~ cyl + disp))
+#' y <- purrr::reduce(chunks, update_ylm, .init = ylm(mpg ~ cyl + disp))
 #' 
-#' # For maximum flexibility, `ploom` also supports processing the first chunk of 
+#' # For maximum flexibility, `yotta` also supports processing the first chunk of 
 #' # data on initialization similar to [`biglm`](https://github.com/cran/biglm).
 #'
 #' # initialize model and process first chunk of data
-#' z  <- oomlm(mpg ~ cyl + disp, chunks[[1]])
+#' z  <- ylm(mpg ~ cyl + disp, chunks[[1]])
 #' 
 #' # iteratively update model with additional data chunks
 #' for(chunk in tail(chunks, -1)) {
-#'   z <- update_oomlm(x, data = chunk)
+#'   z <- update_ylm(x, data = chunk)
 #' }
 #'
 #' @export
-oomlm <- function(formula,
-                  data     = NULL,
-                  weights  = NULL,
-                  sandwich = FALSE) {
+ylm <- function(formula,
+                data     = NULL,
+                weights  = NULL,
+                sandwich = FALSE) {
   
-  obj <- init_oomlm(formula, weights, sandwich)
+  obj <- init_ylm(formula, weights, sandwich)
   
   if(!is.null(data)) {
-    obj <- update_oomlm(obj, data)
+    obj <- update_ylm(obj, data)
   }
   
   obj
@@ -173,9 +173,9 @@ oomlm <- function(formula,
 
 
 #' @export
-print.oomlm <- function(x,
-                        digits = max(3L, getOption("digits") - 3L),
-                        ...) {
+print.ylm <- function(x,
+                      digits = max(3L, getOption("digits") - 3L),
+                      ...) {
   
   cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"),
