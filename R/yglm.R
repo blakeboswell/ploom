@@ -104,14 +104,14 @@ glm_adjust <- function(obj, chunk) {
 }
 
 
-update_yglm <- function(obj, data) {
-  UseMethod("update_yglm", data)
-}
-setGeneric("update_yglm", signature=c("obj", "data"))
+# update_yglm <- function(obj, data) {
+#   UseMethod("update_ylm", data)
+# }
+# setGeneric("update_ylm", signature=c("obj", "data"))
 
 
-#' @export
-update_yglm.data.frame <- function(obj, data) {
+#' @keywords internal
+update_yglm_data <- function(obj, data) {
 
   chunk <- unpack_oomchunk(obj, data)
   
@@ -161,8 +161,8 @@ update_yglm.data.frame <- function(obj, data) {
 }
 
 
-#' @export
-update_yglm.function <- function(obj, data) {
+#' @keywords internal
+update_yglm_function <- function(obj, data) {
   
   while(!is.null(chunk <- data())){
     obj <- update_yglm(obj, chunk)
@@ -171,6 +171,23 @@ update_yglm.function <- function(obj, data) {
   obj
   
 }
+
+
+#' @export
+update.yglm <- function(obj, data) {
+  
+  if(inherits(data, "data.frame")) {
+    return(update_yglm_data(obj, data))
+  }
+  
+  if(inherits(data, "function")) {
+    return(update_yglm_function(obj, data))
+  }
+  
+  stop("class of `data`` not recognized")
+  
+}
+
 
 
 #' @keywords internal
@@ -190,8 +207,17 @@ reset_yglm <- function(obj, beta_old) {
 }
 
 
+reweight <- function(obj, data, ...) {
+  UseMethod("reweight")
+}
+
+setGeneric("reweight")
+
 #' @export
-reweight_yglm <- function(obj, data, num_iterations = 1L, tolerance=1e-7) {
+reweight.yglm <- function(obj,
+                          data,
+                          num_iterations = 1L,
+                          tolerance      = 1e-7) {
   
   if(obj$converged) {
     return(obj)
@@ -202,7 +228,7 @@ reweight_yglm <- function(obj, data, num_iterations = 1L, tolerance=1e-7) {
     beta_old <- coef(obj)
     obj      <- reset_yglm(obj)
     
-    obj            <- update_yglm(obj, data)
+    obj            <- update(obj, data)
     obj$iwls$beta  <- coef(obj)
     obj$iter <- obj$iter + 1L
     
@@ -232,6 +258,7 @@ yglm <- function(formula,
   obj <- init_yglm(formula,
                    family,
                    weights,
+                   start,
                    sandwich)
 
   if(!is.null(data)) {

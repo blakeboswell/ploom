@@ -56,7 +56,7 @@ x <- ylm(mpg ~ cyl + disp)
 
 # iteratively update model with data chunks
 for(chunk in chunks) {
-  update_ylm(x, chunk)
+  update(x, chunk)
 }
 ```
 
@@ -66,7 +66,7 @@ The below example is equivalent to the above `for` loop.
 
 ``` r
 # avoid loops altogether with `purrr::reduce`
-y <- reduce(chunks, update_ylm, .init = ylm(mpg ~ cyl + disp))
+y <- reduce(chunks, update, .init = ylm(mpg ~ cyl + disp))
 ```
 
 For maximum flexibility, `yotta` also supports providing data on
@@ -78,7 +78,7 @@ z  <- ylm(mpg ~ cyl + disp, chunks[[1]])
 
 # iteratively update model with additional data chunks
 for(chunk in tail(chunks, -1)) {
-  z <- update_ylm(x, data = chunk)
+  z <- update(x, data = chunk)
 }
 ```
 

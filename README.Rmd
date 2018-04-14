@@ -57,7 +57,7 @@ x <- ylm(mpg ~ cyl + disp)
 
 # iteratively update model with data chunks
 for(chunk in chunks) {
-  update_ylm(x, chunk)
+  update(x, chunk)
 }
 ```
 
@@ -65,7 +65,7 @@ Separating model initialization and processing of the first data chunk enables f
 
 ```{r, eval = TRUE}
 # avoid loops altogether with `purrr::reduce`
-y <- reduce(chunks, update_ylm, .init = ylm(mpg ~ cyl + disp))
+y <- reduce(chunks, update, .init = ylm(mpg ~ cyl + disp))
 ```
 
 For maximum flexibility, `yotta` also supports providing data on initialization similar to [`biglm`](https://github.com/cran/biglm).
@@ -76,7 +76,7 @@ z  <- ylm(mpg ~ cyl + disp, chunks[[1]])
 
 # iteratively update model with additional data chunks
 for(chunk in tail(chunks, -1)) {
-  z <- update_ylm(x, data = chunk)
+  z <- update(x, data = chunk)
 }
 ```
 

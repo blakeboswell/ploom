@@ -56,7 +56,7 @@ init_ylm <- function(formula,
 #' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`
 #' 
 #' @export
-update_ylm <- function(obj, data) {
+update.ylm <- function(obj, data) {
   
   chunk <- unpack_oomchunk(obj, data)
   
@@ -164,7 +164,7 @@ ylm <- function(formula,
   obj <- init_ylm(formula, weights, sandwich)
   
   if(!is.null(data)) {
-    obj <- update_ylm(obj, data)
+    obj <- update(obj, data)
   }
   
   obj

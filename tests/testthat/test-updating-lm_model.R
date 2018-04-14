@@ -12,7 +12,7 @@ iter_model <- function(df, eqn, weights = NULL) {
   }
   
   for(i in 2:nrow(df)) {
-      x <- update_ylm(x, df[i, ])
+      x <- update(x, df[i, ])
   }
   
   x
