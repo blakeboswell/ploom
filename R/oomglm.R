@@ -143,13 +143,16 @@ update_oomglm.data.frame <- function(obj, data) {
                       trans$w)
   }
   
-  obj$n            <- obj$n + chunk$n
+  
+  zero_wts  <- trans$w == 0
+  intercept <- attr(obj$terms, "intercept") > 0L
+  
+  obj$n            <- obj$n + chunk$n - sum(zero_wts)
   obj$names        <- colnames(chunk$data)
   obj$df.residual  <- obj$n - chunk$p
-  obj$df.null      <- obj$n - 1
-  obj$pweights     <- (obj$pweights
-                       + sum(log(trans$w[trans$w != 0])))
-  obj$zero_weights <- obj$zero_weights + sum(trans$w == 0)
+  obj$df.null      <- obj$n - as.integer(intercept)
+  obj$pweights     <- obj$pweights + sum(log(trans$w[!zero_wts]))
+  obj$zero_weights <- obj$zero_weights + sum(zero_wts)
   
   obj$iwls$rss      <- trans$rss
   obj$iwls$deviance <- trans$deviance
