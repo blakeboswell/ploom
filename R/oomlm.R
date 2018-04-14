@@ -27,16 +27,18 @@ init_oomlm <- function(formula,
   }
   
   obj <- list(
-    call     = sys.call(-1),
-    qr       = NULL,
-    assign   = NULL,
-    terms    = terms(formula),
-    n        = 0,
-    p        = NULL,
-    names    = NULL,
-    weights  = weights,
-    df.resid = NULL,
-    sandwich = xy
+    call         = sys.call(-1),
+    qr           = NULL,
+    assign       = NULL,
+    terms        = terms(formula),
+    n            = 0,
+    p            = NULL,
+    names        = NULL,
+    df.resid     = NULL,
+    sandwich     = xy,
+    weights      = weights,
+    pweights     = 0,
+    zero_weights = 0
   )
   
   class(obj) <- 'oomlm'
@@ -83,9 +85,13 @@ update_oomlm <- function(obj, data) {
                       chunk$weights)
   }
   
-  obj$n        <- obj$n + chunk$n
-  obj$names    <- colnames(chunk$data)
-  obj$df.resid <- obj$n - chunk$p
+  
+  obj$n            <- obj$n + chunk$n
+  obj$names        <- colnames(chunk$data)
+  obj$df.resid     <- obj$n - chunk$p
+  obj$pweights     <- (obj$pweights
+                       + sum(log(chunk$weights[chunk$weights != 0])))
+  obj$zero_weights <- obj$zero_weights + sum(chunk$weights == 0)
   
   obj
   
@@ -163,3 +169,34 @@ oomlm <- function(formula,
   obj
   
 }
+
+
+#' @export
+print.oomlm <- function(obj,
+                        digits = max(3L, getOption("digits") - 3L),
+                        ...) {
+  
+  cat("\nOut-of-memory Linear Model:\n",
+      paste(deparse(obj$call), sep = "\n", collapse = "\n"),
+      "\n\n",
+      sep = "")
+  
+  beta <- coef(obj)
+  
+  if(length(beta)) {
+    cat("Coefficients:\n")
+    print.default(
+      format(beta, digits = digits),
+      print.gap = 2L,
+      quote     = FALSE)
+  } else {
+    cat("No coefficients\n")
+  }
+  
+  cat("\n")
+  cat("Observations included: ", obj$n, "\n")
+  
+  invisible(obj)
+  
+}
+

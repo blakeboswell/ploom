@@ -6,7 +6,7 @@ summary.oomglm <- function(x,
                            symbolic.cor = FALSE,
                            ...) {
 
-    rval <- summary.oomlm(x)
+    rval <- summary.oomlm(x, correlation, symbolic.cor, ...)
     
     rval$family      <- x$family  
     rval$deviance    <- x$iwls$deviance
@@ -21,6 +21,7 @@ summary.oomglm <- function(x,
 }
 
 
+#' @export
 print.summary.oomglm <- function(x,
                                  digits = max(3L, getOption("digits") - 3L),
                                  symbolic.cor = x$symbolic.cor,
@@ -41,12 +42,6 @@ print.summary.oomglm <- function(x,
   #   cat("Sandwich (model-robust) standard errors.\n")
   # }
   
-  cat("\nResidual standard error:",
-      format(signif(x$sigma, digits)),
-      "on",
-      x$df[2L],
-      "degrees of freedom")
-  
   cat("\n")
   
   # cat("\n(Dispersion parameter for ", x$family$family,
@@ -61,15 +56,14 @@ print.summary.oomglm <- function(x,
                   " degrees of freedom\n"),
             1L, paste, collapse = " "), sep = "")
   
-  if(nzchar(mess <- naprint(x$na.action))) cat("  (", mess, ")\n", sep = "")
-  cat("AIC: ", format(x$aic, digits = max(4L, digits + 1L)),"\n\n",
-      "Number of Fisher Scoring iterations: ", x$iter,
-      "\n", sep = "")
-  
   # 
   # if(nzchar(mess <- naprint(x$na.action))) {
   #   cat("  (",mess, ")\n", sep = "")
   # }
+  
+  cat("AIC: ", format(x$aic, digits = max(4L, digits + 1L)),"\n\n",
+      "Number of Fisher Scoring iterations: ", x$iter,
+      "\n", sep = "")
   
   correl <- x$correlation
   if (!is.null(correl)) {

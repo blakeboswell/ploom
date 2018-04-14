@@ -39,8 +39,16 @@ deviance.oomlm <- function(obj, ...) {
 
 
 #' @export
-AIC.oomlm <- function(object, ..., k = 2) {
-  deviance(object) + k * (object$n - object$df.resid)
+AIC.oomlm <- function(obj, ..., k = 2) {
+
+  p   <- obj$qr$rank()
+  rss <- obj$qr$rss_full
+  n   <- obj$n - obj$zero_weights
+  pw  <- obj$pweights
+  
+  (-(pw - n * (log(2 * pi) + 1 - log(n) + log(rss)))
+    + k * (p + 1))
+  
 }
 
 
@@ -101,59 +109,3 @@ vcov.oomlm <- function(obj, ...) {
   
 }
 
-
-#' @export
-print.oomlm <- function(obj,
-                        digits = max(3L, getOption("digits") - 3L),
-                        ...) {
-  
-  cat("\nOut-of-memory Linear Model:\n",
-      paste(deparse(obj$call), sep = "\n", collapse = "\n"),
-      "\n\n",
-      sep = "")
-  
-  beta <- coef(obj)
-  
-  if(length(beta)) {
-    cat("Coefficients:\n")
-    print.default(
-      format(beta, digits = digits),
-      print.gap = 2L,
-      quote     = FALSE)
-  } else {
-    cat("No coefficients\n")
-  }
-  
-  cat("\n")
-  cat("Observations included: ", obj$n, "\n")
-  
-  invisible(obj)
-  
-}
-
-
-print.oomglm <- function() {
-  
-  cat("\nOut-of-memory Generalized Linear Model:\n",
-      paste(deparse(obj$call), sep = "\n", collapse = "\n"),
-      "\n\n",
-      sep = "")
-  
-  beta <- coef(obj)
-  
-  if(length(beta)) {
-    cat("Coefficients:\n")
-    print.default(
-      format(beta, digits = digits),
-      print.gap = 2L,
-      quote     = FALSE)
-  } else {
-    cat("No coefficients\n")
-  }
-  
-  cat("\n")
-  cat("Observations included: ", obj$n, "\n")
-  
-  invisible(obj)
-  
-}

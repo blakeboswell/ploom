@@ -43,14 +43,16 @@ init_oomglm <- function(formula,
     terms         = terms(formula),
     n             = 0,
     names         = NULL,
-    weights       = weights,
     df.residual   = NULL,
     df.null       = NULL,
     sandwich      = xy,
     family        = family,
     iwls          = iwls,
     converged     = FALSE,
-    iter          = 0L
+    iter          = 0L,
+    weights       = weights,
+    pweights      = 0,
+    zero_weights  = 0
   )
   
   class(obj) <- c('oomglm', 'oomlm')
@@ -141,10 +143,13 @@ update_oomglm.data.frame <- function(obj, data) {
                       trans$w)
   }
   
-  obj$n           <- obj$n + chunk$n
-  obj$names       <- colnames(chunk$data)
-  obj$df.residual <- obj$n - chunk$p
-  obj$df.null     <- obj$n - 1
+  obj$n            <- obj$n + chunk$n
+  obj$names        <- colnames(chunk$data)
+  obj$df.residual  <- obj$n - chunk$p
+  obj$df.null      <- obj$n - 1
+  obj$pweights     <- (obj$pweights
+                       + sum(log(trans$w[trans$w != 0])))
+  obj$zero_weights <- obj$zero_weights + sum(trans$w == 0)
   
   obj$iwls$rss      <- trans$rss
   obj$iwls$deviance <- trans$deviance
@@ -236,4 +241,31 @@ oomglm <- function(formula,
 
   obj
 
+}
+
+
+print.oomglm <- function() {
+  
+  cat("\nOut-of-memory Generalized Linear Model:\n",
+      paste(deparse(obj$call), sep = "\n", collapse = "\n"),
+      "\n\n",
+      sep = "")
+  
+  beta <- coef(obj)
+  
+  if(length(beta)) {
+    cat("Coefficients:\n")
+    print.default(
+      format(beta, digits = digits),
+      print.gap = 2L,
+      quote     = FALSE)
+  } else {
+    cat("No coefficients\n")
+  }
+  
+  cat("\n")
+  cat("Observations included: ", obj$n, "\n")
+  
+  invisible(obj)
+  
 }
