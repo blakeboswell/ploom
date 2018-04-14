@@ -1,5 +1,5 @@
-#ifndef PLOOM_BOUNDED_QR_H
-#define PLOOM_BOUNDED_QR_H
+#ifndef YOTTA_BOUNDED_QR_H
+#define YOTTA_BOUNDED_QR_H
 #define RCPP_ARMADILLO_RETURN_COLVEC_AS_VECTOR
 
 #include <RcppArmadillo.h>
