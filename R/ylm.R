@@ -92,7 +92,7 @@ update_ylm <- function(obj, data) {
   obj$names        <- colnames(chunk$data)
   obj$df.resid     <- obj$n - chunk$p
   obj$pweights     <- obj$pweights + sum(log(chunk$weights[!zero_wts]))
-  obj$zero_weights <- obj$zero_weights + sum(chunk$weights == 0)
+  obj$zero_weights <- obj$zero_weights + sum(zero_wts)
   
   obj
   
