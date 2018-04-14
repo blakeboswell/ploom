@@ -5,8 +5,7 @@
 init_yglm <- function(formula,
                       family,
                       weights,
-                      etastart,
-                      mustart,
+                      start,
                       sandwich) {
   
   if(is.character(family)) {
@@ -31,8 +30,8 @@ init_yglm <- function(formula,
   }
   
   iwls <- list(
-    beta = NULL,
-    rss  = 0.0,
+    beta       = start,
+    rss        = 0.0,
     deviance   = 0.0
   )
   
@@ -227,15 +226,12 @@ yglm <- function(formula,
                  data     = NULL,
                  family   = gaussian(),
                  weights  = NULL,
-                 etastart = NULL,
-                 mustart  = NULL,
+                 start    = NULL,
                  sandwich = FALSE) {
 
   obj <- init_yglm(formula,
                    family,
                    weights,
-                   etastart,
-                   mustart,
                    sandwich)
 
   if(!is.null(data)) {
