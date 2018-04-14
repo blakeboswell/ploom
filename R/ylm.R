@@ -9,21 +9,12 @@
 #' 
 #' @param formula a symbolic description of the model to be fitted of class `formula`
 #' @param weights A one-sided, single term `formula` specifying weights
-#' @param sandwich TRUE to compute the Huber/White sandwich covariance matrix
 #' 
 #' @keywords internal
-init_ylm <- function(formula,
-                     weights  = NULL,
-                     sandwich = FALSE) {
+init_ylm <- function(formula, weights  = NULL) {
   
   if(!is.null(weights) && !inherits(weights, "formula")) {
     stop("`weights` must be a formula")
-  }
-  
-  if(sandwich) {
-    xy <- list(xy = NULL)
-  } else {
-    xy <- NULL
   }
   
   obj <- list(
@@ -35,7 +26,6 @@ init_ylm <- function(formula,
     p            = NULL,
     names        = NULL,
     df.resid     = NULL,
-    sandwich     = xy,
     weights      = weights,
     pweights     = 0,
     zero_weights = 0
@@ -75,17 +65,6 @@ update.ylm <- function(obj, data) {
                    chunk$response - chunk$offset,
                    chunk$weights)
   
-  if(!is.null(obj$sandwich)) {
-    obj$sandwich$xy <-
-      update_sandwich(obj$sandwich$xy,
-                      chunk$data,
-                      chunk$n,
-                      chunk$p,
-                      chunk$response,
-                      chunk$weights)
-  }
-  
-  
   zero_wts  <- chunk$weights == 0
   
   obj$n            <- obj$n + chunk$n - sum(zero_wts)
@@ -108,8 +87,6 @@ update.ylm <- function(obj, data) {
 #' @param formula a symbolic description of the model to be fitted of class `formula`
 #' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`
 #' @param weights A one-sided, single term `formula` specifying weights
-#' @param sandwich TRUE to compute the Huber/White sandwich covariance matrix
-#'   (uses `p^4` memory rather than `p^2`)
 #' @details The model formula must not contain any data-dependent terms, as
 #'   these will not be consistent when updated. Factors are permitted, but 
 #'   the levels of the factor must be the same across all data chunks. 
@@ -156,12 +133,9 @@ update.ylm <- function(obj, data) {
 #' }
 #'
 #' @export
-ylm <- function(formula,
-                data     = NULL,
-                weights  = NULL,
-                sandwich = FALSE) {
+ylm <- function(formula, data = NULL, weights  = NULL) {
   
-  obj <- init_ylm(formula, weights, sandwich)
+  obj <- init_ylm(formula, weights)
   
   if(!is.null(data)) {
     obj <- update(obj, data)

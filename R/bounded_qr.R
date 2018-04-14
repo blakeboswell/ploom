@@ -75,13 +75,13 @@ coef.Rcpp_BoundedQr <- function(qr, nvar = NULL, ...){
 vcov.Rcpp_BoundedQr <- function(qr) {
   
   vcov_vec <- qr$vcov(qr$num_params)
-  k        <- length(cov_vec)
+  k        <- length(vcov_vec)
   np       <- qr$num_params
   V        <- matrix(nrow = np, ncol = np)
   pos      <- 1
   
   for(col in 1:np) {
-    V[col, 1:col] <- cov_vec[pos:(pos + col - 1)]
+    V[col, 1:col] <- vcov_vec[pos:(pos + col - 1)]
     pos <- pos + col
   }
   

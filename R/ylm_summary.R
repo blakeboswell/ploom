@@ -113,10 +113,6 @@ print.summary.ylm <- function(x,
                na.print = "NA",
                ...)
   
-  # if (!is.null(x$obj$sandwich)) {
-  #   cat("Sandwich (model-robust) standard errors.\n")
-  # }
-  
   cat("\nObservations included: ", x$n, "\n")
   
   cat("Residual standard error:",

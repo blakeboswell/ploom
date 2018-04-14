@@ -5,8 +5,7 @@
 init_yglm <- function(formula,
                       family,
                       weights,
-                      start,
-                      sandwich) {
+                      start) {
   
   if(is.character(family)) {
     family <- get(family, mode = "function", envir = parent.frame())
@@ -21,12 +20,6 @@ init_yglm <- function(formula,
   
   if(!is.null(weights) && !inherits(weights, "formula")) {
     stop("`weights` must be a formula")
-  }
-  
-  if(sandwich) {
-    xy <- list(xy = NULL)
-  } else {
-    xy <- NULL
   }
   
   iwls <- list(
@@ -44,7 +37,6 @@ init_yglm <- function(formula,
     names         = NULL,
     df.residual   = NULL,
     df.null       = NULL,
-    sandwich      = xy,
     family        = family,
     iwls          = iwls,
     converged     = FALSE,
@@ -132,17 +124,6 @@ update_yglm_data <- function(obj, data) {
                    trans$z - chunk$offset,
                    trans$w)
   
-  if(!is.null(obj$sandwich)) {
-    obj$sandwich$xy <-
-      update_sandwich(obj$sandwich$xy,
-                      chunk$data,
-                      chunk$n,
-                      chunk$p,
-                      trans$z,
-                      trans$w)
-  }
-  
-  
   zero_wts  <- trans$w == 0
   intercept <- attr(obj$terms, "intercept") > 0L
   
@@ -184,7 +165,7 @@ update.yglm <- function(obj, data) {
     return(update_yglm_function(obj, data))
   }
   
-  stop("class of `data`` not recognized")
+  stop("class of `data` not recognized")
   
 }
 
@@ -198,10 +179,6 @@ reset_yglm <- function(obj, beta_old) {
   obj$qr   <- NULL
   obj$n    <- 0L
 
-  if(!is.null(obj$sandwich)) {
-    obj$sandwich <- list(xy = NULL)
-  }
-  
   obj
  
 }
@@ -252,14 +229,12 @@ yglm <- function(formula,
                  data     = NULL,
                  family   = gaussian(),
                  weights  = NULL,
-                 start    = NULL,
-                 sandwich = FALSE) {
+                 start    = NULL) {
 
   obj <- init_yglm(formula,
                    family,
                    weights,
-                   start,
-                   sandwich)
+                   start)
 
   if(!is.null(data)) {
     obj <- update_yglm(obj, data)

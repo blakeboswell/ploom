@@ -41,20 +41,20 @@ unpack_oomchunk <- function(obj, data) {
 }
 
 
-#' @keywords internal
-update_sandwich <- function(qr, mm, n, p, y, w) {
-  
-  xx        <- matrix(nrow = n, ncol = p * (p + 1))
-  xx[, 1:p] <- mm * (drop(y) - offset)
-  
-  for (i in 1:p) {
-    xx[, p * i + (1:p)] <- mm * mm[, i]
-  }
-  
-  if(is.null(qr)) {
-    qr <- new_bounded_qr(p * (p + 1)) 
-  }
-  
-  update(qr, xx, rep(0.0, n), w * w)
-  
-}
+##' @keywords internal
+# update_sandwich <- function(qr, mm, n, p, y, w) {
+#   
+#   xx        <- matrix(nrow = n, ncol = p * (p + 1))
+#   xx[, 1:p] <- mm * (drop(y) - offset)
+#   
+#   for (i in 1:p) {
+#     xx[, p * i + (1:p)] <- mm * mm[, i]
+#   }
+#   
+#   if(is.null(qr)) {
+#     qr <- new_bounded_qr(p * (p + 1)) 
+#   }
+#   
+#   update(qr, xx, rep(0.0, n), w * w)
+#   
+# }

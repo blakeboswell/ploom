@@ -64,48 +64,48 @@ coef.ylm <- function(obj, ...) {
 vcov.ylm <- function(obj, ...) {
   
   ## cpp implementation / HC not supported ---------------------------
-  # V <- vcov(obj$qr)
-  # dimnames(V) <- list(obj$names, obj$names)
-  # 
-  # V
+  V <- vcov(obj$qr)
+  dimnames(V) <- list(obj$names, obj$names)
+
+  V
   
   # biglm implementation --------------------------------------------
   
-  nobs  <- obj$qr$num_obs
-  np    <- obj$qr$num_params
-  sserr <- obj$qr$rss_full
-  ok    <- !obj$qr$lindep()
-  
-  R  <- rvcov_biglm(
-    np,
-    obj$qr$D,
-    obj$qr$rbar,
-    ok
-  )
-  
-  dimnames(R) <- list(obj$names, obj$names)
-  
-  if(!is.null(obj$sandwich)) {
-    
-    betas <- coef(obj$qr)
-    
-    V <- sandwich_rcov_biglm(
-      np,
-      obj$sandwich$xy$D,
-      obj$sandwich$xy$rbar,
-      R,
-      betas,
-      ok
-    )
-    
-    dimnames(V) <- list(obj$names, obj$names)
-    attr(V, "model-based") <- R * sserr / (nobs - np + sum(!ok))
-    
-  } else {
-    V <- R * sserr / (nobs - np + sum(!ok))
-  }
-  
-  V
+  # nobs  <- obj$qr$num_obs
+  # np    <- obj$qr$num_params
+  # sserr <- obj$qr$rss_full
+  # ok    <- !obj$qr$lindep()
+  # 
+  # R  <- rvcov_biglm(
+  #   np,
+  #   obj$qr$D,
+  #   obj$qr$rbar,
+  #   ok
+  # )
+  # 
+  # dimnames(R) <- list(obj$names, obj$names)
+  # 
+  # if(!is.null(obj$sandwich)) {
+  #   
+  #   betas <- coef(obj$qr)
+  #   
+  #   V <- sandwich_rcov_biglm(
+  #     np,
+  #     obj$sandwich$xy$D,
+  #     obj$sandwich$xy$rbar,
+  #     R,
+  #     betas,
+  #     ok
+  #   )
+  #   
+  #   dimnames(V) <- list(obj$names, obj$names)
+  #   attr(V, "model-based") <- R * sserr / (nobs - np + sum(!ok))
+  #   
+  # } else {
+  #   V <- R * sserr / (nobs - np + sum(!ok))
+  # }
+  # 
+  # V
   
 }
 

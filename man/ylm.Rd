@@ -4,7 +4,7 @@
 \alias{ylm}
 \title{Initialize Updating Linear Regression model}
 \usage{
-ylm(formula, data = NULL, weights = NULL, sandwich = FALSE)
+ylm(formula, data = NULL, weights = NULL)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted of class `formula`}
@@ -12,9 +12,6 @@ ylm(formula, data = NULL, weights = NULL, sandwich = FALSE)
 \item{data}{an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`}
 
 \item{weights}{A one-sided, single term `formula` specifying weights}
-
-\item{sandwich}{TRUE to compute the Huber/White sandwich covariance matrix
-(uses `p^4` memory rather than `p^2`)}
 }
 \value{
 `ylm` model object that can be updated with more data
