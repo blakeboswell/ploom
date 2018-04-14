@@ -106,7 +106,8 @@ test_that("weighted oomglm without intercept", {
   
   df      <- mtcars
   w       <- runif(nrow(mtcars))
-  df['w'] <- w / sum(w)
+  w       <- w / sum(w)
+  df['w'] <- w
   
   f <- mpg ~ 0 + cyl + disp + hp + wt
   
