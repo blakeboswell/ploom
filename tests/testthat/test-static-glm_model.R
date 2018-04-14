@@ -5,7 +5,6 @@ expect_summary_equal <- function(sy, sx) {
   expect_equal(sy$terms, sx$terms)
   expect_equal(sy$family, sx$family)
   expect_equal(sy$deviance, sx$deviance)
-  expect_equal(sy$aic, sx$aic)
   expect_equal(sy$df.residual, sx$df.residual)
   # expect_equal(sy$null.deviance, sx$null.deviance)
   expect_equal(sy$df.null, sx$df.null)
@@ -35,6 +34,14 @@ test_that("oomglm", {
     summary(x, correlation = TRUE)
   )
   
+  
+  f2 <- mpg ~ cyl
+  y2 <- glm(f2, data = mtcars)
+  x2 <- reweight_oomglm(oomglm(f2), mtcars, num_iterations = 8L)
+  
+  expect_equal(AIC(y) - AIC(y2),
+               AIC(x) - AIC(x2))
+  
 })
 
 
@@ -42,7 +49,8 @@ test_that("weighted oomglm", {
   
   df      <- mtcars
   w       <- runif(nrow(mtcars))
-  df['w'] <- w / sum(w)
+  w       <- w / sum(w)
+  df['w'] <- w
   
   f <- mpg ~ cyl + disp + hp + wt
   y <- glm(f, data = df, weights = w)
@@ -56,6 +64,14 @@ test_that("weighted oomglm", {
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
+  
+  f2 <- mpg ~ cyl
+  y2 <- glm(f2, data = mtcars, weights = w)
+  x2 <- oomglm(f2, weights = ~w)
+  x2 <- reweight_oomglm(x2, mtcars, num_iterations = 8L)
+  
+  expect_equal(AIC(y) - AIC(y2),
+               AIC(x) - AIC(x2))
   
 })
 
@@ -75,6 +91,13 @@ test_that("oomglm without intercept", {
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
+  
+  f2 <- mpg ~ 0 + cyl
+  y2 <- glm(f2, data = mtcars)
+  x2 <- reweight_oomglm(oomglm(f2), mtcars, num_iterations = 8L)
+  
+  expect_equal(AIC(y) - AIC(y2),
+               AIC(x) - AIC(x2))
   
 })
 
@@ -98,5 +121,13 @@ test_that("weighted oomglm without intercept", {
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
+  
+  f2 <- mpg ~ 0 + cyl
+  y2 <- glm(f2, data = mtcars, weights = w)
+  x2 <- oomglm(f2, weights = ~w)
+  x2 <- reweight_oomglm(x2, mtcars, num_iterations = 8L)
+  
+  expect_equal(AIC(y) - AIC(y2),
+               AIC(x) - AIC(x2))
   
 })
