@@ -173,16 +173,16 @@ oomlm <- function(formula,
 
 
 #' @export
-print.oomlm <- function(obj,
+print.oomlm <- function(x,
                         digits = max(3L, getOption("digits") - 3L),
                         ...) {
   
   cat("\nCall:  ",
-      paste(deparse(obj$call), sep = "\n", collapse = "\n"),
+      paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n",
       sep = "")
   
-  beta <- coef(obj)
+  beta <- coef(x)
   
   if(length(beta)) {
     cat("Coefficients:\n")
@@ -195,9 +195,9 @@ print.oomlm <- function(obj,
   }
   
   cat("\n")
-  cat("Observations included: ", obj$n, "\n")
+  cat("Observations included: ", x$n, "\n")
   
-  invisible(obj)
+  invisible(x)
   
 }
 

@@ -73,6 +73,7 @@ summary.oomlm <- function(x,
     call          = x$call,
     terms         = x$terms,
     coefficients  = coef_mat,
+    n             = num_obs,
     aliased       = lindep,
     df            = c(rank, res_dof, num_params),
     fstatistic    = fstatistic,
@@ -102,7 +103,7 @@ print.summary.oomlm <- function(x,
                                 signif.stars = getOption("show.signif.stars"),
                                 ...) {
   
-  cat("\nOut-of-memory Linear Model:\n",
+  cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
   
@@ -116,7 +117,9 @@ print.summary.oomlm <- function(x,
   #   cat("Sandwich (model-robust) standard errors.\n")
   # }
   
-  cat("\nResidual standard error:",
+  cat("\nObservations included: ", x$n, "\n")
+  
+  cat("Residual standard error:",
       format(signif(x$sigma, digits)),
       "on",
       x$df[2L],

@@ -28,7 +28,7 @@ print.summary.oomglm <- function(x,
                                  signif.stars = getOption("show.signif.stars"),
                                  ...) {
   
-  cat("\nOut-of-memory Generalized Linear Model:\n",
+  cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
   
@@ -42,8 +42,7 @@ print.summary.oomglm <- function(x,
   #   cat("Sandwich (model-robust) standard errors.\n")
   # }
   
-  cat("\n")
-  
+  cat("\nObservations included: ", x$n, "\n")
   cat(
     apply(cbind(paste(format(c("Residual"), justify="right"),
                       "deviance:"),
