@@ -2,7 +2,7 @@
 % Please edit documentation in R/bounded_qr.R
 \name{update.Rcpp_BoundedQr}
 \alias{update.Rcpp_BoundedQr}
-\title{wrapper for `BoundedQr` method `update`}
+\title{wrapper for \code{BoundedQr} method \code{update}}
 \usage{
 \method{update}{Rcpp_BoundedQr}(qr, X, y, weights)
 }
@@ -16,6 +16,6 @@
 \item{weights}{numeric vector of observation weights}
 }
 \description{
-wrapper for `BoundedQr` method `update`
+wrapper for \code{BoundedQr} method \code{update}
 }
 \keyword{internal}

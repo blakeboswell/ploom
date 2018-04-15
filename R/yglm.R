@@ -1,6 +1,19 @@
 #' @include yotta_shared.R
 
 
+#' Initialize Updating Generalized Linear Regression Model
+#' 
+#' @md
+#' @noRd
+#' @description
+#' Performs the details of intializing `yglm` object called by
+#' `yglm` function.
+#' 
+#' @param formula a symbolic description of the model to be fitted of class `formula`.
+#' @param family a `glm` family object.
+#' @param weights a one-sided, single term `formula` specifying weights. 
+#' @param start starting values for the parameters in the linear predictor.
+#' 
 #' @keywords internal
 init_yglm <- function(formula,
                       family,
@@ -52,6 +65,13 @@ init_yglm <- function(formula,
 }
 
 
+#' Apply `glm` transformations to `chunk`
+#' 
+#' @md
+#' @noRd
+#' @param object `yglm` model.
+#' @param chunk list created by `unpack_oomchunk`.
+#' 
 #' @keywords internal
 glm_adjust <- function(obj, chunk) {
 
@@ -96,12 +116,13 @@ glm_adjust <- function(obj, chunk) {
 }
 
 
-# update_yglm <- function(obj, data) {
-#   UseMethod("update_ylm", data)
-# }
-# setGeneric("update_ylm", signature=c("obj", "data"))
-
-
+#' Update `yglm` from `data.frame`
+#' 
+#' @md
+#' @noRd
+#' @param object `yglm` model.
+#' @param data `data.frame` of observations to be fit.
+#' 
 #' @keywords internal
 update_yglm_data <- function(obj, data) {
 
@@ -142,6 +163,14 @@ update_yglm_data <- function(obj, data) {
 }
 
 
+#' Update `yglm` given `function` that returns `data.frame`s
+#'   when iterated over
+#' 
+#' @md
+#' @noRd
+#' @param obj `yglm` model
+#' @param data `function`
+#' 
 #' @keywords internal
 update_yglm_function <- function(obj, data) {
   
@@ -154,6 +183,12 @@ update_yglm_function <- function(obj, data) {
 }
 
 
+#' Update `yglm` with new observations
+#' 
+#' @md
+#' @param obj `yglm` model.
+#' @param data an `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' 
 #' @export
 update.yglm <- function(obj, data) {
   
@@ -170,7 +205,13 @@ update.yglm <- function(obj, data) {
 }
 
 
-
+#' Reset model in preparation for new reweight iteration
+#' 
+#' @md
+#' @noRd
+#' @param obj `ygml` model.
+#' @param beta_old `ygml` coefficients resulting from previous
+#'   reweight iteration.
 #' @keywords internal
 reset_yglm <- function(obj, beta_old) {
   
@@ -184,23 +225,30 @@ reset_yglm <- function(obj, beta_old) {
 }
 
 
-reweight <- function(obj, data, ...) {
-  UseMethod("reweight")
-}
-
+#' @export
+reweight <- function(obj, data, ...) { UseMethod("reweight") }
 setGeneric("reweight")
 
+
+#' Reweight `yglm` model via Iteratively Reweighted Least Squares method
+#' 
+#' @md
+#' @param obj `yglm` model.
+#' @param data an `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' @param num_iter number of Fisher scoring iterations to perform.
+#' @param tolerance tolerance for change in coefficient (as multiple of standard error).
+#'
 #' @export
 reweight.yglm <- function(obj,
                           data,
-                          num_iterations = 1L,
-                          tolerance      = 1e-7) {
+                          num_iter  = 1L,
+                          tolerance = 1e-7) {
   
   if(obj$converged) {
     return(obj)
   }
   
-  for(i in 1:num_iterations) {
+  for(i in 1:num_iter) {
     
     beta_old <- coef(obj)
     obj      <- reset_yglm(obj)
@@ -224,12 +272,27 @@ reweight.yglm <- function(obj,
 }
 
 
+#' Initialize Updating Generalized Linear Regression model
+#' 
+#' @md
+#' @description
+#' Perform  generalized linear regression usig Alan Miller's bounded memory QR
+#'   factorization algorithm which enables models with `p` variables
+#'   to be fit in `p^2` memory.
+#' 
+#' @param formula a symbolic description of the model to be fitted of class `formula`.
+#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' @param family A `glm` family object.
+#' @param weights a one-sided, single term `formula` specifying weights.
+#' @param start starting values for the parameters in the linear predictor.
+#' @param ... ignored.
 #' @export
 yglm <- function(formula,
                  data     = NULL,
                  family   = gaussian(),
                  weights  = NULL,
-                 start    = NULL) {
+                 start    = NULL,
+                 ...) {
 
   obj <- init_yglm(formula,
                    family,

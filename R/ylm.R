@@ -3,12 +3,13 @@
 
 #' Initialize Updating Linear Regression Model
 #' 
+#' @noRd
 #' @description
 #' Performs the details of intializing `ylm` object called by
 #' `ylm` function.
 #' 
-#' @param formula a symbolic description of the model to be fitted of class `formula`
-#' @param weights A one-sided, single term `formula` specifying weights
+#' @param formula a symbolic description of the model to be fitted of class `formula`.
+#' @param weights A one-sided, single term `formula` specifying weights.
 #' 
 #' @keywords internal
 init_ylm <- function(formula, weights  = NULL) {
@@ -39,11 +40,12 @@ init_ylm <- function(formula, weights  = NULL) {
 
 #' Update Updating Linear Regression Model with more data
 #' 
+#' @md
 #' @description
-#' Update `ylm` linear model fit with new data 
+#' Update `ylm` linear model fit with new data. 
 #' 
-#' @param obj `ylm` object to be updated
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`
+#' @param obj `ylm` object to be updated.
+#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
 #' 
 #' @export
 update.ylm <- function(obj, data) {
@@ -80,28 +82,35 @@ update.ylm <- function(obj, data) {
 
 #' Initialize Updating Linear Regression model
 #' 
+#' @md
 #' @description
-#' Apply Alan Miller's bounded memory QR factorization algorithm to perform
-#' linear regression on `p` covariates using only `p^2` memory.
+#' Perform linear regression via Alan Miller's bounded memory QR
+#'   factorization algorithm which enables models with `p` variables
+#'   to be fit in `p^2` memory.
 #' 
-#' @param formula a symbolic description of the model to be fitted of class `formula`
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`
-#' @param weights A one-sided, single term `formula` specifying weights
+#' @param formula a symbolic description of the model to be fitted of class `formula`.
+#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' @param weights a one-sided, single term `formula` specifying weights.
+#' @param ... ignored.
 #' @details The model formula must not contain any data-dependent terms, as
 #'   these will not be consistent when updated. Factors are permitted, but 
 #'   the levels of the factor must be the same across all data chunks. 
 #'   Empty factor levels are accepted.
-#' @return `ylm` model object that can be updated with more data
-#'   via [update_ylm][yotta::update_ylm]
+#'
+#' @return `ylm` initializes an object of class `ylm`. If `data` is missing,
+#'   the `ylm` object will not be fit on initialization. `ylm` objects can
+#'   be iteratively updated with new data via the function `update`. If 
+#'   `data` is provided, an `update` will be performed on initialization.
+#'  
+#' @seealso [yglm()]
+#' 
 #' @examples
 #' # The function `ylm` is similar to base `lm` for fitting in-memory data.
-#'
 #' w <- ylm(mpg ~ cyl + disp, data = mtcars)
 #'
 #' # Models are initalized with a call to `ylm` and updated with
-#' # `update_ylm`. The intended pattern is to initialize a model with the formula
-#' # only and then to reference the data through iterative (identical) calls over
-#' # subsets of the data to be fitted.
+#' # `update`. The recommended pattern is to initialize a model without providing
+#' # data, then feed the data via calls to `update`.  For example:
 #' 
 #' # proxy for data feed
 #' chunks  <- purrr::pmap(mtcars, list)
@@ -111,29 +120,15 @@ update.ylm <- function(obj, data) {
 #' 
 #' # iteratively update model with data chunks
 #' for(chunk in chunks) {
-#'   update_ylm(x, chunk)
+#'   update(x, chunk)
 #' }
 #'
-#' # Separating model initialization and processing of the first data chunk
+#' # Separating model initialization and processing of data 
 #' # enables functional patterns like `reduce` to take the place of loops.
-#' # The below example is equivalent to the above `for` loop.
+#' y <- purrr::reduce(chunks, update, .init = ylm(mpg ~ cyl + disp))
 #' 
-#' # avoid loops altogether with `purrr::reduce`
-#' y <- purrr::reduce(chunks, update_ylm, .init = ylm(mpg ~ cyl + disp))
-#' 
-#' # For maximum flexibility, `yotta` also supports processing the first chunk of 
-#' # data on initialization similar to [`biglm`](https://github.com/cran/biglm).
-#'
-#' # initialize model and process first chunk of data
-#' z  <- ylm(mpg ~ cyl + disp, chunks[[1]])
-#' 
-#' # iteratively update model with additional data chunks
-#' for(chunk in tail(chunks, -1)) {
-#'   z <- update_ylm(x, data = chunk)
-#' }
-#'
 #' @export
-ylm <- function(formula, data = NULL, weights  = NULL) {
+ylm <- function(formula, data = NULL, weights  = NULL, ...) {
   
   obj <- init_ylm(formula, weights)
   

@@ -26,6 +26,7 @@ Suggests:
     testthat
 BugReports: https://github.com/bboswell/yotta/issues
 RoxygenNote: 6.0.1
+Roxygen: list(markdown = TRUE)
 Collate: 
     'RcppExports.R'
     'biglm_vcov.R'

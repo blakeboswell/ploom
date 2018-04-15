@@ -4,7 +4,7 @@ argument|default|won't impl|impl
 ---|---|---|---
 formula|||x|
 data|||x|
-subset|x||implement in feed
+subset||x|implement in feed
 weights|||x|
 na.action||x|implement in feed
 method|"qr"|x|always "as274"

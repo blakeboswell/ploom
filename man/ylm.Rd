@@ -4,38 +4,41 @@
 \alias{ylm}
 \title{Initialize Updating Linear Regression model}
 \usage{
-ylm(formula, data = NULL, weights = NULL)
+ylm(formula, data = NULL, weights = NULL, ...)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted of class `formula`}
+\item{formula}{a symbolic description of the model to be fitted of class \code{formula}.}
 
-\item{data}{an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`}
+\item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
 
-\item{weights}{A one-sided, single term `formula` specifying weights}
+\item{weights}{a one-sided, single term \code{formula} specifying weights.}
+
+\item{...}{ignored.}
 }
 \value{
-`ylm` model object that can be updated with more data
-  via [update_ylm][yotta::update_ylm]
+\code{ylm} initializes an object of class \code{ylm}. If \code{data} is missing,
+the \code{ylm} object will not be fit on initialization. \code{ylm} objects can
+be iteratively updated with new data via the function \code{update}. If
+\code{data} is provided, an \code{update} will be performed on initialization.
 }
 \description{
-Apply Alan Miller's bounded memory QR factorization algorithm to perform
-linear regression on `p` covariates using only `p^2` memory.
+Perform linear regression via Alan Miller's bounded memory QR
+factorization algorithm which enables models with \code{p} variables
+to be fit in \code{p^2} memory.
 }
 \details{
 The model formula must not contain any data-dependent terms, as
-  these will not be consistent when updated. Factors are permitted, but 
-  the levels of the factor must be the same across all data chunks. 
-  Empty factor levels are accepted.
+these will not be consistent when updated. Factors are permitted, but
+the levels of the factor must be the same across all data chunks.
+Empty factor levels are accepted.
 }
 \examples{
 # The function `ylm` is similar to base `lm` for fitting in-memory data.
-
 w <- ylm(mpg ~ cyl + disp, data = mtcars)
 
 # Models are initalized with a call to `ylm` and updated with
-# `update_ylm`. The intended pattern is to initialize a model with the formula
-# only and then to reference the data through iterative (identical) calls over
-# subsets of the data to be fitted.
+# `update`. The recommended pattern is to initialize a model without providing
+# data, then feed the data via calls to `update`.  For example:
 
 # proxy for data feed
 chunks  <- purrr::pmap(mtcars, list)
@@ -45,25 +48,14 @@ x <- ylm(mpg ~ cyl + disp)
 
 # iteratively update model with data chunks
 for(chunk in chunks) {
-  update_ylm(x, chunk)
+  update(x, chunk)
 }
 
-# Separating model initialization and processing of the first data chunk
+# Separating model initialization and processing of data 
 # enables functional patterns like `reduce` to take the place of loops.
-# The below example is equivalent to the above `for` loop.
+y <- purrr::reduce(chunks, update, .init = ylm(mpg ~ cyl + disp))
 
-# avoid loops altogether with `purrr::reduce`
-y <- purrr::reduce(chunks, update_ylm, .init = ylm(mpg ~ cyl + disp))
-
-# For maximum flexibility, `yotta` also supports processing the first chunk of 
-# data on initialization similar to [`biglm`](https://github.com/cran/biglm).
-
-# initialize model and process first chunk of data
-z  <- ylm(mpg ~ cyl + disp, chunks[[1]])
-
-# iteratively update model with additional data chunks
-for(chunk in tail(chunks, -1)) {
-  z <- update_ylm(x, data = chunk)
 }
-
+\seealso{
+\code{\link[=yglm]{yglm()}}
 }

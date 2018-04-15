@@ -3,8 +3,8 @@
 \name{sandwich_rcov_biglm}
 \alias{sandwich_rcov_biglm}
 \title{Hubert/White sandwich vcov implementation for updating linear
-model (Miller AS274 QR factorization) as implemented 
-in package `biglm`}
+model (Miller AS274 QR factorization) as implemented
+in package \code{biglm}}
 \usage{
 sandwich_rcov_biglm(np, D, rbar, R, betas, ok)
 }
@@ -23,7 +23,7 @@ sandwich_rcov_biglm(np, D, rbar, R, betas, ok)
 }
 \description{
 Hubert/White sandwich vcov implementation for updating linear
-model (Miller AS274 QR factorization) as implemented 
-in package `biglm`
+model (Miller AS274 QR factorization) as implemented
+in package \code{biglm}
 }
 \keyword{internal}

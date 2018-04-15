@@ -7,10 +7,10 @@
 \method{update}{ylm}(obj, data)
 }
 \arguments{
-\item{obj}{`ylm` object to be updated}
+\item{obj}{\code{ylm} object to be updated.}
 
-\item{data}{an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`}
+\item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
 }
 \description{
-Update `ylm` linear model fit with new data
+Update \code{ylm} linear model fit with new data.
 }

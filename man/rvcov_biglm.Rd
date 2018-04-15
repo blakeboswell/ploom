@@ -4,7 +4,7 @@
 \alias{rvcov_biglm}
 \title{vcov implementation for updating linear model
 (Miller AS274 QR factorization) as implemented
-in package `biglm`}
+in package \code{biglm}}
 \usage{
 rvcov_biglm(np, D, rbar, ok)
 }
@@ -18,6 +18,6 @@ rvcov_biglm(np, D, rbar, ok)
 \description{
 vcov implementation for updating linear model
 (Miller AS274 QR factorization) as implemented
-in package `biglm`
+in package \code{biglm}
 }
 \keyword{internal}
