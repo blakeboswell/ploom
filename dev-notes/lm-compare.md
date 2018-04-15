@@ -4,14 +4,14 @@ argument|default|won't impl|impl
 ---|---|---|---
 formula|||x|
 data|||x|
-subset||| implement in feed
+subset|x||implement in feed
 weights|||x|
-na.action||| implement in feed
+na.action||x|implement in feed
 method|"qr"|x|always "as274"
 model|TRUE|x||
 x|TRUE|x||
 y|TRUE|x||
-qr|TRUE||x|always TRUE
+qr|TRUE|x|always TRUE
 singular.ok|TRUE|x||
 contrasts||x||
 offset|||x|
