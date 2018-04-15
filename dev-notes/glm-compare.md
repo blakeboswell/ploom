@@ -2,24 +2,24 @@
 
 argument|default|won't impl|impl
 ---|---|---|---
-formula|||x|
-family|||
-data|||x|
-weights|||x|
+formula|||x
+family|||x
+data|||x
+weights|||x
 subset||x|implement in feed
 na.action||x|implement in feed
-start|||
-etastart|||
-mustart|||
-offset|||x|
-control|||
-model|TRUE|x||
-method|"qlm.fit"|x|always iwls with as274
-x|FALSE|x||
-y|TRUE|x||
-contrasts||x||
-intercept|||
-...||x||
+start|||x
+etastart||x|
+mustart||x|
+offset|||x
+control||x|
+model|TRUE|x|
+method|"qlm.fit"|x|always "iwls" with "as274"
+x|FALSE|x|
+y|TRUE|x|
+contrasts||x|
+intercept||x|
+...||x|
 
 
 # `glm` Values
