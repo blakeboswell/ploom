@@ -7,15 +7,15 @@ data|||x|
 subset||| implement in feed
 weights|||x|
 na.action||| implement in feed
-method|"qr"|x|"as274"
+method|"qr"|x|always "as274"
 model|TRUE|x||
 x|TRUE|x||
 y|TRUE|x||
-qr|TRUE||x|
-singular.ok|TRUE|||
+qr|TRUE||x|always TRUE
+singular.ok|TRUE|x||
 contrasts||x||
 offset|||x|
-...||||
+...||x||
 
 
 # `lm` Values
