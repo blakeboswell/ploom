@@ -46,7 +46,7 @@ The functions `ylm` and `yglm` are similar to base `lm` and `glm` for fitting in
 w <- ylm(mpg ~ cyl + disp, data = mtcars)
 ```
 
-Models are initalized with a call to `ylm` and updated with `update_ylm`.   The recommended pattern is to initialize models without referencing the data, then call `update_ylm` on each data chunk in the exact same way.
+Models are initalized with a call to `ylm` and updated with `update`.   The recommended pattern is to initialize models without referencing the data, then call `update` on each data chunk in the exact same way.
 
 ```{r, eval = TRUE}
 # proxy for big data feed (`purrr::pmap`)
