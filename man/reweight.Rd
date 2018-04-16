@@ -2,7 +2,8 @@
 % Please edit documentation in R/oomglm.R
 \name{reweight}
 \alias{reweight}
-\title{Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS) method}
+\title{Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS)
+method.}
 \usage{
 reweight(obj, data, num_iter, tolerance = 1e-07)
 }
@@ -14,13 +15,16 @@ reweight(obj, data, num_iter, tolerance = 1e-07)
 \item{num_iter}{Number of IWLS iterations to perform. Will automatically
 stop iterating if model converges before \code{num_iter} iterations.}
 
-\item{tolerance}{Tolerance for change in coefficient (as multiple of standard error).}
+\item{tolerance}{Tolerance for change in coefficient as a multiple
+of standard error.}
 }
 \value{
-\code{oomglm} object after performing \code{num_iter} IWLS iterations on \code{data}
+\code{oomglm} object after performing \code{num_iter} IWLS iterations on
+\code{data}.
 }
 \description{
-Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS) method
+Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS)
+method.
 }
 \examples{
 # proxy for data feed

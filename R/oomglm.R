@@ -6,9 +6,11 @@
 #' @md
 #' @noRd
 #' @description
-#' Performs the details of intializing `oomglm` object called by `oomglm` function.
+#' Performs the details of intializing `oomglm` object called by `oomglm`
+#'  function.
 #' 
-#' @param formula a symbolic description of the model to be fitted of class `formula`.
+#' @param formula a symbolic description of the model to be fitted of class
+#'  `formula`.
 #' @param family a `glm` family object.
 #' @param weights a one-sided, single term `formula` specifying weights. 
 #' @param start starting values for the parameters in the linear predictor.
@@ -225,16 +227,19 @@ reset_oomglm <- function(obj, beta_old) {
 
 
 
-#' Reweight `oomglm` model via Iteratively Reweighted Least Squares (IWLS) method
+#' Reweight `oomglm` model via Iteratively Reweighted Least Squares (IWLS)
+#'  method.
 #' 
 #' @md
 #' @param obj `oomglm` model.
 #' @param data An `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
 #' @param num_iter Number of IWLS iterations to perform. Will automatically
 #'   stop iterating if model converges before `num_iter` iterations.
-#' @param tolerance Tolerance for change in coefficient (as multiple of standard error).
+#' @param tolerance Tolerance for change in coefficient as a multiple
+#'  of standard error.
 #'
-#' @return `oomglm` object after performing `num_iter` IWLS iterations on `data`
+#' @return `oomglm` object after performing `num_iter` IWLS iterations on
+#'  `data`.
 #' 
 #' @seealso [oomlm()]
 #' @examples
@@ -248,7 +253,9 @@ reset_oomglm <- function(obj, beta_old) {
 #' x <- reweight(x, mtcars, num_iter = 4)
 #' 
 #' @export
-reweight <- function(obj, data, num_iter, tolerance = 1e-7) { UseMethod("reweight") }
+reweight <- function(obj, data, num_iter, tolerance = 1e-7){
+  UseMethod("reweight")
+}
 setGeneric("reweight")
 
 
@@ -286,43 +293,48 @@ reweight.oomglm <- function(obj,
 }
 
 
-#' Initialize Updating Generalized Linear Regression model
+#' Initialize Updating Generalized Linear model
 #' 
 #' @md
 #' @description
-#' Perform  generalized linear regression usig Alan Miller's bounded memory QR
+#' Perform  generalized linear regression using Alan Miller's bounded memory QR
 #'   factorization algorithm which enables models with `p` variables
 #'   to be fit in `p^2` memory.
 #' 
-#' @param formula a symbolic description of the model to be fitted of class `formula`.
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' @param formula a symbolic description of the model to be fitted of class
+#'   `formula`.
+#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or
+#'   `environment`.
 #' @param family A `glm` family object.
 #' @param weights a one-sided, single term `formula` specifying weights.
 #' @param start starting values for the parameters in the linear predictor.
 #' @param ... ignored.
 #' 
 #' @details
-#' A `ylgm` object can be in various states of fit depending on the number of seen 
-#'   observations and rounds of IWLS that have been performed.  Therefore, it is important
-#'   to consider all return values within the following context
+#' A `oomglm` object can be in various states of fit depending on the number
+#'   of seen observations and rounds of IWLS that have been performed.
+#'   Therefore, it is important to consider all return values within the
+#'   following context:
 #'   
 #'   * The number of observations processed per round of IWLS (`n`).
 #'   * The number of IWLS iterations that have been performed (`iter`).
 #'   * If the IWLS algorithm has converged (`converged`).
 #'
-#' @return `oomglm` returns an object of class `oomglm` inheriting from the class `oomlm`.
+#' @return `oomglm` returns an object of class `oomglm` inheriting from the
+#'   class `oomlm`.
 #'
 #' \item{coefficients}{A named vector of coefficients.}
 #' \item{rank}{The numeric rank of the linear model}
-#' \item{family}{a [stats::family()] object describing the error distribution and
-#'   link function used in the model.}
+#' \item{family}{a [stats::family()] object describing the error distribution
+#'   and link function used in the model.}
 #' \item{n}{The number observations processed per round of IWLS.}
 #' \item{iter}{The number of iterations of IWLS performed.}
 #' \item{df.residual}{The residual degrees of freedom.}
 #' \item{converged}{Indicates if the IWLS algorithm has converged.}
 #' \item{call}{The matched call.}
 #' \item{terms}{The [stats::terms()] object used.}
-#' \item{qr}{A [ploom::BoundedQr()] object resulting from the latest round of IWLS.}
+#' \item{qr}{A [ploom::BoundedQr()] object resulting from the latest round of
+#'   IWLS.}
 #' \item{weights}{The weights `formula` provided to the model.}
 #' 
 #' @examples

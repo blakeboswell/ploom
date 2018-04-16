@@ -1,14 +1,15 @@
 #' @include ploom_shared.R
 
 
-#' Initialize Updating Linear Regression Model
+#' Initialize Updating Linear Model
 #' 
 #' @noRd
 #' @description
 #' Performs the details of intializing `oomlm` object called by
 #' `oomlm` function.
 #' 
-#' @param formula a symbolic description of the model to be fitted of class `formula`.
+#' @param formula a symbolic description of the model to be fitted of class
+#'   `formula`.
 #' @param weights A one-sided, single term `formula` specifying weights.
 #' 
 #' @keywords internal
@@ -38,14 +39,31 @@ init_oomlm <- function(formula, weights  = NULL) {
 }
 
 
-#' Update Updating Linear Regression Model with more data
+#' Fit Updating Linear Model to more data
 #' 
 #' @md
 #' @description
 #' Update `oomlm` linear model fit with new data. 
 #' 
 #' @param obj `oomlm` object to be updated.
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list`
+#'   or `environment`.
+#'
+#' @seealso [oomlm()]
+#' @examples
+#' #' # create simple example data chunks
+#' chunks  <- purrr::pmap(mtcars, list)
+#' 
+#' # initialize the model
+#' x <- oomlm(mpg ~ cyl + disp)
+#' 
+#' # iteratively update model with chunks
+#' for(chunk in chunks) {
+#'   update(x, chunk)
+#' }
+#'
+#' # `oomlm` models can be fit with functional patterns like `purrr::reduce`.
+#' y <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
 #' 
 #' @export
 update.oomlm <- function(obj, data) {
@@ -80,7 +98,7 @@ update.oomlm <- function(obj, data) {
 }
 
 
-#' Initialize Updating Linear Regression model
+#' Initialize Updating Linear model
 #' 
 #' @md
 #' @description
@@ -88,54 +106,57 @@ update.oomlm <- function(obj, data) {
 #'   factorization algorithm which enables models with `p` variables
 #'   to be fit in `p^2` memory.
 #' 
-#' @param formula a symbolic description of the model to be fitted of class `formula`.
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' @param formula a symbolic description of the model to be fitted of class
+#'   `formula`.
+#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or 
+#'   `environment`.
 #' @param weights a one-sided, single term `formula` specifying weights.
 #' @param ... ignored.
-#' @details The model formula must not contain any data-dependent terms, as
-#'   these will not be consistent when updated. Factors are permitted, but 
-#'   the levels of the factor must be the same across all data chunks. 
-#'   Empty factor levels are accepted.
+#' @details `oomlm` initializes an object of class `oomlm`. If `data` is
+#'   missing, the `oomlm` object will *not* be fit on initialization. 
+#'   `oomlm` objects are intended to be iteratively updated with new data via
+#'   the function [update()]. If  `data` is provided, an [update()] will be
+#'   performed on initialization.
 #'
-#' @return `oomlm` initializes an object of class `oomlm`. If `data` is missing,
-#'   the `oomlm` object will not be fit on initialization. `oomlm` objects can
-#'   be iteratively updated with new data via the function `update`. If 
-#'   `data` is provided, an `update` will be performed on initialization.
-#' \item{call}{need desc}
-#' \item{qr}{need desc}
-#' \item{assign}{need desc}
-#' \item{terms}{need desc}
-#' \item{n}{need desc}
-#' \item{p}{need desc}
-#' \item{names}{need desc}
-#' \item{df.resid}{need desc}
-#' \item{weights}{need desc}
-#' \item{pweights}{need desc}
-#' \item{zero_weights}{need desc}
+#'   `formula` must not contain any data-dependent terms to ensure consistency
+#'   across calls to [update()]. Factors are permitted, but the levels of the
+#'   factor must be the same across all data chunks. Empty factor levels are
+#'   accepted.
+#'   
+#' @return A `oomlm` object can be in an in-progress state. Therefore, it is 
+#'   important to consider the number of observations processed when assessing
+#'   the return values.
+#'
+#' \item{coefficients}{a named vector of coefficients.}
+#' \item{rank}{the numeric rank of the fitted linear model.}
+#' \item{weights}{a one-sided, single term `formula` specifying weights.}
+#' \item{df.residual}{the residual degrees of freedom.}
+#' \item{call}{the matched call.}
+#' \item{terms}{the [stats::terms()] object used.}
+#' \item{n}{the number of observations processed.}
 #' 
-#' @seealso [yglm()]
+#' @seealso [oomglm()]
 #' @examples
 #' # The function `oomlm` is similar to base `lm` for fitting in-memory data.
 #' w <- oomlm(mpg ~ cyl + disp, data = mtcars)
 #'
-#' # Models are initalized with a call to `oomlm` and updated with
-#' # `update`. The recommended pattern is to initialize a model without providing
-#' # data, then feed the data via calls to `update`.  For example:
+#' # Models are initalized with a call to `oomlm` and updated with `update`.
+#' # The recommended pattern is to initialize a model without providing data
+#' # then feed the data via iterative calls to `update`. For example:
 #' 
-#' # proxy for data feed
+#' # create simple example data chunks
 #' chunks  <- purrr::pmap(mtcars, list)
 #' 
 #' # initialize the model
 #' x <- oomlm(mpg ~ cyl + disp)
 #' 
-#' # iteratively update model with data chunks
+#' # iteratively update model with chunks
 #' for(chunk in chunks) {
 #'   update(x, chunk)
 #' }
 #'
-#' # Separating model initialization and processing of data 
-#' # enables functional patterns like `reduce` to take the place of loops.
-#' y <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
+#' # `oomlm` models can be fit via functional patterns like `purrr::reduce`.
+#' y <- reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
 #' 
 #' @export
 oomlm <- function(formula, data = NULL, weights  = NULL, ...) {

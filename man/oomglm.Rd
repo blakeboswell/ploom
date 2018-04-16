@@ -2,15 +2,17 @@
 % Please edit documentation in R/oomglm.R
 \name{oomglm}
 \alias{oomglm}
-\title{Initialize Updating Generalized Linear Regression model}
+\title{Initialize Updating Generalized Linear model}
 \usage{
 oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
   start = NULL, ...)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted of class \code{formula}.}
+\item{formula}{a symbolic description of the model to be fitted of class
+\code{formula}.}
 
-\item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
+\item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or
+\code{environment}.}
 
 \item{family}{A \code{glm} family object.}
 
@@ -21,30 +23,33 @@ oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
 \item{...}{ignored.}
 }
 \value{
-\code{oomglm} returns an object of class \code{oomglm} inheriting from the class \code{oomlm}.
+\code{oomglm} returns an object of class \code{oomglm} inheriting from the
+class \code{oomlm}.
 
 \item{coefficients}{A named vector of coefficients.}
 \item{rank}{The numeric rank of the linear model}
-\item{family}{a \code{\link[stats:family]{stats::family()}} object describing the error distribution and
-link function used in the model.}
+\item{family}{a \code{\link[stats:family]{stats::family()}} object describing the error distribution
+and link function used in the model.}
 \item{n}{The number observations processed per round of IWLS.}
 \item{iter}{The number of iterations of IWLS performed.}
 \item{df.residual}{The residual degrees of freedom.}
 \item{converged}{Indicates if the IWLS algorithm has converged.}
 \item{call}{The matched call.}
 \item{terms}{The \code{\link[stats:terms]{stats::terms()}} object used.}
-\item{qr}{A \code{\link[ploom:BoundedQr]{ploom::BoundedQr()}} object resulting from the latest round of IWLS.}
+\item{qr}{A \code{\link[ploom:BoundedQr]{ploom::BoundedQr()}} object resulting from the latest round of
+IWLS.}
 \item{weights}{The weights \code{formula} provided to the model.}
 }
 \description{
-Perform  generalized linear regression usig Alan Miller's bounded memory QR
+Perform  generalized linear regression using Alan Miller's bounded memory QR
 factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
 }
 \details{
-A \code{ylgm} object can be in various states of fit depending on the number of seen
-observations and rounds of IWLS that have been performed.  Therefore, it is important
-to consider all return values within the following context
+A \code{oomglm} object can be in various states of fit depending on the number
+of seen observations and rounds of IWLS that have been performed.
+Therefore, it is important to consider all return values within the
+following context:
 \itemize{
 \item The number of observations processed per round of IWLS (\code{n}).
 \item The number of IWLS iterations that have been performed (\code{iter}).
