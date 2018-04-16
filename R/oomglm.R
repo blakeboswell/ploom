@@ -1,4 +1,4 @@
-#' @include yotta_shared.R
+#' @include ploom_shared.R
 
 
 #' Initialize Updating Generalized Linear Regression Model
@@ -6,8 +6,7 @@
 #' @md
 #' @noRd
 #' @description
-#' Performs the details of intializing `yglm` object called by
-#' `yglm` function.
+#' Performs the details of intializing `oomglm` object called by `oomglm` function.
 #' 
 #' @param formula a symbolic description of the model to be fitted of class `formula`.
 #' @param family a `glm` family object.
@@ -15,10 +14,10 @@
 #' @param start starting values for the parameters in the linear predictor.
 #' 
 #' @keywords internal
-init_yglm <- function(formula,
-                      family,
-                      weights,
-                      start) {
+init_oomglm <- function(formula,
+                        family,
+                        weights,
+                        start) {
   
   if(is.character(family)) {
     family <- get(family, mode = "function", envir = parent.frame())
@@ -59,7 +58,7 @@ init_yglm <- function(formula,
     zero_weights  = 0
   )
   
-  class(obj) <- c('yglm', 'ylm')
+  class(obj) <- c("oomglm", "oomlm")
   obj
   
 }
@@ -69,7 +68,7 @@ init_yglm <- function(formula,
 #' 
 #' @md
 #' @noRd
-#' @param object `yglm` model.
+#' @param object `oomglm` model.
 #' @param chunk list created by `unpack_oomchunk`.
 #' 
 #' @keywords internal
@@ -116,15 +115,15 @@ glm_adjust <- function(obj, chunk) {
 }
 
 
-#' Update `yglm` from `data.frame`
+#' Update `oomglm` from `data.frame`
 #' 
 #' @md
 #' @noRd
-#' @param object `yglm` model.
+#' @param object `oomglm` model.
 #' @param data `data.frame` of observations to be fit.
 #' 
 #' @keywords internal
-update_yglm_data <- function(obj, data) {
+update_oomglm_data <- function(obj, data) {
 
   chunk <- unpack_oomchunk(obj, data)
   
@@ -163,19 +162,19 @@ update_yglm_data <- function(obj, data) {
 }
 
 
-#' Update `yglm` given `function` that returns `data.frame`s
+#' Update `oomglm` given `function` that returns `data.frame`s
 #'   when iterated over
 #' 
 #' @md
 #' @noRd
-#' @param obj `yglm` model
+#' @param obj `oomglm` model
 #' @param data `function`
 #' 
 #' @keywords internal
-update_yglm_function <- function(obj, data) {
+update_oomglm_function <- function(obj, data) {
   
   while(!is.null(chunk <- data())){
-    obj <- update_yglm(obj, chunk)
+    obj <- update_oomglm(obj, chunk)
   }
   
   obj
@@ -183,21 +182,21 @@ update_yglm_function <- function(obj, data) {
 }
 
 
-#' Update `yglm` with new observations
+#' Update `oomglm` with new observations
 #' 
 #' @md
-#' @param obj `yglm` model.
+#' @param obj `oomglm` model.
 #' @param data an `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
 #' 
 #' @export
-update.yglm <- function(obj, data) {
+update.oomglm <- function(obj, data) {
   
   if(inherits(data, "data.frame")) {
-    return(update_yglm_data(obj, data))
+    return(update_oomglm_data(obj, data))
   }
   
   if(inherits(data, "function")) {
-    return(update_yglm_function(obj, data))
+    return(update_oomglm_function(obj, data))
   }
   
   stop("class of `data` not recognized")
@@ -213,7 +212,7 @@ update.yglm <- function(obj, data) {
 #' @param beta_old `ygml` coefficients resulting from previous
 #'   reweight iteration.
 #' @keywords internal
-reset_yglm <- function(obj, beta_old) {
+reset_oomglm <- function(obj, beta_old) {
   
   obj$iwls$rss      <- 0.0
   obj$iwls$deviance <- 0.0
@@ -226,24 +225,24 @@ reset_yglm <- function(obj, beta_old) {
 
 
 
-#' Reweight `yglm` model via Iteratively Reweighted Least Squares (IWLS) method
+#' Reweight `oomglm` model via Iteratively Reweighted Least Squares (IWLS) method
 #' 
 #' @md
-#' @param obj `yglm` model.
+#' @param obj `oomglm` model.
 #' @param data An `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
 #' @param num_iter Number of IWLS iterations to perform. Will automatically
 #'   stop iterating if model converges before `num_iter` iterations.
 #' @param tolerance Tolerance for change in coefficient (as multiple of standard error).
 #'
-#' @return `yglm` object after performing `num_iter` IWLS iterations on `data`
+#' @return `oomglm` object after performing `num_iter` IWLS iterations on `data`
 #' 
-#' @seealso [ylm()]
+#' @seealso [oomlm()]
 #' @examples
 #' # proxy for data feed
 #' chunks  <- purrr::pmap(mtcars, list)
 #' 
 #' # initialize the model
-#' x <- ylm(mpg ~ cyl + disp)
+#' x <- oomglm(mpg ~ cyl + disp)
 #' 
 #' # perform iwls
 #' x <- reweight(x, mtcars, num_iter = 4)
@@ -254,10 +253,10 @@ setGeneric("reweight")
 
 
 #' @export
-reweight.yglm <- function(obj,
-                          data,
-                          num_iter  = 1L,
-                          tolerance = 1e-7) {
+reweight.oomglm <- function(obj,
+                            data,
+                            num_iter  = 1L,
+                            tolerance = 1e-7) {
   
   if(obj$converged) {
     return(obj)
@@ -266,7 +265,7 @@ reweight.yglm <- function(obj,
   for(i in 1:num_iter) {
     
     beta_old <- coef(obj)
-    obj      <- reset_yglm(obj)
+    obj      <- reset_oomglm(obj)
     
     obj            <- update(obj, data)
     obj$iwls$beta  <- coef(obj)
@@ -311,7 +310,7 @@ reweight.yglm <- function(obj,
 #'   * The number of IWLS iterations that have been performed (`iter`).
 #'   * If the IWLS algorithm has converged (`converged`).
 #'
-#' @return `yglm` returns an object of class `yglm` inheriting from the class `ylm`.
+#' @return `oomglm` returns an object of class `oomglm` inheriting from the class `oomlm`.
 #'
 #' \item{coefficients}{A named vector of coefficients.}
 #' \item{rank}{The numeric rank of the linear model}
@@ -323,7 +322,7 @@ reweight.yglm <- function(obj,
 #' \item{converged}{Indicates if the IWLS algorithm has converged.}
 #' \item{call}{The matched call.}
 #' \item{terms}{The [stats::terms()] object used.}
-#' \item{qr}{A [yotta::BoundedQr()] object resulting from the latest round of IWLS.}
+#' \item{qr}{A [ploom::BoundedQr()] object resulting from the latest round of IWLS.}
 #' \item{weights}{The weights `formula` provided to the model.}
 #' 
 #' @examples
@@ -331,26 +330,26 @@ reweight.yglm <- function(obj,
 #' chunks  <- purrr::pmap(mtcars, list)
 #' 
 #' # initialize the model
-#' x <- ylm(mpg ~ cyl + disp)
+#' x <- oomglm(mpg ~ cyl + disp)
 #' 
 #' # perform iwls
 #' x <- reweight(x, mtcars, num_iter = 4)
 #'
 #' @export
-yglm <- function(formula,
-                 data     = NULL,
-                 family   = gaussian(),
-                 weights  = NULL,
-                 start    = NULL,
-                 ...) {
+oomglm <- function(formula,
+                   data     = NULL,
+                   family   = gaussian(),
+                   weights  = NULL,
+                   start    = NULL,
+                   ...) {
 
-  obj <- init_yglm(formula,
+  obj <- init_oomglm(formula,
                    family,
                    weights,
                    start)
 
   if(!is.null(data)) {
-    obj <- update_yglm(obj, data)
+    obj <- update_oomglm(obj, data)
   }
 
   obj
@@ -359,9 +358,9 @@ yglm <- function(formula,
 
 
 #' @export
-print.yglm <- function(x,
-                       digits = max(3L, getOption("digits") - 3L),
-                       ...) {
+print.oomglm <- function(x,
+                         digits = max(3L, getOption("digits") - 3L),
+                         ...) {
   
   cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")

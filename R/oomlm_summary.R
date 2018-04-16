@@ -4,13 +4,13 @@
 
 
 #' @export
-summary.ylm <- function(x,
-                        correlation  = FALSE,
-                        symbolic.cor = FALSE,
-                        ...) {
+summary.oomlm <- function(x,
+                          correlation  = FALSE,
+                          symbolic.cor = FALSE,
+                          ...) {
 
-  if(!inherits(x, "ylm")) {
-    stop("not an ylm object.")
+  if(!inherits(x, "oomlm")) {
+    stop("not an oomlm object.")
   }
   
   rank <- x$qr$rank()
@@ -90,18 +90,18 @@ summary.ylm <- function(x,
     rval$symbolic.cor  <- symbolic.cor
   }
   
-  class(rval) <- "summary.ylm"
+  class(rval) <- "summary.oomlm"
   rval
   
 }
 
 
 #' @export
-print.summary.ylm <- function(x,
-                              digits = max(3L, getOption("digits") - 3L),
-                              symbolic.cor = x$symbolic.cor,
-                              signif.stars = getOption("show.signif.stars"),
-                              ...) {
+print.summary.oomlm <- function(x,
+                                digits = max(3L, getOption("digits") - 3L),
+                                symbolic.cor = x$symbolic.cor,
+                                signif.stars = getOption("show.signif.stars"),
+                                ...) {
   
   cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"),

@@ -1,4 +1,4 @@
 library(testthat)
-library(yotta)
+library(ploom)
 
-test_check("yotta")
+test_check("ploom")

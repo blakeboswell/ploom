@@ -1,12 +1,12 @@
 
 
 #' @export
-summary.yglm <- function(x,
-                         correlation  = FALSE,
-                         symbolic.cor = FALSE,
-                         ...) {
+summary.oomglm <- function(x,
+                           correlation  = FALSE,
+                           symbolic.cor = FALSE,
+                           ...) {
 
-    rval <- summary.ylm(x, correlation, symbolic.cor, ...)
+    rval <- summary.oomlm(x, correlation, symbolic.cor, ...)
     
     rval$family      <- x$family  
     rval$deviance    <- x$iwls$deviance
@@ -15,18 +15,18 @@ summary.yglm <- function(x,
     rval$df.null     <- x$df.null
     rval$iter        <- x$iter
     
-    class(rval) <- "summary.yglm"
+    class(rval) <- "summary.oomglm"
     
     rval
 }
 
 
 #' @export
-print.summary.yglm <- function(x,
-                               digits = max(3L, getOption("digits") - 3L),
-                               symbolic.cor = x$symbolic.cor,
-                               signif.stars = getOption("show.signif.stars"),
-                               ...) {
+print.summary.oomglm <- function(x,
+                                 digits = max(3L, getOption("digits") - 3L),
+                                 symbolic.cor = x$symbolic.cor,
+                                 signif.stars = getOption("show.signif.stars"),
+                                 ...) {
   
   cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"),

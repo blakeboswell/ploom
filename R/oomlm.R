@@ -1,18 +1,18 @@
-#' @include yotta_shared.R
+#' @include ploom_shared.R
 
 
 #' Initialize Updating Linear Regression Model
 #' 
 #' @noRd
 #' @description
-#' Performs the details of intializing `ylm` object called by
-#' `ylm` function.
+#' Performs the details of intializing `oomlm` object called by
+#' `oomlm` function.
 #' 
 #' @param formula a symbolic description of the model to be fitted of class `formula`.
 #' @param weights A one-sided, single term `formula` specifying weights.
 #' 
 #' @keywords internal
-init_ylm <- function(formula, weights  = NULL) {
+init_oomlm <- function(formula, weights  = NULL) {
   
   if(!is.null(weights) && !inherits(weights, "formula")) {
     stop("`weights` must be a formula")
@@ -32,7 +32,7 @@ init_ylm <- function(formula, weights  = NULL) {
     zero_weights = 0
   )
   
-  class(obj) <- 'ylm'
+  class(obj) <- "oomlm"
   obj
   
 }
@@ -42,13 +42,13 @@ init_ylm <- function(formula, weights  = NULL) {
 #' 
 #' @md
 #' @description
-#' Update `ylm` linear model fit with new data. 
+#' Update `oomlm` linear model fit with new data. 
 #' 
-#' @param obj `ylm` object to be updated.
+#' @param obj `oomlm` object to be updated.
 #' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
 #' 
 #' @export
-update.ylm <- function(obj, data) {
+update.oomlm <- function(obj, data) {
   
   chunk <- unpack_oomchunk(obj, data)
   
@@ -97,18 +97,28 @@ update.ylm <- function(obj, data) {
 #'   the levels of the factor must be the same across all data chunks. 
 #'   Empty factor levels are accepted.
 #'
-#' @return `ylm` initializes an object of class `ylm`. If `data` is missing,
-#'   the `ylm` object will not be fit on initialization. `ylm` objects can
+#' @return `oomlm` initializes an object of class `oomlm`. If `data` is missing,
+#'   the `oomlm` object will not be fit on initialization. `oomlm` objects can
 #'   be iteratively updated with new data via the function `update`. If 
 #'   `data` is provided, an `update` will be performed on initialization.
-#'  
-#' @seealso [yglm()]
+#' \item{call}{need desc}
+#' \item{qr}{need desc}
+#' \item{assign}{need desc}
+#' \item{terms}{need desc}
+#' \item{n}{need desc}
+#' \item{p}{need desc}
+#' \item{names}{need desc}
+#' \item{df.resid}{need desc}
+#' \item{weights}{need desc}
+#' \item{pweights}{need desc}
+#' \item{zero_weights}{need desc}
 #' 
+#' @seealso [yglm()]
 #' @examples
-#' # The function `ylm` is similar to base `lm` for fitting in-memory data.
-#' w <- ylm(mpg ~ cyl + disp, data = mtcars)
+#' # The function `oomlm` is similar to base `lm` for fitting in-memory data.
+#' w <- oomlm(mpg ~ cyl + disp, data = mtcars)
 #'
-#' # Models are initalized with a call to `ylm` and updated with
+#' # Models are initalized with a call to `oomlm` and updated with
 #' # `update`. The recommended pattern is to initialize a model without providing
 #' # data, then feed the data via calls to `update`.  For example:
 #' 
@@ -116,7 +126,7 @@ update.ylm <- function(obj, data) {
 #' chunks  <- purrr::pmap(mtcars, list)
 #' 
 #' # initialize the model
-#' x <- ylm(mpg ~ cyl + disp)
+#' x <- oomlm(mpg ~ cyl + disp)
 #' 
 #' # iteratively update model with data chunks
 #' for(chunk in chunks) {
@@ -125,12 +135,12 @@ update.ylm <- function(obj, data) {
 #'
 #' # Separating model initialization and processing of data 
 #' # enables functional patterns like `reduce` to take the place of loops.
-#' y <- purrr::reduce(chunks, update, .init = ylm(mpg ~ cyl + disp))
+#' y <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
 #' 
 #' @export
-ylm <- function(formula, data = NULL, weights  = NULL, ...) {
+oomlm <- function(formula, data = NULL, weights  = NULL, ...) {
   
-  obj <- init_ylm(formula, weights)
+  obj <- init_oomlm(formula, weights)
   
   if(!is.null(data)) {
     obj <- update(obj, data)
@@ -142,9 +152,9 @@ ylm <- function(formula, data = NULL, weights  = NULL, ...) {
 
 
 #' @export
-print.ylm <- function(x,
-                      digits = max(3L, getOption("digits") - 3L),
-                      ...) {
+print.oomlm <- function(x,
+                        digits = max(3L, getOption("digits") - 3L),
+                        ...) {
   
   cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"),

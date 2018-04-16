@@ -19,12 +19,12 @@ expect_summary_equal <- function(sy, sx) {
 }
 
 
-test_that("yglm", {
+test_that("oomglm", {
   
   f <- mpg ~ cyl + disp + hp + wt
   
   y <- glm(f, data = mtcars)
-  x <- reweight(yglm(f), mtcars, num_iter = 8L)
+  x <- reweight(oomglm(f), mtcars, num_iter = 8L)
   
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -37,7 +37,7 @@ test_that("yglm", {
   
   f2 <- mpg ~ cyl
   y2 <- glm(f2, data = mtcars)
-  x2 <- reweight(yglm(f2), mtcars, num_iter = 8L)
+  x2 <- reweight(oomglm(f2), mtcars, num_iter = 8L)
   
   expect_equal(AIC(y) - AIC(y2),
                AIC(x) - AIC(x2))
@@ -45,7 +45,7 @@ test_that("yglm", {
 })
 
 
-test_that("weighted yglm", {
+test_that("weighted oomglm", {
   
   df      <- mtcars
   w       <- runif(nrow(mtcars))
@@ -54,7 +54,7 @@ test_that("weighted yglm", {
   
   f <- mpg ~ cyl + disp + hp + wt
   y <- glm(f, data = df, weights = w)
-  x <- yglm(f, weights = ~w)
+  x <- oomglm(f, weights = ~w)
   x <- reweight(x, df, num_iter = 8L)
   
   expect_equal(coef(x), coef(y))
@@ -67,7 +67,7 @@ test_that("weighted yglm", {
   
   f2 <- mpg ~ cyl
   y2 <- glm(f2, data = mtcars, weights = w)
-  x2 <- yglm(f2, weights = ~w)
+  x2 <- oomglm(f2, weights = ~w)
   x2 <- reweight(x2, mtcars, num_iter = 8L)
   
   expect_equal(AIC(y) - AIC(y2),
@@ -76,13 +76,13 @@ test_that("weighted yglm", {
 })
 
 
-test_that("yglm without intercept", {
+test_that("oomglm without intercept", {
   
   df <- mtcars
   f  <- mpg ~ 0 + cyl + disp + hp + wt
   
   y <- glm(f, data = df)
-  x <- reweight(yglm(f), data = df, num_iter = 8L)
+  x <- reweight(oomglm(f), data = df, num_iter = 8L)
   
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -94,7 +94,7 @@ test_that("yglm without intercept", {
   
   f2 <- mpg ~ 0 + cyl
   y2 <- glm(f2, data = mtcars)
-  x2 <- reweight(yglm(f2), mtcars, num_iter = 8L)
+  x2 <- reweight(oomglm(f2), mtcars, num_iter = 8L)
   
   expect_equal(AIC(y) - AIC(y2),
                AIC(x) - AIC(x2))
@@ -102,7 +102,7 @@ test_that("yglm without intercept", {
 })
 
 
-test_that("weighted yglm without intercept", {
+test_that("weighted oomglm without intercept", {
   
   df      <- mtcars
   w       <- runif(nrow(mtcars))
@@ -112,7 +112,7 @@ test_that("weighted yglm without intercept", {
   f <- mpg ~ 0 + cyl + disp + hp + wt
   
   y <- glm(f, data = df, weights = w)
-  x <- yglm(f, weights = ~w)
+  x <- oomglm(f, weights = ~w)
   x <- reweight(x, data = df, num_iter = 8L)
   
   expect_equal(coef(x), coef(y))
@@ -125,7 +125,7 @@ test_that("weighted yglm without intercept", {
   
   f2 <- mpg ~ 0 + cyl
   y2 <- glm(f2, data = mtcars, weights = w)
-  x2 <- yglm(f2, weights = ~w)
+  x2 <- oomglm(f2, weights = ~w)
   x2 <- reweight(x2, mtcars, num_iter = 8L)
   
   expect_equal(AIC(y) - AIC(y2),

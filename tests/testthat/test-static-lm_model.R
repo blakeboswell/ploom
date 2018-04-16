@@ -17,11 +17,11 @@ expect_summary_equal <- function(sy, sx) {
 }
 
 
-test_that("ylm", {
+test_that("oomlm", {
   
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = mtcars)
-  x <- ylm(f, mtcars)
+  x <- oomlm(f, mtcars)
   
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -33,7 +33,7 @@ test_that("ylm", {
 })
 
 
-test_that("weighted ylm", {
+test_that("weighted oomlm", {
   
   df      <- mtcars
   w       <- runif(nrow(mtcars))
@@ -41,7 +41,7 @@ test_that("weighted ylm", {
   
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = df, weights = w)
-  x <- ylm(f, df, weights = ~w)
+  x <- oomlm(f, df, weights = ~w)
   
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -53,13 +53,13 @@ test_that("weighted ylm", {
 })
 
 
-test_that("ylm without intercept", {
+test_that("oomlm without intercept", {
   
   df <- mtcars
   f  <- mpg ~ 0 + cyl + disp + hp + wt
   
   y <- lm(f, data = df)
-  x <- ylm(f, df)
+  x <- oomlm(f, df)
   
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -71,7 +71,7 @@ test_that("ylm without intercept", {
 })
 
 
-test_that("weighted ylm without intercept", {
+test_that("weighted oomlm without intercept", {
   
   df      <- mtcars
   w       <- runif(nrow(mtcars))
@@ -80,7 +80,7 @@ test_that("weighted ylm without intercept", {
   f <- mpg ~ 0 + cyl + disp + hp + wt
   
   y <- lm(f, data = df, weights = w)
-  x <- ylm(f, df, weights = ~w)
+  x <- oomlm(f, df, weights = ~w)
   
   expect_equal(vcov(x), vcov(y))
   expect_summary_equal(
