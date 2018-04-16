@@ -225,19 +225,34 @@ reset_yglm <- function(obj, beta_old) {
 }
 
 
-#' @export
-reweight <- function(obj, data, ...) { UseMethod("reweight") }
-setGeneric("reweight")
 
-
-#' Reweight `yglm` model via Iteratively Reweighted Least Squares method
+#' Reweight `yglm` model via Iteratively Reweighted Least Squares (IWLS) method
 #' 
 #' @md
 #' @param obj `yglm` model.
-#' @param data an `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
-#' @param num_iter number of Fisher scoring iterations to perform.
-#' @param tolerance tolerance for change in coefficient (as multiple of standard error).
+#' @param data An `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' @param num_iter Number of IWLS iterations to perform. Will automatically
+#'   stop iterating if model converges before `num_iter` iterations.
+#' @param tolerance Tolerance for change in coefficient (as multiple of standard error).
 #'
+#' @return `yglm` object after performing `num_iter` IWLS iterations on `data`
+#' 
+#' @seealso [ylm()]
+#' @examples
+#' # proxy for data feed
+#' chunks  <- purrr::pmap(mtcars, list)
+#' 
+#' # initialize the model
+#' x <- ylm(mpg ~ cyl + disp)
+#' 
+#' # perform iwls
+#' x <- reweight(x, mtcars, num_iter = 4)
+#' 
+#' @export
+reweight <- function(obj, data, num_iter, tolerance = 1e-7) { UseMethod("reweight") }
+setGeneric("reweight")
+
+
 #' @export
 reweight.yglm <- function(obj,
                           data,
@@ -286,6 +301,41 @@ reweight.yglm <- function(obj,
 #' @param weights a one-sided, single term `formula` specifying weights.
 #' @param start starting values for the parameters in the linear predictor.
 #' @param ... ignored.
+#' 
+#' @details
+#' A `ylgm` object can be in various states of fit depending on the number of seen 
+#'   observations and rounds of IWLS that have been performed.  Therefore, it is important
+#'   to consider all return values within the following context
+#'   
+#'   * The number of observations processed per round of IWLS (`n`).
+#'   * The number of IWLS iterations that have been performed (`iter`).
+#'   * If the IWLS algorithm has converged (`converged`).
+#'
+#' @return `yglm` returns an object of class `yglm` inheriting from the class `ylm`.
+#'
+#' \item{coefficients}{A named vector of coefficients.}
+#' \item{rank}{The numeric rank of the linear model}
+#' \item{family}{a [stats::family()] object describing the error distribution and
+#'   link function used in the model.}
+#' \item{n}{The number observations processed per round of IWLS.}
+#' \item{iter}{The number of iterations of IWLS performed.}
+#' \item{df.residual}{The residual degrees of freedom.}
+#' \item{converged}{Indicates if the IWLS algorithm has converged.}
+#' \item{call}{The matched call.}
+#' \item{terms}{The [stats::terms()] object used.}
+#' \item{qr}{A [yotta::BoundedQr()] object resulting from the latest round of IWLS.}
+#' \item{weights}{The weights `formula` provided to the model.}
+#' 
+#' @examples
+#' # proxy for data feed
+#' chunks  <- purrr::pmap(mtcars, list)
+#' 
+#' # initialize the model
+#' x <- ylm(mpg ~ cyl + disp)
+#' 
+#' # perform iwls
+#' x <- reweight(x, mtcars, num_iter = 4)
+#'
 #' @export
 yglm <- function(formula,
                  data     = NULL,

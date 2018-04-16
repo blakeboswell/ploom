@@ -20,8 +20,45 @@ yglm(formula, data = NULL, family = gaussian(), weights = NULL,
 
 \item{...}{ignored.}
 }
+\value{
+\code{yglm} returns an object of class \code{yglm} inheriting from the class \code{ylm}.
+
+\item{coefficients}{A named vector of coefficients.}
+\item{rank}{The numeric rank of the linear model}
+\item{family}{a \code{\link[stats:family]{stats::family()}} object describing the error distribution and
+link function used in the model.}
+\item{n}{The number observations processed per round of IWLS.}
+\item{iter}{The number of iterations of IWLS performed.}
+\item{df.residual}{The residual degrees of freedom.}
+\item{converged}{Indicates if the IWLS algorithm has converged.}
+\item{call}{The matched call.}
+\item{terms}{The \code{\link[stats:terms]{stats::terms()}} object used.}
+\item{qr}{A \code{\link[yotta:BoundedQr]{yotta::BoundedQr()}} object resulting from the latest round of IWLS.}
+\item{weights}{The weights \code{formula} provided to the model.}
+}
 \description{
 Perform  generalized linear regression usig Alan Miller's bounded memory QR
 factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
+}
+\details{
+A \code{ylgm} object can be in various states of fit depending on the number of seen
+observations and rounds of IWLS that have been performed.  Therefore, it is important
+to consider all return values within the following context
+\itemize{
+\item The number of observations processed per round of IWLS (\code{n}).
+\item The number of IWLS iterations that have been performed (\code{iter}).
+\item If the IWLS algorithm has converged (\code{converged}).
+}
+}
+\examples{
+# proxy for data feed
+chunks  <- purrr::pmap(mtcars, list)
+
+# initialize the model
+x <- ylm(mpg ~ cyl + disp)
+
+# perform iwls
+x <- reweight(x, mtcars, num_iter = 4)
+
 }
