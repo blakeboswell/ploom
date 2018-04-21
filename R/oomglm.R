@@ -392,8 +392,6 @@ print.oomglm <- function(x,
   cat("Degrees of Freedom:", x$df.null, "Total (i.e. Null); ",
       x$df.residual, "Residual\n")
   
-  # if(nzchar(mess <- naprint(x$na.action))) cat("  (",mess, ")\n", sep = "")
-  
   cat("Residual Deviance:", format(signif(deviance(x), digits)),
       "\tAIC:", format(signif(AIC(x), digits)))
   
