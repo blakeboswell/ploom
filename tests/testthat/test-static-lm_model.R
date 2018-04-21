@@ -53,6 +53,28 @@ test_that("weighted oomlm", {
 })
 
 
+test_that("weighted oomlm with zero weight", {
+  
+  df      <- mtcars
+  w       <- runif(nrow(mtcars))
+  w[4:7]  <- 0.0
+  df['w'] <- w / sum(w)
+  
+  f <- mpg ~ cyl + disp + hp + wt
+  y <- lm(f, data = df, weights = w)
+  x <- oomlm(f, df, weights = ~w)
+  
+  expect_equal(coef(x), coef(y))
+  expect_equal(vcov(x), vcov(y))
+  expect_summary_equal(
+    summary(y, correlation = TRUE),
+    summary(x, correlation = TRUE)
+  )
+  
+})
+
+
+
 test_that("oomlm without intercept", {
   
   df <- mtcars

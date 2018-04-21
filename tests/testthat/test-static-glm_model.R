@@ -76,6 +76,41 @@ test_that("weighted oomglm", {
 })
 
 
+
+test_that("weighted oomglm with zero weight", {
+  
+  df      <- mtcars
+  w       <- runif(nrow(mtcars))
+  w[4:7]  <- 0.0
+  w       <- w / sum(w)
+  df['w'] <- w
+  
+  f <- mpg ~ cyl + disp + hp + wt
+  y <- glm(f, data = df, weights = w)
+  x <- oomglm(f, weights = ~w)
+  x <- reweight(x, df, num_iter = 8L)
+  
+  expect_equal(coef(x), coef(y))
+  expect_equal(vcov(x), vcov(y))
+  
+  expect_summary_equal(
+    summary(y, correlation = TRUE),
+    summary(x, correlation = TRUE)
+  )
+
+  # glm returns AIC = Inf when zero weights
+  # are included ...
+  # f2 <- mpg ~ cyl
+  # y2 <- glm(f2, data = mtcars, weights = w)
+  # x2 <- oomglm(f2, weights = ~w)
+  # x2 <- reweight(x2, mtcars, num_iter = 8L)
+  # 
+  # expect_equal(AIC(y) - AIC(y2),
+  #              AIC(x) - AIC(x2))
+  
+})
+
+
 test_that("oomglm without intercept", {
   
   df <- mtcars
