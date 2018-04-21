@@ -22,7 +22,7 @@ unpack_oomchunk <- function(obj, data) {
   n <- nrow(chunk_data)
   
   if(is.null(obj$weights)) {
-    chunk_weights <- numeric(0)
+    chunk_weights <- rep(1.0, n)
   } else {
     chunk_weights <- model.frame(obj$weights, data)[[1]]
   }

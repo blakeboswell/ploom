@@ -55,9 +55,7 @@ init_oomglm <- function(formula,
     iwls          = iwls,
     converged     = FALSE,
     iter          = 0L,
-    weights       = weights,
-    pweights      = 0,
-    zero_weights  = 0
+    weights       = weights
   )
   
   class(obj) <- c("oomglm", "oomlm")
@@ -131,6 +129,7 @@ update_oomglm_data <- function(obj, data) {
   
   if(is.null(obj$assign)) {
     obj$assign <- chunk$assign
+    obj$names  <- colnames(chunk$data)
   }
   
   if(is.null(obj$qr)) {
@@ -146,16 +145,12 @@ update_oomglm_data <- function(obj, data) {
                    trans$z - chunk$offset,
                    trans$w)
   
-  zero_wts  <- trans$w == 0
   intercept <- attr(obj$terms, "intercept") > 0L
   
-  obj$n            <- obj$n + chunk$n - sum(zero_wts)
-  obj$names        <- colnames(chunk$data)
+  obj$n            <- obj$qr$num_obs
   obj$df.residual  <- obj$n - chunk$p
   obj$df.null      <- obj$n - as.integer(intercept)
-  obj$pweights     <- obj$pweights + sum(log(trans$w[!zero_wts]))
-  obj$zero_weights <- obj$zero_weights + sum(zero_wts)
-  
+
   obj$iwls$rss      <- trans$rss
   obj$iwls$deviance <- trans$deviance
   
@@ -313,12 +308,10 @@ reweight.oomglm <- function(obj,
 #' @details
 #' A `oomglm` object can be in various states of fit depending on the number
 #'   of seen observations and rounds of IWLS that have been performed.
-#'   Therefore, it is important to consider all return values within the
-#'   following context:
-#'   
-#'   * The number of observations processed per round of IWLS (`n`).
-#'   * The number of IWLS iterations that have been performed (`iter`).
-#'   * If the IWLS algorithm has converged (`converged`).
+#'   It is important to view the model within the context of:
+#'   the number of observations processed per round of IWLS (`n`);
+#'   the number of IWLS iterations that have been performed (`iter`);
+#'   if the IWLS algorithm has converged (`converged`).
 #'
 #' @return `oomglm` returns an object of class `oomglm` inheriting from the
 #'   class `oomlm`.
@@ -356,9 +349,9 @@ oomglm <- function(formula,
                    ...) {
 
   obj <- init_oomglm(formula,
-                   family,
-                   weights,
-                   start)
+                     family,
+                     weights,
+                     start)
 
   if(!is.null(data)) {
     obj <- update_oomglm(obj, data)

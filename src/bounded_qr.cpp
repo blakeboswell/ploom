@@ -54,17 +54,10 @@ double BoundedQr::rank() {
 //' @keywords internal
 void BoundedQr::update(arma::mat &X,
                        arma::vec &y,
-                       arma::vec &weight) {
+                       arma::vec &w) {
   
   const int np   = num_params_;
   arma::vec xrow = arma::vec(np);
-  arma::vec w;
-  
-  if(weight.n_rows == 0) {
-    w = arma::ones(X.n_rows);
-  } else {
-    w = weight;
-  }
   
   arma::uvec pw = find(w);
   if(pw.n_rows > 0) {
