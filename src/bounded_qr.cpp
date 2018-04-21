@@ -90,6 +90,11 @@ void BoundedQr::include(arma::vec &xrow,
                         double yelem,
                         double weight) {
 
+  
+  if(::abs(weight) <= NEAR_ZERO_) {
+    return;
+  }
+  
   const int np = num_params_;
   
   double w = weight;
