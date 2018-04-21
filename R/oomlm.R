@@ -20,17 +20,15 @@ init_oomlm <- function(formula, weights  = NULL) {
   }
   
   obj <- list(
-    call         = sys.call(-1),
-    qr           = NULL,
-    assign       = NULL,
+    formula      = formula,
     terms        = terms(formula),
-    n            = 0,
-    p            = NULL,
-    names        = NULL,
-    df.resid     = NULL,
     weights      = weights,
-    pweights     = 0,
-    zero_weights = 0
+    call         = sys.call(-1),
+    n            = 0,
+    df.residual  = NULL,
+    qr           = NULL,
+    names        = NULL,
+    assign       = NULL
   )
   
   class(obj) <- "oomlm"
@@ -72,6 +70,7 @@ update.oomlm <- function(obj, data) {
   
   if(is.null(obj$assign)) {
     obj$assign <- chunk$assign
+    obj$names  <- colnames(chunk$data)
   }
   
   if(is.null(obj$qr)) {
@@ -85,13 +84,8 @@ update.oomlm <- function(obj, data) {
                    chunk$response - chunk$offset,
                    chunk$weights)
   
-  zero_wts  <- chunk$weights == 0
-  
-  obj$n            <- obj$n + chunk$n - sum(zero_wts)
-  obj$names        <- colnames(chunk$data)
-  obj$df.resid     <- obj$n - chunk$p
-  obj$pweights     <- obj$pweights + sum(log(chunk$weights[!zero_wts]))
-  obj$zero_weights <- obj$zero_weights + sum(zero_wts)
+  obj$n            <- obj$qr$num_obs
+  obj$df.residual  <- obj$n - chunk$p
   
   obj
   
@@ -112,28 +106,27 @@ update.oomlm <- function(obj, data) {
 #'   `environment`.
 #' @param weights a one-sided, single term `formula` specifying weights.
 #' @param ... ignored.
-#' @details `oomlm` initializes an object of class `oomlm`. If `data` is
-#'   missing, the `oomlm` object will *not* be fit on initialization. 
-#'   `oomlm` objects are intended to be iteratively updated with new data via
-#'   the function [update()]. If  `data` is provided, an [update()] will be
-#'   performed on initialization.
+#' @details `oomlm` initializes an object of class `oomlm`. `oomlm` objects
+#'   are intended to be iteratively updated with new data via the function 
+#'   [update()]. If `data` is provided to the `oolm` function call, an 
+#'   [update()] round will be performed on initialization.
 #'
-#'   `formula` must not contain any data-dependent terms to ensure consistency
-#'   across calls to [update()]. Factors are permitted, but the levels of the
-#'   factor must be the same across all data chunks. Empty factor levels are
-#'   accepted.
+#'   The provided `formula` must not contain any data-dependent terms to ensure
+#'   consistency across calls to [update()]. Factors are permitted, but the
+#'   levels of the factor must be the same across all data chunks. Empty factor
+#'   levels are accepted.
 #'   
-#' @return A `oomlm` object can be in an in-progress state. Therefore, it is 
-#'   important to consider the number of observations processed when assessing
-#'   the return values.
+#' @return A `oomlm` object is perpetually in an _in-progress_ state. It is up
+#'   to the user to know when fitting is complete.  Therefore, only basic model
+#'   characteristics are provided as values with the `oolm` object. Statistics
+#'   are available on demand via `summary` and extractor functions.
 #'
-#' \item{coefficients}{a named vector of coefficients.}
-#' \item{rank}{the numeric rank of the fitted linear model.}
-#' \item{weights}{a one-sided, single term `formula` specifying weights.}
-#' \item{df.residual}{the residual degrees of freedom.}
-#' \item{call}{the matched call.}
-#' \item{terms}{the [stats::terms()] object used.}
 #' \item{n}{the number of observations processed.}
+#' \item{df.residual}{the residual degrees of freedom.}
+#' \item{formula}{the [stats::formula()] object specifying the linear model.}
+#' \item{terms}{the [stats::terms()] object specifying the terms of the linear model.}
+#' \item{weights}{a one-sided, single term `formula` specifying weights.}
+#' \item{call}{the matched call.}
 #' 
 #' @seealso [oomglm()]
 #' @examples

@@ -43,8 +43,8 @@ AIC.oomlm <- function(obj, ..., k = 2) {
 
   p   <- obj$qr$rank()
   rss <- obj$qr$rss_full
-  n   <- obj$n - obj$zero_weights
-  pw  <- obj$pweights
+  n   <- obj$qr$num_obs
+  pw  <- obj$qr$pweights
   
   (-(pw - n * (log(2 * pi) + 1 - log(n) + log(rss)))
     + k * (p + 1))
