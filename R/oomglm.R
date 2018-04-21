@@ -43,19 +43,20 @@ init_oomglm <- function(formula,
   )
   
   obj <- list(
-    call          = sys.call(-1),
-    qr            = NULL,
-    assign        = NULL,
-    terms         = terms(formula),
+    converged     = FALSE,
+    iter          = 0,
     n             = 0,
-    names         = NULL,
     df.residual   = NULL,
     df.null       = NULL,
+    formula       = formula,
     family        = family,
-    iwls          = iwls,
-    converged     = FALSE,
-    iter          = 0L,
-    weights       = weights
+    terms         = terms(formula),
+    weights       = weights,
+    call          = sys.call(-1),
+    qr            = NULL,
+    names         = NULL,
+    assign        = NULL,
+    iwls          = iwls
   )
   
   class(obj) <- c("oomglm", "oomlm")
@@ -306,29 +307,36 @@ reweight.oomglm <- function(obj,
 #' @param ... ignored.
 #' 
 #' @details
-#' A `oomglm` object can be in various states of fit depending on the number
+#' `ooglm` initializes an object of class `ooglm` inheriting from the
+#'   class `oomlm`. `ooglm` objects are intended to be iteratively 
+#'   updated with new data via calls to [update()]. Iterative fitting
+#'   over all data [updates()] are performed with the function [reweight()].
+#'   If `data` is provided to the `ooglm` function call, an [update()] round 
+#'   will be performed on initialization.
+#' 
+#'   A `oomglm` object can be in various states of fit depending on the number
 #'   of seen observations and rounds of IWLS that have been performed.
 #'   It is important to view the model within the context of:
 #'   the number of observations processed per round of IWLS (`n`);
 #'   the number of IWLS iterations that have been performed (`iter`);
-#'   if the IWLS algorithm has converged (`converged`).
+#'   and if the IWLS algorithm has converged (`converged`).
 #'
-#' @return `oomglm` returns an object of class `oomglm` inheriting from the
-#'   class `oomlm`.
+#' @return It is up to the user to know when fitting is complete.
+#'   Therefore, only basic model characteristics are provided as values with 
+#'   the `ooglm` object. Statistics are available on demand via `summary` and 
+#'   extractor functions.
 #'
-#' \item{coefficients}{A named vector of coefficients.}
-#' \item{rank}{The numeric rank of the linear model}
+#' \item{converged}{Indicates if the IWLS algorithm has converged.}
+#' \item{iter}{The number of iterations of IWLS performed.}
+#' \item{n}{The number observations processed per round of IWLS.}
+#' \item{df.residual}{The residual degrees of freedom.}
+#' \item{df.null}{The residual degrees of freedom.}
+#' \item{formula}{the [stats::formula()] object specifying the linear model.}
 #' \item{family}{a [stats::family()] object describing the error distribution
 #'   and link function used in the model.}
-#' \item{n}{The number observations processed per round of IWLS.}
-#' \item{iter}{The number of iterations of IWLS performed.}
-#' \item{df.residual}{The residual degrees of freedom.}
-#' \item{converged}{Indicates if the IWLS algorithm has converged.}
-#' \item{call}{The matched call.}
 #' \item{terms}{The [stats::terms()] object used.}
-#' \item{qr}{A [ploom::BoundedQr()] object resulting from the latest round of
-#'   IWLS.}
 #' \item{weights}{The weights `formula` provided to the model.}
+#' \item{call}{The matched call.}
 #' 
 #' @examples
 #' # proxy for data feed

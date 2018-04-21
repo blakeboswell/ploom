@@ -23,21 +23,21 @@ oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
 \item{...}{ignored.}
 }
 \value{
-\code{oomglm} returns an object of class \code{oomglm} inheriting from the
-class \code{oomlm}.
+It is up to the user to know when fitting is complete.
+Therefore, only basic model characteristics are provided as values with
+the \code{ooglm} object. Statistics are available on demand via \code{summary} and
+extractor functions.
 
-\item{coefficients}{A named vector of coefficients.}
-\item{rank}{The numeric rank of the linear model}
+\item{converged}{Indicates if the IWLS algorithm has converged.}
+\item{iter}{The number of iterations of IWLS performed.}
+\item{n}{The number observations processed per round of IWLS.}
+\item{df.residual}{The residual degrees of freedom.}
+\item{df.null}{The residual degrees of freedom.}
+\item{formula}{the \code{\link[stats:formula]{stats::formula()}} object specifying the linear model.}
 \item{family}{a \code{\link[stats:family]{stats::family()}} object describing the error distribution
 and link function used in the model.}
-\item{n}{The number observations processed per round of IWLS.}
-\item{iter}{The number of iterations of IWLS performed.}
-\item{df.residual}{The residual degrees of freedom.}
-\item{converged}{Indicates if the IWLS algorithm has converged.}
-\item{call}{The matched call.}
 \item{terms}{The \code{\link[stats:terms]{stats::terms()}} object used.}
-\item{qr}{A \code{\link[ploom:BoundedQr]{ploom::BoundedQr()}} object resulting from the latest round of
-IWLS.}
+\item{call}{The matched call.}
 \item{weights}{The weights \code{formula} provided to the model.}
 }
 \description{
@@ -46,15 +46,19 @@ factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
 }
 \details{
+\code{ooglm} initializes an object of class \code{ooglm} inheriting from the
+class \code{oomlm}. \code{ooglm} objects are intended to be iteratively
+updated with new data via calls to \code{\link[=update]{update()}}. Iterative fitting
+over all data \code{\link[=updates]{updates()}} are performed with the function \code{\link[=reweight]{reweight()}}.
+If \code{data} is provided to the \code{ooglm} function call, an \code{\link[=update]{update()}} round
+will be performed on initialization.
+
 A \code{oomglm} object can be in various states of fit depending on the number
 of seen observations and rounds of IWLS that have been performed.
-Therefore, it is important to consider all return values within the
-following context:
-\itemize{
-\item The number of observations processed per round of IWLS (\code{n}).
-\item The number of IWLS iterations that have been performed (\code{iter}).
-\item If the IWLS algorithm has converged (\code{converged}).
-}
+It is important to view the model within the context of:
+the number of observations processed per round of IWLS (\code{n});
+the number of IWLS iterations that have been performed (\code{iter});
+and if the IWLS algorithm has converged (\code{converged}).
 }
 \examples{
 # proxy for data feed
