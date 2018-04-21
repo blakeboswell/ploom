@@ -18,17 +18,17 @@ oomlm(formula, data = NULL, weights = NULL, ...)
 \item{...}{ignored.}
 }
 \value{
-A \code{oomlm} object can be in an in-progress state. Therefore, it is
-important to consider the number of observations processed when assessing
-the return values.
+A \code{oomlm} object is perpetually in an \emph{in-progress} state. It is up
+to the user to know when fitting is complete.  Therefore, only basic model
+characteristics are provided as values with the \code{oolm} object. Statistics
+are available on demand via \code{summary} and extractor functions.
 
-\item{coefficients}{a named vector of coefficients.}
-\item{rank}{the numeric rank of the fitted linear model.}
-\item{weights}{a one-sided, single term \code{formula} specifying weights.}
-\item{df.residual}{the residual degrees of freedom.}
-\item{call}{the matched call.}
-\item{terms}{the \code{\link[stats:terms]{stats::terms()}} object used.}
 \item{n}{the number of observations processed.}
+\item{df.residual}{the residual degrees of freedom.}
+\item{formula}{the \code{\link[stats:formula]{stats::formula()}} object specifying the linear model.}
+\item{terms}{the \code{\link[stats:terms]{stats::terms()}} object specifying the terms of the linear model.}
+\item{weights}{a one-sided, single term \code{formula} specifying weights.}
+\item{call}{the matched call.}
 }
 \description{
 Perform linear regression via Alan Miller's bounded memory QR
@@ -36,16 +36,15 @@ factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
 }
 \details{
-\code{oomlm} initializes an object of class \code{oomlm}. If \code{data} is
-missing, the \code{oomlm} object will \emph{not} be fit on initialization.
-\code{oomlm} objects are intended to be iteratively updated with new data via
-the function \code{\link[=update]{update()}}. If  \code{data} is provided, an \code{\link[=update]{update()}} will be
-performed on initialization.
+\code{oomlm} initializes an object of class \code{oomlm}. \code{oomlm} objects
+are intended to be iteratively updated with new data via the function
+\code{\link[=update]{update()}}. If \code{data} is provided to the \code{oolm} function call, an
+\code{\link[=update]{update()}} round will be performed on initialization.
 
-\code{formula} must not contain any data-dependent terms to ensure consistency
-across calls to \code{\link[=update]{update()}}. Factors are permitted, but the levels of the
-factor must be the same across all data chunks. Empty factor levels are
-accepted.
+The provided \code{formula} must not contain any data-dependent terms to ensure
+consistency across calls to \code{\link[=update]{update()}}. Factors are permitted, but the
+levels of the factor must be the same across all data chunks. Empty factor
+levels are accepted.
 }
 \examples{
 # The function `oomlm` is similar to base `lm` for fitting in-memory data.
