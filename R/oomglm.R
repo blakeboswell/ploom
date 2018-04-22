@@ -38,7 +38,7 @@ init_oomglm <- function(formula,
   
   iwls <- list(
     beta       = start,
-    pe_beta    = NULL,
+    pre_beta   = NULL,
     rss        = 0.0,
     deviance   = 0.0
   )
