@@ -38,6 +38,7 @@ init_oomglm <- function(formula,
   
   iwls <- list(
     beta       = start,
+    pe_beta    = NULL,
     rss        = 0.0,
     deviance   = 0.0
   )
@@ -124,7 +125,7 @@ glm_adjust <- function(obj, chunk) {
 #' @param data `data.frame` of observations to be fit.
 #' 
 #' @keywords internal
-update_oomglm_data <- function(obj, data) {
+update_oomglm <- function(obj, data) {
 
   chunk <- unpack_oomchunk(obj, data)
   
@@ -160,26 +161,6 @@ update_oomglm_data <- function(obj, data) {
 }
 
 
-#' Update `oomglm` given `function` that returns `data.frame`s
-#'   when iterated over
-#' 
-#' @md
-#' @noRd
-#' @param obj `oomglm` model
-#' @param data `function`
-#' 
-#' @keywords internal
-update_oomglm_function <- function(obj, data) {
-  
-  while(!is.null(chunk <- data())){
-    obj <- update_oomglm(obj, chunk)
-  }
-  
-  obj
-  
-}
-
-
 #' Update `oomglm` with new observations
 #' 
 #' @md
@@ -189,16 +170,23 @@ update_oomglm_function <- function(obj, data) {
 #' @export
 update.oomglm <- function(obj, data) {
   
+  if(!inherits(data, c("function", "data.frame"))) {
+    stop("class of `data` not supported")
+  }
+  
   if(inherits(data, "data.frame")) {
-    return(update_oomglm_data(obj, data))
+    data <- oomfeed(data, chunksize = nrow(data))
   }
   
-  if(inherits(data, "function")) {
-    return(update_oomglm_function(obj, data))
+  while(!is.null(chunk <- data())){
+    obj <- update_oomglm(obj, chunk)
   }
   
-  stop("class of `data` not recognized")
+  obj$iwls$beta  <- coef(obj)
+  obj$iter       <- obj$iter + 1L
   
+  obj
+
 }
 
 
@@ -206,12 +194,11 @@ update.oomglm <- function(obj, data) {
 #' 
 #' @md
 #' @noRd
-#' @param obj `ygml` model.
-#' @param beta_old `ygml` coefficients resulting from previous
-#'   reweight iteration.
+#' @param obj `oomglm` model.
 #' @keywords internal
-reset_oomglm <- function(obj, beta_old) {
+reset_oomglm <- function(obj) {
   
+  obj$iwls$pre_beta <- coef(obj)
   obj$iwls$rss      <- 0.0
   obj$iwls$deviance <- 0.0
   obj$qr   <- NULL
@@ -222,6 +209,26 @@ reset_oomglm <- function(obj, beta_old) {
 }
 
 
+#' Test for IWLS convergence
+#' 
+#' @md
+#' @noRd
+#' @param obj `oomglm` model.
+#' @keywords internal
+iwls_converged <- function(obj, tolerance) {
+
+  beta     <- obj$iwls$beta
+  beta_old <- obj$iwls$pre_beta
+
+  if(is.null(beta_old)){
+    return(FALSE)
+  }
+    
+  delta <- (beta_old - beta) / sqrt(diag(vcov(obj)))
+  max(abs(delta)) < tolerance
+  
+} 
+
 
 #' Reweight `oomglm` model via Iteratively Reweighted Least Squares (IWLS)
 #'  method.
@@ -229,12 +236,12 @@ reset_oomglm <- function(obj, beta_old) {
 #' @md
 #' @param obj `oomglm` model.
 #' @param data An `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
-#' @param num_iter Number of IWLS iterations to perform. Will automatically
-#'   stop iterating if model converges before `num_iter` iterations.
+#' @param max_iter Maximum number of IWLS iterations to perform. Will 
+#'   stop iterating if model converges before `max_iter` iterations.
 #' @param tolerance Tolerance for change in coefficient as a multiple
 #'  of standard error.
 #'
-#' @return `oomglm` object after performing `num_iter` IWLS iterations on
+#' @return `oomglm` object after performing `max_iter` IWLS iterations on
 #'  `data`.
 #' 
 #' @seealso [oomlm()]
@@ -246,10 +253,10 @@ reset_oomglm <- function(obj, beta_old) {
 #' x <- oomglm(mpg ~ cyl + disp)
 #' 
 #' # perform iwls
-#' x <- reweight(x, mtcars, num_iter = 4)
+#' x <- reweight(x, mtcars, max_iter = 4)
 #' 
 #' @export
-reweight <- function(obj, data, num_iter, tolerance = 1e-7){
+reweight <- function(obj, data, max_iter, tolerance = 1e-7){
   UseMethod("reweight")
 }
 setGeneric("reweight")
@@ -258,28 +265,21 @@ setGeneric("reweight")
 #' @export
 reweight.oomglm <- function(obj,
                             data,
-                            num_iter  = 1L,
+                            max_iter  = 1L,
                             tolerance = 1e-7) {
   
   if(obj$converged) {
     return(obj)
   }
   
-  for(i in 1:num_iter) {
+  for(i in 1:max_iter) {
     
-    beta_old <- coef(obj)
-    obj      <- reset_oomglm(obj)
-    
-    obj            <- update(obj, data)
-    obj$iwls$beta  <- coef(obj)
-    obj$iter <- obj$iter + 1L
-    
-    if(!is.null(beta_old)) {
-      delta <- (beta_old - obj$iwls$beta) / sqrt(diag(vcov(obj)))
-      if (max(abs(delta)) < tolerance){
+    obj <- reset_oomglm(obj)
+    obj <- update(obj, data)
+
+    if(iwls_converged(obj, tolerance)) {
         obj$converged <- TRUE
         break
-      }
     }
 
   }
@@ -346,7 +346,7 @@ reweight.oomglm <- function(obj,
 #' x <- oomglm(mpg ~ cyl + disp)
 #' 
 #' # perform iwls
-#' x <- reweight(x, mtcars, num_iter = 4)
+#' x <- reweight(x, mtcars, max_iter = 4)
 #'
 #' @export
 oomglm <- function(formula,
@@ -362,7 +362,7 @@ oomglm <- function(formula,
                      start)
 
   if(!is.null(data)) {
-    obj <- update_oomglm(obj, data)
+    obj <- update(obj, data)
   }
 
   obj
