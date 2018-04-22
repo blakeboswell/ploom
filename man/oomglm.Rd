@@ -37,8 +37,8 @@ extractor functions.
 \item{family}{a \code{\link[stats:family]{stats::family()}} object describing the error distribution
 and link function used in the model.}
 \item{terms}{The \code{\link[stats:terms]{stats::terms()}} object used.}
-\item{call}{The matched call.}
 \item{weights}{The weights \code{formula} provided to the model.}
+\item{call}{The matched call.}
 }
 \description{
 Perform  generalized linear regression using Alan Miller's bounded memory QR

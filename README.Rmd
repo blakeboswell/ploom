@@ -40,17 +40,20 @@ library(purrr)
 
 ### Model Initializing and Updating
 
-The functions `oomlm` and `oomglm` are similar to base `lm` and `glm` for fitting in-memory data.
+
+#### Linear
+
+The `ploom` linear model, `oomlm`, is similar to base `lm` for fitting in-memory data.
 
 ```{r, eval = TRUE}
-w <- oomlm(mpg ~ cyl + disp, data = mtcars)
+x <- oomlm(mpg ~ cyl + disp, data = mtcars)
 ```
 
-Models are initalized with a call to `oomlm` and updated with `update`.   The recommended pattern is to initialize models without referencing the data, then call `update` on each data chunk in the exact same way.
+Models are initalized with a call to `oomlm` and updated with `update`. The intended pattern is to initialize models without referencing data, then call `update` on each data chunk.
 
 ```{r, eval = TRUE}
-# proxy for big data feed (`purrr::pmap`)
-chunks  <- pmap(mtcars, list)
+# proxy for big data feed 
+chunks  <- purrr::pmap(mtcars, list)
 
 # initialize the model
 x <- oomlm(mpg ~ cyl + disp)
@@ -61,12 +64,40 @@ for(chunk in chunks) {
 }
 ```
 
-Separating model initialization and processing of the first data chunk enables functional patterns like `reduce` to take the place of loops.  The below example is equivalent to the above `for` loop.
+We can avoid loops with functional patterns like `reduce`.
 
 ```{r, eval = TRUE}
-# avoid loops altogether with `purrr::reduce`
-y <- reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
+x <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
 ```
+
+#### Generalized Linear
+
+`ploom` employs IWLS to fit generalized linear models. This process requires iterative passes over the data.
+The `ploom` generalized linear model, `oomglm`, breaks up the IWLS fitting process into three process: model initialization, (iterative) data updates, and iterative reweights.
+
+Consider the in memory case with only a single call to `update`
+
+```{r, eval = TRUE}
+# initialize the model
+x <- oomglm(mpg ~ cyl + disp)
+
+# re-weight 8 times or until convergence
+x <- reweight(x, mtcars, num_iter = 8)
+```
+
+For the out-of-memory case, or iterative calls `updates`, use the `oomfeed` object:
+
+```{r, eval = TRUE}
+# proxy for big data feed
+chunks  <- purrr::pmap(mtcars, list)
+
+# initialize the model
+x <- oomglm(mpg ~ cyl + disp)
+
+# iteratively reweight model over iterative calls to update
+x <- reweight(x, oomfeed(mtcars, chunksize = 10), num_iter = 8)
+```
+
 
 ### Using Feeds for a Variety of OOM Data Formats
 
