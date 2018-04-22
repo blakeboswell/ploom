@@ -24,8 +24,8 @@ make_linear <- function(alpha, betas, nrows, sigma = 1) {
 
 alpha <- runif(1, -10, 10)
 betas <- matrix(rnorm(4, 10, 10), ncol = 1)
-N     <- 2*10^6
-chunk_size <- 2*10^3
+N     <- 3*10^7
+chunk_size <- 3*10^3
 
 
 df <- make_linear(alpha, betas, N) %>%
@@ -36,10 +36,6 @@ df <- make_linear(alpha, betas, N) %>%
 
 w <- oomglm(y ~ v2 + v3 + v4 + v5)
 w <- reweight(w, oomfeed(df, chunk_size), max_iter = 8)
-
-
-
-
 
 
 
