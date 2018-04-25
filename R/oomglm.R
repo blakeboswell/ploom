@@ -161,6 +161,18 @@ update_oomglm <- function(obj, data) {
 }
 
 
+#' @keywords internal
+iter_update <- function(obj, data) {
+  
+  while(!is.null(chunk <- data())){
+    obj <- update_oomglm(obj, chunk)
+  }
+  
+  obj
+  
+}
+
+
 #' Update `oomglm` with new observations
 #' 
 #' @md
@@ -170,19 +182,23 @@ update_oomglm <- function(obj, data) {
 #' @export
 update.oomglm <- function(obj, data) {
   
-  if(!inherits(data, c("function", "data.frame"))) {
-    stop("class of `data` not supported")
-  }
+  # if(!inherits(data, c("function", "data.frame"))) {
+  #   stop("class of `data` not supported")
+  # }
+  # 
+  # if(inherits(data, "data.frame")) {
+  #   data <- oomfeed(data, chunksize = nrow(data))
+  # }
   
   if(inherits(data, "data.frame")) {
-    data <- oomfeed(data, chunksize = nrow(data))
+    return(update_oomglm(obj, data))
   }
   
-  while(!is.null(chunk <- data())){
-    obj <- update_oomglm(obj, chunk)
+  if(inherits(data, "function")) {
+    return(iter_update(obj, data))
   }
   
-  obj
+  stop("class of `data` not recognized")
 
 }
 
