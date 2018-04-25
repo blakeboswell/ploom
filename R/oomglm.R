@@ -174,7 +174,7 @@ update_oomglm_data <- function(obj, data) {
 update_oomglm_function <- function(obj, data) {
   
   while(!is.null(chunk <- data())){
-    obj <- update_oomglm(obj, chunk)
+    obj <- update(obj, chunk)
   }
   
   obj
@@ -349,7 +349,7 @@ oomglm <- function(formula,
                    start)
 
   if(!is.null(data)) {
-    obj <- update_oomglm(obj, data)
+    obj <- update(obj, data)
   }
 
   obj
