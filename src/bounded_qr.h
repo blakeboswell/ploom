@@ -1,5 +1,5 @@
-#ifndef YOTTA_BOUNDED_QR_H
-#define YOTTA_BOUNDED_QR_H
+#ifndef PLOOM_BOUNDED_QR_H
+#define PLOOM_BOUNDED_QR_H
 #define RCPP_ARMADILLO_RETURN_COLVEC_AS_VECTOR
 
 #include <RcppArmadillo.h>
@@ -16,7 +16,9 @@ using namespace Rcpp;
 //'  (1992), pp. 458-478
 //'
 //'  num_obs_
-//'  the latest count of observations processed.
+//'  the latest count of observations processed. double precision is
+//'  used so that it will be numeric on the R side accomodating row
+//'  counts larger than R integers can contain
 //'  
 //'  num_params_ 
 //'  the total number of dependent variables,
@@ -76,7 +78,8 @@ private:
 public:
   
   int num_params_;
-  int num_obs_;
+  double num_obs_;
+  double pweights_;
   
   arma::vec D_;
   arma::vec rbar_;
@@ -93,6 +96,7 @@ public:
     num_params_ = np;
     num_obs_    = 0;
     rbar_dim_   = np * (np - 1) / 2;
+    pweights_   = 0.0;
     
     D_       = arma::zeros(num_params_);
     rbar_    = arma::zeros(rbar_dim_);
@@ -142,6 +146,7 @@ RCPP_MODULE(BoundedQrModule) {
 
     .field("num_params", &BoundedQr::num_params_)
     .field("num_obs",    &BoundedQr::num_obs_)
+    .field("pweights",   &BoundedQr::pweights_)
 
     .field("rss_full", &BoundedQr::sserr_)
     .field("sumsqy",   &BoundedQr::sumysq_)

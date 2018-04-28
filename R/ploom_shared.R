@@ -2,8 +2,7 @@
 #' @keywords internal
 unpack_oomchunk <- function(obj, data) {
   
-  model_terms  <- obj$terms
-  chunk_data   <- model.frame(model_terms, data)
+  chunk_data   <- model.frame(obj$terms, data)
   chunk_assign <- attr(chunk_data, "assign")
   
   if(!is.null(obj$assign)) {
@@ -17,7 +16,7 @@ unpack_oomchunk <- function(obj, data) {
   }
   
   chunk_response <- model.response(chunk_data) - chunk_offset
-  chunk_data     <- model.matrix(model_terms, chunk_data)
+  chunk_data     <- model.matrix(obj$terms, chunk_data)
   
   p <- ncol(chunk_data)
   n <- nrow(chunk_data)

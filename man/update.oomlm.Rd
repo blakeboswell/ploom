@@ -2,15 +2,35 @@
 % Please edit documentation in R/oomlm.R
 \name{update.oomlm}
 \alias{update.oomlm}
-\title{Update Updating Linear Regression Model with more data}
+\title{Fit Updating Linear Model to more data}
 \usage{
 \method{update}{oomlm}(obj, data)
 }
 \arguments{
 \item{obj}{\code{oomlm} object to be updated.}
 
-\item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
+\item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list}
+or \code{environment}.}
 }
 \description{
 Update \code{oomlm} linear model fit with new data.
+}
+\examples{
+#' # create simple example data chunks
+chunks  <- purrr::pmap(mtcars, list)
+
+# initialize the model
+x <- oomlm(mpg ~ cyl + disp)
+
+# iteratively update model with chunks
+for(chunk in chunks) {
+  update(x, chunk)
+}
+
+# `oomlm` models can be fit with functional patterns like `purrr::reduce`.
+y <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
+
+}
+\seealso{
+\code{\link[=oomlm]{oomlm()}}
 }

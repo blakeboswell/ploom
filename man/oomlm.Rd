@@ -2,35 +2,33 @@
 % Please edit documentation in R/oomlm.R
 \name{oomlm}
 \alias{oomlm}
-\title{Initialize Updating Linear Regression model}
+\title{Initialize Updating Linear model}
 \usage{
 oomlm(formula, data = NULL, weights = NULL, ...)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted of class \code{formula}.}
+\item{formula}{a symbolic description of the model to be fitted of class
+\code{formula}.}
 
-\item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
+\item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or
+\code{environment}.}
 
 \item{weights}{a one-sided, single term \code{formula} specifying weights.}
 
 \item{...}{ignored.}
 }
 \value{
-\code{oomlm} initializes an object of class \code{oomlm}. If \code{data} is missing,
-the \code{oomlm} object will not be fit on initialization. \code{oomlm} objects can
-be iteratively updated with new data via the function \code{update}. If
-\code{data} is provided, an \code{update} will be performed on initialization.
-\item{call}{need desc}
-\item{qr}{need desc}
-\item{assign}{need desc}
-\item{terms}{need desc}
-\item{n}{need desc}
-\item{p}{need desc}
-\item{names}{need desc}
-\item{df.resid}{need desc}
-\item{weights}{need desc}
-\item{pweights}{need desc}
-\item{zero_weights}{need desc}
+A \code{oomlm} object is perpetually in an \emph{in-progress} state. It is up
+to the user to know when fitting is complete.  Therefore, only basic model
+characteristics are provided as values with the \code{oolm} object. Statistics
+are available on demand via \code{summary} and extractor functions.
+
+\item{n}{the number of observations processed.}
+\item{df.residual}{the residual degrees of freedom.}
+\item{formula}{the \code{\link[stats:formula]{stats::formula()}} object specifying the linear model.}
+\item{terms}{the \code{\link[stats:terms]{stats::terms()}} object specifying the terms of the linear model.}
+\item{weights}{a one-sided, single term \code{formula} specifying weights.}
+\item{call}{the matched call.}
 }
 \description{
 Perform linear regression via Alan Miller's bounded memory QR
@@ -38,35 +36,39 @@ factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
 }
 \details{
-The model formula must not contain any data-dependent terms, as
-these will not be consistent when updated. Factors are permitted, but
-the levels of the factor must be the same across all data chunks.
-Empty factor levels are accepted.
+\code{oomlm} initializes an object of class \code{oomlm}. \code{oomlm} objects
+are intended to be iteratively updated with new data via the function
+\code{\link[=update]{update()}}. If \code{data} is provided to the \code{oolm} function call, an
+\code{\link[=update]{update()}} round will be performed on initialization.
+
+The provided \code{formula} must not contain any data-dependent terms to ensure
+consistency across calls to \code{\link[=update]{update()}}. Factors are permitted, but the
+levels of the factor must be the same across all data chunks. Empty factor
+levels are accepted.
 }
 \examples{
 # The function `oomlm` is similar to base `lm` for fitting in-memory data.
 w <- oomlm(mpg ~ cyl + disp, data = mtcars)
 
-# Models are initalized with a call to `oomlm` and updated with
-# `update`. The recommended pattern is to initialize a model without providing
-# data, then feed the data via calls to `update`.  For example:
+# Models are initalized with a call to `oomlm` and updated with `update`.
+# The recommended pattern is to initialize a model without providing data
+# then feed the data via iterative calls to `update`. For example:
 
-# proxy for data feed
+# create simple example data chunks
 chunks  <- purrr::pmap(mtcars, list)
 
 # initialize the model
 x <- oomlm(mpg ~ cyl + disp)
 
-# iteratively update model with data chunks
+# iteratively update model with chunks
 for(chunk in chunks) {
   update(x, chunk)
 }
 
-# Separating model initialization and processing of data 
-# enables functional patterns like `reduce` to take the place of loops.
-y <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
+# `oomlm` models can be fit via functional patterns like `purrr::reduce`.
+y <- reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
 
 }
 \seealso{
-\code{\link[=yglm]{yglm()}}
+\code{\link[=oomglm]{oomglm()}}
 }

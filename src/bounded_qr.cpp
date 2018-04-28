@@ -50,13 +50,19 @@ double BoundedQr::rank() {
 }
 
 
+
 //' @keywords internal
 void BoundedQr::update(arma::mat &X,
                        arma::vec &y,
                        arma::vec &w) {
   
-  const int np = num_params_;
+  const int np   = num_params_;
   arma::vec xrow = arma::vec(np);
+  
+  arma::uvec pw = find(w);
+  if(pw.n_rows > 0) {
+    pweights_ += sum(log(w.elem(pw)));
+  }
   
   for(int i = 0; i < X.n_rows; ++i) {
     
@@ -84,6 +90,11 @@ void BoundedQr::include(arma::vec &xrow,
                         double yelem,
                         double weight) {
 
+  
+  if(::abs(weight) <= NEAR_ZERO_) {
+    return;
+  }
+  
   const int np = num_params_;
   
   double w = weight;

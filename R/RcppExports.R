@@ -8,7 +8,9 @@
 #'  (1992), pp. 458-478
 #'
 #'  num_obs_
-#'  the latest count of observations processed.
+#'  the latest count of observations processed. double precision is
+#'  used so that it will be numeric on the R side accomodating row
+#'  counts larger than R integers can contain
 #'  
 #'  num_params_ 
 #'  the total number of dependent variables,
