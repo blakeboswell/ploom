@@ -1,4 +1,3 @@
-library(purrr)
 library(rbenchmark)
 library(dplyr)
 library(biglm)
@@ -32,7 +31,6 @@ df <- make_linear(alpha, betas, N) %>%
 
 w <- oomglm(y ~ v2 + v3 + v4 + v5)
 w <- reweight(w, oomfeed(df, chunk_size), num_iter = 8)
-
 
 w <- oomglm(y ~ v2 + v3 + v4 + v5)
 w <- reweight(w, oomfeed(df, chunk_size), max_iter = 8)
