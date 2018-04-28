@@ -69,22 +69,22 @@ x <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
 
 #### Generalized Linear
 
-The `ploom` generalized linear model, `oomglm`, breaks up the IWLS
-fitting process into three process: model initialization, (iterative)
-data updates, and iterative reweights.
-
-Consider the in memory case with only a single call to `update`
+The `ploom` function `oomglm` fits generalized linear models via
+Iterative Weighted Least Squares (IWLS).  
+When fitting in-memory data the process is similar to `oomlm` but we use
+the function `reweight` instead of `update`. `reweight` itertively fit
+until convergence.
 
 ``` r
 # initialize the model
 x <- oomglm(mpg ~ cyl + disp)
 
 # re-weight 8 times or until convergence
-x <- reweight(x, mtcars, num_iter = 8)
+x <- reweight(x, mtcars, max_iter = 8)
 ```
 
-For the out-of-memory case, or iterative calls `updates`, use the
-`oomfeed` object:
+When working with out-of-memory or chunked data, use the `oomfeed`
+object:
 
 ``` r
 # proxy for big data feed
@@ -94,8 +94,45 @@ chunks  <- purrr::pmap(mtcars, list)
 x <- oomglm(mpg ~ cyl + disp)
 
 # iteratively reweight model over iterative calls to update
-x <- reweight(x, oomfeed(mtcars, chunksize = 10), num_iter = 8)
+x <- reweight(x, oomfeed(mtcars, chunksize = 10), max_iter = 8)
 ```
+
+The `reweight` process can also be implemented directly with `ploom`
+functions:
+
+``` r
+x    <- oomglm(mpg ~ cyl + disp)
+feed <- oomfeed(mtcars, chunksize = 10)
+
+# a first pass over the data
+x <- init_update(x)
+x <- update(x, feed)
+x <- end_update(x)
+
+print(x$converged)
+```
+
+    ## [1] FALSE
+
+``` r
+# a second pass over the data
+x <- init_update(x)
+x <- update(x, feed)
+x <- end_update(x)
+
+print(x$converged)
+```
+
+    ## [1] TRUE
+
+``` r
+print(x$iter)
+```
+
+    ## [1] 2
+
+This can be useful when debugging / evaluating models with long runtimes
+by exposing the individual steps of the model process for inspection.
 
 ### Using Feeds for a Variety of OOM Data Formats
 

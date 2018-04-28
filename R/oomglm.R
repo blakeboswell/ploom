@@ -182,14 +182,6 @@ iter_update <- function(obj, data) {
 #' @export
 update.oomglm <- function(obj, data) {
   
-  # if(!inherits(data, c("function", "data.frame"))) {
-  #   stop("class of `data` not supported")
-  # }
-  # 
-  # if(inherits(data, "data.frame")) {
-  #   data <- oomfeed(data, chunksize = nrow(data))
-  # }
-  
   if(inherits(data, "data.frame")) {
     return(update_oomglm(obj, data))
   }
@@ -209,15 +201,9 @@ update.oomglm <- function(obj, data) {
 #' @noRd
 #' @param obj `oomglm` model.
 #' @keywords internal
-reset_oomglm <- function(obj) {
+init_update <- function(obj) {
   
-  obj$iwls$pre_beta <- obj$iwls$beta
   obj$iwls$beta     <- coef(obj)
-  
-  if(!is.null(obj$iwls$beta)) {
-    obj$iter  <- obj$iter + 1L  
-  }
-  
   obj$iwls$rss      <- 0.0
   obj$iwls$deviance <- 0.0
   obj$qr   <- NULL
@@ -234,16 +220,18 @@ reset_oomglm <- function(obj) {
 #' @noRd
 #' @param obj `oomglm` model.
 #' @keywords internal
-iwls_converged <- function(obj, tolerance) {
+end_update <- function(obj, tolerance = 1e-7) {
 
-  beta_old <- obj$iwls$pre_beta
+  obj$iter  <- obj$iter + 1L 
+  
+  beta_old <- obj$iwls$beta
   
   if(is.null(beta_old)) {
     obj$converged <- FALSE
     return(obj)
   }
   
-  beta  <- obj$iwls$beta
+  beta  <- coef(obj)
   delta <- (beta_old - beta) / sqrt(diag(vcov(obj)))
   obj$converged <- max(abs(delta)) < tolerance
   
@@ -297,9 +285,9 @@ reweight.oomglm <- function(obj,
       break
     }
     
-    obj <- reset_oomglm(obj)
+    obj <- init_update(obj)
     obj <- update(obj, data)
-    obj <- iwls_converged(obj, tolerance)
+    obj <- end_update(obj, tolerance)
     
   }
   
