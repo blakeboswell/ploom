@@ -84,17 +84,15 @@ x <- oomglm(mpg ~ cyl + disp)
 x <- reweight(x, mtcars, max_iter = 8)
 ```
 
-When working with out-of-memory or chunked data, use the `oomfeed` object:
+To fit data in chunks, use the `oomfeed` object:
 
 ```{r, eval = TRUE}
-# proxy for big data feed
-chunks  <- purrr::pmap(mtcars, list)
-
 # initialize the model
-x <- oomglm(mpg ~ cyl + disp)
+x    <- oomglm(mpg ~ cyl + disp)
+feed <- oomfeed(mtcars, chunksize = 10)
 
-# iteratively reweight model over iterative calls to update
-x <- reweight(x, oomfeed(mtcars, chunksize = 10), max_iter = 8)
+# iteratively reweight model
+x <- reweight(x, feed, max_iter = 8)
 ```
 
 The `reweight` process can also be implemented directly with `ploom` functions:
