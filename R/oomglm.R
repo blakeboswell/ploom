@@ -187,11 +187,21 @@ update.oomglm <- function(obj, data) {
 }
 
 
-#' Prepare model for next round of reweight
+#' Prepare model for IWLS iteration
+#' 
+#' Reset variables used for IWLS calculation
 #' 
 #' @md
-#' @noRd
 #' @param obj `oomglm` model.
+#' @examples
+#' x    <- oomglm(mpg ~ cyl + disp)
+#' feed <- oomfeed(mtcars, chunksize = 10)
+#'
+#' # manually execute an IWLS reweight iteration
+#' x <- init_reweight(x)
+#' x <- update(x, feed)
+#' x <- end_reweight(x)
+#' 
 #' @export
 init_reweight <- function(obj) {
   
@@ -206,11 +216,24 @@ init_reweight <- function(obj) {
 }
 
 
-#' Perform end of reweight actions
+#' Perform end of IWLS reweight iteration
+#' 
+#' Update variables used for IWLS calculation, increment `iter`, and
+#' determine if model has converged
 #' 
 #' @md
-#' @noRd
 #' @param obj `oomglm` model.
+#' @param tolerance Tolerance for change in coefficient as a multiple
+#'  of standard error.
+#' @examples
+#' x    <- oomglm(mpg ~ cyl + disp)
+#' feed <- oomfeed(mtcars, chunksize = 10)
+#'
+#' # manually execute an IWLS reweight iteration
+#' x <- init_reweight(x)
+#' x <- update(x, feed)
+#' x <- end_reweight(x)
+#' 
 #' @export
 end_reweight <- function(obj, tolerance = 1e-7) {
 
@@ -230,8 +253,7 @@ end_reweight <- function(obj, tolerance = 1e-7) {
 } 
 
 
-#' Reweight `oomglm` model via Iteratively Reweighted Least Squares (IWLS)
-#'  method.
+#' Reweight `oomglm` model via Iteratively Reweighted Least Squares (IWLS).
 #' 
 #' @md
 #' @param obj `oomglm` model.
@@ -246,9 +268,6 @@ end_reweight <- function(obj, tolerance = 1e-7) {
 #' 
 #' @seealso [oomlm()]
 #' @examples
-#' # proxy for data feed
-#' chunks  <- purrr::pmap(mtcars, list)
-#' 
 #' # initialize the model
 #' x <- oomglm(mpg ~ cyl + disp)
 #' 
@@ -336,9 +355,6 @@ reweight.oomglm <- function(obj,
 #' \item{call}{The matched call.}
 #' 
 #' @examples
-#' # proxy for data feed
-#' chunks  <- purrr::pmap(mtcars, list)
-#' 
 #' # initialize the model
 #' x <- oomglm(mpg ~ cyl + disp)
 #' 

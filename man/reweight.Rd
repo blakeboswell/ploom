@@ -2,39 +2,34 @@
 % Please edit documentation in R/oomglm.R
 \name{reweight}
 \alias{reweight}
-\title{Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS)
-method.}
+\title{Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS).}
 \usage{
-reweight(obj, data, num_iter, tolerance = 1e-07)
+reweight(obj, data, max_iter, tolerance = 1e-07)
 }
 \arguments{
 \item{obj}{\code{oomglm} model.}
 
 \item{data}{An \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
 
-\item{num_iter}{Number of IWLS iterations to perform. Will automatically
-stop iterating if model converges before \code{num_iter} iterations.}
+\item{max_iter}{Maximum number of IWLS iterations to perform. Will
+stop iterating if model converges before \code{max_iter} iterations.}
 
 \item{tolerance}{Tolerance for change in coefficient as a multiple
 of standard error.}
 }
 \value{
-\code{oomglm} object after performing \code{num_iter} IWLS iterations on
+\code{oomglm} object after performing \code{max_iter} IWLS iterations on
 \code{data}.
 }
 \description{
-Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS)
-method.
+Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS).
 }
 \examples{
-# proxy for data feed
-chunks  <- purrr::pmap(mtcars, list)
-
 # initialize the model
 x <- oomglm(mpg ~ cyl + disp)
 
 # perform iwls
-x <- reweight(x, mtcars, num_iter = 4)
+x <- reweight(x, mtcars, max_iter = 4)
 
 }
 \seealso{

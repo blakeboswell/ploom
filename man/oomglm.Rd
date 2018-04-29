@@ -61,13 +61,10 @@ the number of IWLS iterations that have been performed (\code{iter});
 and if the IWLS algorithm has converged (\code{converged}).
 }
 \examples{
-# proxy for data feed
-chunks  <- purrr::pmap(mtcars, list)
-
 # initialize the model
 x <- oomglm(mpg ~ cyl + disp)
 
 # perform iwls
-x <- reweight(x, mtcars, num_iter = 4)
+x <- reweight(x, mtcars, max_iter = 4)
 
 }
