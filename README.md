@@ -9,7 +9,7 @@
 
 <!-- [Coverage Status]() -->
 
-## Overview
+# Overview
 
 A collection of tools for out-of-memory linear model fitting and
 inference. Implements `lm` and `glm` analogs using Alan Miller’s AS274
@@ -19,11 +19,11 @@ to stream in data and stream out results during fitting.
 
 > Currently in early development stage.
 
-### tl;dr Features
+## tl;dr Features
 
 > forthcoming
 
-## Installation
+# Installation
 
 ``` r
 # the early development version from GitHub:
@@ -31,11 +31,11 @@ to stream in data and stream out results during fitting.
 devtools::install_github("blakeboswell/ploom")
 ```
 
-## Usage
+# Usage
 
-### Model Initializing and Updating
+## Model Initializing and Updating
 
-#### Linear Models
+### Linear Models
 
 The `ploom` linear model, `oomlm`, is similar to base `lm` for fitting
 in-memory data.
@@ -67,7 +67,7 @@ We can avoid loops with functional patterns like `reduce`.
 x <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
 ```
 
-#### Generalized Linear Models
+### Generalized Linear Models
 
 The `ploom::oomglm` function fits generalized linear models via
 Iteratively Weighted Least Squares (IWLS).
@@ -151,12 +151,12 @@ x
 This is useful when debugging / evaluating models with long runtimes by
 exposing the individual steps of the model process for inspection.
 
-### Using Feeds for a Variety of OOM Data Formats
+## Using Feeds for a Variety of OOM Data Formats
 
-## Alternatives
+# Alternatives
 
 > forthcoming
 
-## Acknowledgements
+# Acknowledgements
 
 > forthcoming
