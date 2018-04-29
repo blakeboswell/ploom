@@ -401,9 +401,11 @@ print.oomglm <- function(x,
       x$df.residual, "Residual\n")
   
   cat("Residual Deviance:", format(signif(deviance(x), digits)),
-      "\tAIC:", format(signif(AIC(x), digits)))
+      "\tAIC:", format(signif(AIC(x), digits)), "\n\n")
   
-  cat("\n")
+  cat("Converged:", x$converged,
+      "\nNumber of Fisher Scoring iterations:", x$iter, "\n")
+  
   invisible(x)
   
 }

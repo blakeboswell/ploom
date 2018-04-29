@@ -35,7 +35,7 @@ devtools::install_github("blakeboswell/ploom")
 
 ### Model Initializing and Updating
 
-#### Linear
+#### Linear Models
 
 The `ploom` linear model, `oomlm`, is similar to base `lm` for fitting
 in-memory data.
@@ -67,13 +67,14 @@ We can avoid loops with functional patterns like `reduce`.
 x <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
 ```
 
-#### Generalized Linear
+#### Generalized Linear Models
 
-The `ploom` function `oomglm` fits generalized linear models via
-Iterative Weighted Least Squares (IWLS).  
+The `ploom::oomglm` function fits generalized linear models via
+Iteratively Weighted Least Squares (IWLS).
+
 When fitting in-memory data the process is similar to `oomlm` but we use
-the function `reweight` instead of `update`. `reweight` itertively fit
-until convergence.
+the function `reweight` instead of `update`. `reweight` fits the model
+via iterative passes over the data until convergence.
 
 ``` r
 # initialize the model
@@ -108,31 +109,47 @@ feed <- oomfeed(mtcars, chunksize = 10)
 x <- init_update(x)
 x <- update(x, feed)
 x <- end_update(x)
-
-print(x$converged)
+x
 ```
 
-    ## [1] FALSE
+    ## 
+    ## Call:  oomglm(mpg ~ cyl + disp)
+    ## 
+    ## Coefficients:
+    ## (Intercept)          cyl         disp  
+    ##    34.66099     -1.58728     -0.02058  
+    ## 
+    ## Observations included:  32 
+    ## Degrees of Freedom: 31 Total (i.e. Null);  29 Residual
+    ## Residual Deviance: 270.7     AIC: 167.1 
+    ## 
+    ## Converged: FALSE 
+    ## Number of Fisher Scoring iterations: 1
 
 ``` r
 # a second pass over the data
 x <- init_update(x)
 x <- update(x, feed)
 x <- end_update(x)
-
-print(x$converged)
+x
 ```
 
-    ## [1] TRUE
+    ## 
+    ## Call:  oomglm(mpg ~ cyl + disp)
+    ## 
+    ## Coefficients:
+    ## (Intercept)          cyl         disp  
+    ##    34.66099     -1.58728     -0.02058  
+    ## 
+    ## Observations included:  32 
+    ## Degrees of Freedom: 31 Total (i.e. Null);  29 Residual
+    ## Residual Deviance: 270.7     AIC: 167.1 
+    ## 
+    ## Converged: TRUE 
+    ## Number of Fisher Scoring iterations: 2
 
-``` r
-print(x$iter)
-```
-
-    ## [1] 2
-
-This can be useful when debugging / evaluating models with long runtimes
-by exposing the individual steps of the model process for inspection.
+This is useful when debugging / evaluating models with long runtimes by
+exposing the individual steps of the model process for inspection.
 
 ### Using Feeds for a Variety of OOM Data Formats
 
