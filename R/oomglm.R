@@ -161,18 +161,6 @@ update_oomglm <- function(obj, data) {
 }
 
 
-#' @keywords internal
-iter_update <- function(obj, data) {
-  
-  while(!is.null(chunk <- data())){
-    obj <- update(obj, chunk)
-  }
-  
-  obj
-  
-}
-
-
 #' Update `oomglm` with new observations
 #' 
 #' @md
@@ -182,26 +170,30 @@ iter_update <- function(obj, data) {
 #' @export
 update.oomglm <- function(obj, data) {
   
+  if(!inherits(data, c("function", "data.frame"))) {
+    stop("class of `data` not recognized")
+  }
+  
   if(inherits(data, "data.frame")) {
-    return(update_oomglm(obj, data))
+    data <- oomfeed(data, chunksize = nrow(data))
   }
   
-  if(inherits(data, "function")) {
-    return(iter_update(obj, data))
+  while(!is.null(chunk <- data())){
+    obj <- update_oomglm(obj, chunk)
   }
   
-  stop("class of `data` not recognized")
-
+  obj
+  
 }
 
 
-#' Reset model in preparation for new reweight iteration
+#' Prepare model for next round of reweight
 #' 
 #' @md
 #' @noRd
 #' @param obj `oomglm` model.
-#' @keywords internal
-init_update <- function(obj) {
+#' @export
+init_reweight <- function(obj) {
   
   obj$iwls$beta     <- coef(obj)
   obj$iwls$rss      <- 0.0
@@ -214,20 +206,18 @@ init_update <- function(obj) {
 }
 
 
-#' Test for IWLS convergence
+#' Perform end of reweight actions
 #' 
 #' @md
 #' @noRd
 #' @param obj `oomglm` model.
-#' @keywords internal
-end_update <- function(obj, tolerance = 1e-7) {
+#' @export
+end_reweight <- function(obj, tolerance = 1e-7) {
 
-  obj$iter  <- obj$iter + 1L 
-  
+  obj$iter <- obj$iter + 1L 
   beta_old <- obj$iwls$beta
   
   if(is.null(beta_old)) {
-    obj$converged <- FALSE
     return(obj)
   }
   
@@ -285,9 +275,9 @@ reweight.oomglm <- function(obj,
       break
     }
     
-    obj <- init_update(obj)
+    obj <- init_reweight(obj)
     obj <- update(obj, data)
-    obj <- end_update(obj, tolerance)
+    obj <- end_reweight(obj, tolerance)
     
   }
   
