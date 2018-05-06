@@ -97,7 +97,7 @@ glm_adjust <- function(obj, chunk) {
   gprime  <- fam$mu.eta(eta)
   z       <- eta + (y - g) / gprime
   fam_var <- fam$variance(g)
-  w       <- w * gprime ^ 2 / fam_var
+  ww      <- w * gprime ^ 2 / fam_var
 
   if(!is.null(beta)) {
     rss <-
@@ -108,7 +108,7 @@ glm_adjust <- function(obj, chunk) {
 
   list(
     z = z,
-    w = w,
+    w = ww,
     g = g,
     deviance = dev,
     rss      = rss
@@ -149,10 +149,9 @@ update_oomglm <- function(obj, data) {
   
   intercept <- attr(obj$terms, "intercept") > 0L
   
-  obj$n            <- obj$qr$num_obs
-  obj$df.residual  <- obj$n - chunk$p
-  obj$df.null      <- obj$n - as.integer(intercept)
-
+  obj$n             <- obj$qr$num_obs
+  obj$df.residual   <- obj$n - chunk$p
+  obj$df.null       <- obj$n - as.integer(intercept)
   obj$iwls$rss      <- trans$rss
   obj$iwls$deviance <- trans$deviance
   
@@ -205,7 +204,10 @@ update.oomglm <- function(obj, data) {
 #' @export
 init_reweight <- function(obj) {
   
-  obj$iwls$beta     <- coef(obj)
+  if(obj$iter > 0) {
+    obj$iwls$beta <- coef(obj)  
+  }
+  
   obj$iwls$rss      <- 0.0
   obj$iwls$deviance <- 0.0
   obj$qr   <- NULL
