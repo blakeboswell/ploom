@@ -24,14 +24,6 @@ of standard error.}
 \description{
 Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS).
 }
-\examples{
-# initialize the model
-x <- oomglm(mpg ~ cyl + disp)
-
-# perform iwls
-x <- reweight(x, mtcars, max_iter = 4)
-
-}
 \seealso{
 \code{\link[=oomlm]{oomlm()}}
 }

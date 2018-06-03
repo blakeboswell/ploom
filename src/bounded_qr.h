@@ -57,6 +57,7 @@ using namespace Rcpp;
 //'  equal to last element in rss_
 //'  
 //' @keywords internal
+//' @name BoundedQr
 class BoundedQr {
   
 private:

@@ -1,6 +1,5 @@
 #' @include ploom_shared.R
 
-
 #' Initialize Updating Linear Model
 #' 
 #' @noRd
@@ -11,7 +10,6 @@
 #' @param formula a symbolic description of the model to be fitted of class
 #'   `formula`.
 #' @param weights A one-sided, single term `formula` specifying weights.
-#' 
 #' @keywords internal
 init_oomlm <- function(formula, weights  = NULL) {
   
@@ -46,23 +44,7 @@ init_oomlm <- function(formula, weights  = NULL) {
 #' @param obj `oomlm` object to be updated.
 #' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list`
 #'   or `environment`.
-#'
 #' @seealso [oomlm()]
-#' @examples
-#' #' # create simple example data chunks
-#' chunks  <- purrr::pmap(mtcars, list)
-#' 
-#' # initialize the model
-#' x <- oomlm(mpg ~ cyl + disp)
-#' 
-#' # iteratively update model with chunks
-#' for(chunk in chunks) {
-#'   update(x, chunk)
-#' }
-#'
-#' # `oomlm` models can be fit with functional patterns like `purrr::reduce`.
-#' y <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
-#' 
 #' @export
 update.oomlm <- function(obj, data) {
   
@@ -127,30 +109,7 @@ update.oomlm <- function(obj, data) {
 #' \item{terms}{the [stats::terms()] object specifying the terms of the linear model.}
 #' \item{weights}{a one-sided, single term `formula` specifying weights.}
 #' \item{call}{the matched call.}
-#' 
 #' @seealso [oomglm()]
-#' @examples
-#' # The function `oomlm` is similar to base `lm` for fitting in-memory data.
-#' w <- oomlm(mpg ~ cyl + disp, data = mtcars)
-#'
-#' # Models are initalized with a call to `oomlm` and updated with `update`.
-#' # The recommended pattern is to initialize a model without providing data
-#' # then feed the data via iterative calls to `update`. For example:
-#' 
-#' # create simple example data chunks
-#' chunks  <- purrr::pmap(mtcars, list)
-#' 
-#' # initialize the model
-#' x <- oomlm(mpg ~ cyl + disp)
-#' 
-#' # iteratively update model with chunks
-#' for(chunk in chunks) {
-#'   update(x, chunk)
-#' }
-#'
-#' # `oomlm` models can be fit via functional patterns like `purrr::reduce`.
-#' y <- reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
-#' 
 #' @export
 oomlm <- function(formula, data = NULL, weights  = NULL, ...) {
   

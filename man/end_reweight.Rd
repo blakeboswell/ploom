@@ -16,13 +16,3 @@ of standard error.}
 Update variables used for IWLS calculation, increment \code{iter}, and
 determine if model has converged
 }
-\examples{
-x    <- oomglm(mpg ~ cyl + disp)
-feed <- oomfeed(mtcars, chunksize = 10)
-
-# manually execute an IWLS reweight iteration
-x <- init_reweight(x)
-x <- update(x, feed)
-x <- end_reweight(x)
-
-}

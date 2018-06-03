@@ -1,3 +1,6 @@
+## PKG_CXXFLAGS = -O3
+PGK_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) 
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
 ## With R 3.1.0 or later, you can uncomment the following line to tell R to 
 ## enable compilation with C++11 (where available)
@@ -10,5 +13,7 @@
 ## support within Armadillo prefers / requires it
 CXX_STD = CXX11
 
-PKG_CXXFLAGS = -I/usr/local/opt/llvm/include -O3 # $(SHLIB_OPENMP_CXXFLAGS) 
-PKG_LIBS = -I/usr/local/opt/llvm/include $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+## PKG_CXXFLAGS = -I/usr/local/opt/llvm/include -O3 # $(SHLIB_OPENMP_CXXFLAGS) 
+## PKG_LIBS = -I/usr/local/opt/llvm/include $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+

@@ -3,6 +3,55 @@ library(dplyr)
 library(biglm)
 
 
+# feed df test ----------------------------------------------------------
+
+airp <- read.table("http://faculty.washington.edu/tlumley/NO2.dat",
+                   col.names=c("logno2","logcars","temp","windsp",
+                               "tempgrad","winddir","hour","day"))
+
+w <- oomglm(exp(logno2) ~ logcars + temp + windsp,
+            family = Gamma(log),
+            start=c(2, 0, 0, 0))
+
+w <- reweight(w, data = oomfeed(airp, chunksize = 150), max_iter = 20)
+
+summary(w)
+
+
+# feed file test --------------------------------------------------------
+
+# mtcars %>% write.table('data/mtcars.txt', row.names = FALSE)
+
+next_chunk <- oomfeed(file("data/mtcars.txt"),
+                      chunksize = 10,
+                      col.names = colnames(mtcars))
+
+while(!is.null(chunk <- next_chunk())) {
+  print(head(chunk))
+}
+
+z <- oomglm(mpg ~ cyl + disp)
+z <- reweight(z, data = next_chunk, max_iter = 10)
+
+
+# feed url test ---------------------------------------------------------
+
+next_chunk <- oomfeed(url("http://faculty.washington.edu/tlumley/NO2.dat"),
+                      chunksize=150,
+                      col.names=c("logno2","logcars","temp","windsp",
+                                  "tempgrad","winddir","hour","day"))
+
+z <- oomglm(exp(logno2) ~ logcars + temp + windsp,
+            family = Gamma(log),
+            start=c(2, 0, 0, 0))
+
+z <- reweight(z, next_chunk, max_iter = 20)
+
+z
+
+
+# large data tests ------------------------------------------------------
+
 make_linear <- function(alpha, betas, nrows, sigma = 1) {
   
   p <- length(betas)
@@ -28,9 +77,6 @@ df <- make_linear(alpha, betas, N) %>%
   rename_all(tolower) %>%
   rename(y = v1)
 
-
-w <- oomglm(y ~ v2 + v3 + v4 + v5)
-w <- reweight(w, oomfeed(df, chunk_size), num_iter = 8)
 
 w <- oomglm(y ~ v2 + v3 + v4 + v5)
 w <- reweight(w, oomfeed(df, chunk_size), max_iter = 8)

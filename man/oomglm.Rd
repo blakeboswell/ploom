@@ -60,11 +60,3 @@ the number of observations processed per round of IWLS (\code{n});
 the number of IWLS iterations that have been performed (\code{iter});
 and if the IWLS algorithm has converged (\code{converged}).
 }
-\examples{
-# initialize the model
-x <- oomglm(mpg ~ cyl + disp)
-
-# perform iwls
-x <- reweight(x, mtcars, max_iter = 4)
-
-}

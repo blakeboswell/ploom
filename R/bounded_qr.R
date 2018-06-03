@@ -9,7 +9,7 @@ new_bounded_qr <- function(np) {
     stop("Number of parameters must be greater than 0")
   }
   
-  new(Class = BoundedQr, np)
+  methods::new(Class = BoundedQr, np)
 }
 
 

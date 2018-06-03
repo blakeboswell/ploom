@@ -14,7 +14,6 @@
 #' @param family a `glm` family object.
 #' @param weights a one-sided, single term `formula` specifying weights. 
 #' @param start starting values for the parameters in the linear predictor.
-#' 
 #' @keywords internal
 init_oomglm <- function(formula,
                         family,
@@ -72,7 +71,6 @@ init_oomglm <- function(formula,
 #' @noRd
 #' @param object `oomglm` model.
 #' @param chunk list created by `unpack_oomchunk`.
-#' 
 #' @keywords internal
 glm_adjust <- function(obj, chunk) {
 
@@ -123,7 +121,6 @@ glm_adjust <- function(obj, chunk) {
 #' @noRd
 #' @param object `oomglm` model.
 #' @param data `data.frame` of observations to be fit.
-#' 
 #' @keywords internal
 update_oomglm <- function(obj, data) {
 
@@ -165,7 +162,6 @@ update_oomglm <- function(obj, data) {
 #' @md
 #' @param obj `oomglm` model.
 #' @param data an `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
-#' 
 #' @export
 update.oomglm <- function(obj, data) {
   
@@ -192,15 +188,6 @@ update.oomglm <- function(obj, data) {
 #' 
 #' @md
 #' @param obj `oomglm` model.
-#' @examples
-#' x    <- oomglm(mpg ~ cyl + disp)
-#' feed <- oomfeed(mtcars, chunksize = 10)
-#'
-#' # manually execute an IWLS reweight iteration
-#' x <- init_reweight(x)
-#' x <- update(x, feed)
-#' x <- end_reweight(x)
-#' 
 #' @export
 init_reweight <- function(obj) {
   
@@ -227,15 +214,6 @@ init_reweight <- function(obj) {
 #' @param obj `oomglm` model.
 #' @param tolerance Tolerance for change in coefficient as a multiple
 #'  of standard error.
-#' @examples
-#' x    <- oomglm(mpg ~ cyl + disp)
-#' feed <- oomfeed(mtcars, chunksize = 10)
-#'
-#' # manually execute an IWLS reweight iteration
-#' x <- init_reweight(x)
-#' x <- update(x, feed)
-#' x <- end_reweight(x)
-#' 
 #' @export
 end_reweight <- function(obj, tolerance = 1e-7) {
 
@@ -269,13 +247,6 @@ end_reweight <- function(obj, tolerance = 1e-7) {
 #'  `data`.
 #' 
 #' @seealso [oomlm()]
-#' @examples
-#' # initialize the model
-#' x <- oomglm(mpg ~ cyl + disp)
-#' 
-#' # perform iwls
-#' x <- reweight(x, mtcars, max_iter = 4)
-#' 
 #' @export
 reweight <- function(obj, data, max_iter, tolerance = 1e-7){
   UseMethod("reweight")
@@ -355,14 +326,6 @@ reweight.oomglm <- function(obj,
 #' \item{terms}{The [stats::terms()] object used.}
 #' \item{weights}{The weights `formula` provided to the model.}
 #' \item{call}{The matched call.}
-#' 
-#' @examples
-#' # initialize the model
-#' x <- oomglm(mpg ~ cyl + disp)
-#' 
-#' # perform iwls
-#' x <- reweight(x, mtcars, max_iter = 4)
-#'
 #' @export
 oomglm <- function(formula,
                    data     = NULL,

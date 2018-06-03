@@ -28,7 +28,7 @@ formula.oomlm <- function(x, ...) {
 
 #' @export
 family.oomlm <- function(object, ...) {
-  gaussian() 
+  gaussian()
 }
 
 

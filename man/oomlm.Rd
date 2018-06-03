@@ -46,29 +46,6 @@ consistency across calls to \code{\link[=update]{update()}}. Factors are permitt
 levels of the factor must be the same across all data chunks. Empty factor
 levels are accepted.
 }
-\examples{
-# The function `oomlm` is similar to base `lm` for fitting in-memory data.
-w <- oomlm(mpg ~ cyl + disp, data = mtcars)
-
-# Models are initalized with a call to `oomlm` and updated with `update`.
-# The recommended pattern is to initialize a model without providing data
-# then feed the data via iterative calls to `update`. For example:
-
-# create simple example data chunks
-chunks  <- purrr::pmap(mtcars, list)
-
-# initialize the model
-x <- oomlm(mpg ~ cyl + disp)
-
-# iteratively update model with chunks
-for(chunk in chunks) {
-  update(x, chunk)
-}
-
-# `oomlm` models can be fit via functional patterns like `purrr::reduce`.
-y <- reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
-
-}
 \seealso{
 \code{\link[=oomglm]{oomglm()}}
 }

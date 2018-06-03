@@ -49,5 +49,6 @@
 #'  equal to last element in rss_
 #'  
 #' @keywords internal
+#' @name BoundedQr
 NULL
 

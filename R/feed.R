@@ -7,10 +7,10 @@ setGeneric("oomfeed")
 
 
 #' @export
-oomfeed.data.frame <- function(conn, chunksize, ...) {
+oomfeed.data.frame <- function(data, chunksize, ...) {
 
   reset  <- FALSE
-  n      <- nrow(conn)
+  n      <- nrow(data)
   cursor <- 0
 
   function() {
@@ -32,7 +32,7 @@ oomfeed.data.frame <- function(conn, chunksize, ...) {
       reset <<- TRUE
     }
 
-    conn[start:cursor, ]
+    data[start:cursor, ]
 
   }
 
@@ -41,42 +41,49 @@ oomfeed.data.frame <- function(conn, chunksize, ...) {
 
 
 #' @export
-oomfeed.connection <- function(conn, chunksize, ...) {
+oomfeed.connection <- function(data, chunksize, ...) {
 
   reset <- FALSE
-  deats <- summary(conn)
+  deats <- summary(data)
+  close(data) # create fresh connection below
   
   conn_fxn <- function(class_name){
-    switch(class_name, "file" = file, "url-libcurl" = url, NULL)
+    switch(
+      class_name,
+      "file"        = file,
+      "url-libcurl" = url,
+      "gzfile"      = gzfile,
+      "bzfile"      = bzfile,
+      "xzfile"      = xzfile,
+      NULL
+    )
   }
   
   if(is.null(fxn <- conn_fxn(deats$class))) {
-    stop("unsuppored connection")
+    stop(cat("oomfeed does not support connection type ", deats$class))
   }
   
-  close(conn)
-  conn <- fxn(deats$description, open = deats$mode)
+  data <- fxn(deats$description, open = deats$mode)
   
   function() {
-
+    
     if(reset) {
-      if(!is.null(conn)) {
-        close(conn)
+      if(!is.null(data)) {
+        close(data)
       }
-      conn  <<- fxn(deats$description, open = deats$mode)
+      data  <<- fxn(deats$description, open = deats$mode)
       reset <<- FALSE
     }
-
-    rval <- read.table(conn, nrows = chunksize, ...)
-
+    
+    rval <- read.table(data, nrows = chunksize, ...)
+    
     if(nrow(rval) == 0) {
-      close(conn)
+      close(data)
       reset <<- TRUE
-      conn  <<- NULL
+      data  <<- NULL
       return(NULL)
     }
-
+    
     rval
-
   }
 }

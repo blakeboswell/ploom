@@ -12,13 +12,3 @@ init_reweight(obj)
 \description{
 Reset variables used for IWLS calculation
 }
-\examples{
-x    <- oomglm(mpg ~ cyl + disp)
-feed <- oomfeed(mtcars, chunksize = 10)
-
-# manually execute an IWLS reweight iteration
-x <- init_reweight(x)
-x <- update(x, feed)
-x <- end_reweight(x)
-
-}
