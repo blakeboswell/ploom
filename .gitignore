@@ -5,3 +5,5 @@
 docs/
 scratch.R
 logo/
+*.txt
+*.txt.gz
