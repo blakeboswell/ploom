@@ -1,2 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+dev-notes/
+benchmark\.R
+logo/
+scratch\.R
+README\.Rmd
