@@ -4,18 +4,19 @@
 \alias{update.Rcpp_BoundedQr}
 \title{wrapper for \code{BoundedQr} method \code{update}}
 \usage{
-\method{update}{Rcpp_BoundedQr}(qr, X, y, weights)
+\method{update}{Rcpp_BoundedQr}(object, X, y, weights, ...)
 }
 \arguments{
-\item{qr}{BoundedQr object to update}
+\item{object}{BoundedQr object to update}
 
 \item{X}{numeric matrix of covariate observations}
 
 \item{y}{numeric vector of response}
 
 \item{weights}{numeric vector of observation weights}
+
+\item{...}{ignored}
 }
 \description{
 wrapper for \code{BoundedQr} method \code{update}
 }
-\keyword{internal}

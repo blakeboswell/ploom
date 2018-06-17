@@ -4,10 +4,10 @@
 \alias{reweight}
 \title{Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS).}
 \usage{
-reweight(obj, data, max_iter, tolerance = 1e-07)
+reweight(object, data, max_iter, tolerance = 1e-07)
 }
 \arguments{
-\item{obj}{\code{oomglm} model.}
+\item{object}{\code{oomglm} model.}
 
 \item{data}{An \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
 
@@ -25,5 +25,5 @@ of standard error.}
 Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS).
 }
 \seealso{
-\code{\link[=oomlm]{oomlm()}}
+\code{\link[=oomglm]{oomglm()}}
 }

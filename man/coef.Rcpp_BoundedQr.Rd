@@ -4,10 +4,10 @@
 \alias{coef.Rcpp_BoundedQr}
 \title{wrapper for \code{BoundedQr} method \code{betas}}
 \usage{
-\method{coef}{Rcpp_BoundedQr}(qr, nvar = NULL, ...)
+\method{coef}{Rcpp_BoundedQr}(object, nvar = NULL, ...)
 }
 \arguments{
-\item{qr}{BoundedQr object}
+\item{object}{BoundedQr object}
 
 \item{nvar}{int number of coefficients to return}
 
@@ -16,4 +16,3 @@
 \description{
 wrapper for \code{BoundedQr} method \code{betas}
 }
-\keyword{internal}

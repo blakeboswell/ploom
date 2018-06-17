@@ -37,7 +37,7 @@ extractor functions.
 \item{family}{a \code{\link[stats:family]{stats::family()}} object describing the error distribution
 and link function used in the model.}
 \item{terms}{The \code{\link[stats:terms]{stats::terms()}} object used.}
-\item{weights}{The weights \code{formula} provided to the model.}
+\item{weights}{The weights \code{\link[stats:formula]{stats::formula()}} provided to the model.}
 \item{call}{The matched call.}
 }
 \description{
@@ -49,8 +49,8 @@ to be fit in \code{p^2} memory.
 \code{ooglm} initializes an object of class \code{ooglm} inheriting from the
 class \code{oomlm}. \code{ooglm} objects are intended to be iteratively
 updated with new data via calls to \code{\link[=update]{update()}}. Iterative fitting
-over all data \code{\link[=updates]{updates()}} are performed with the function \code{\link[=reweight]{reweight()}}.
-If \code{data} is provided to the \code{ooglm} function call, an \code{\link[=update]{update()}} round
+over all data updates are performed with the function \code{\link[=reweight]{reweight()}}.
+If \code{data} is provided to the \code{ooglm} function call, an \code{update()} round
 will be performed on initialization.
 
 A \code{oomglm} object can be in various states of fit depending on the number

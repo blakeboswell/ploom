@@ -4,12 +4,13 @@
 \alias{vcov.Rcpp_BoundedQr}
 \title{wrapper for \code{BoundedQr} method \code{vcov}}
 \usage{
-\method{vcov}{Rcpp_BoundedQr}(qr)
+\method{vcov}{Rcpp_BoundedQr}(object, ...)
 }
 \arguments{
-\item{qr}{BoundedQr object}
+\item{object}{BoundedQr object}
+
+\item{...}{ignored}
 }
 \description{
 wrapper for \code{BoundedQr} method \code{vcov}
 }
-\keyword{internal}

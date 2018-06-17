@@ -4,12 +4,14 @@
 \alias{update.oomglm}
 \title{Update \code{oomglm} with new observations}
 \usage{
-\method{update}{oomglm}(obj, data)
+\method{update}{oomglm}(object, data, ...)
 }
 \arguments{
-\item{obj}{\code{oomglm} model.}
+\item{object}{\code{oomglm} model.}
 
 \item{data}{an \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
+
+\item{...}{ignored}
 }
 \description{
 Update \code{oomglm} with new observations

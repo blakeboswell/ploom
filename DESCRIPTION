@@ -19,6 +19,8 @@ License: GPL
 Depends:
   R (>= 3.1.2),
   Rcpp (>= 0.12.15)
+Imports:
+  methods
 LinkingTo:
   Rcpp (>= 0.12.15),
   RcppArmadillo

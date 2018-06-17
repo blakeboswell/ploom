@@ -4,13 +4,15 @@
 \alias{update.oomlm}
 \title{Fit Updating Linear Model to more data}
 \usage{
-\method{update}{oomlm}(obj, data)
+\method{update}{oomlm}(object, data, ...)
 }
 \arguments{
-\item{obj}{\code{oomlm} object to be updated.}
+\item{object}{\code{oomlm} object to be updated.}
 
 \item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list}
 or \code{environment}.}
+
+\item{...}{ignored}
 }
 \description{
 Update \code{oomlm} linear model fit with new data.

@@ -4,10 +4,10 @@
 \alias{end_reweight}
 \title{Perform end of IWLS reweight iteration}
 \usage{
-end_reweight(obj, tolerance = 1e-07)
+end_reweight(object, tolerance = 1e-07)
 }
 \arguments{
-\item{obj}{\code{oomglm} model.}
+\item{object}{\code{oomglm} model.}
 
 \item{tolerance}{Tolerance for change in coefficient as a multiple
 of standard error.}

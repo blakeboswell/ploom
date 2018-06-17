@@ -4,10 +4,10 @@
 \alias{init_reweight}
 \title{Prepare model for IWLS iteration}
 \usage{
-init_reweight(obj)
+init_reweight(object)
 }
 \arguments{
-\item{obj}{\code{oomglm} model.}
+\item{object}{\code{oomglm} model.}
 }
 \description{
 Reset variables used for IWLS calculation
