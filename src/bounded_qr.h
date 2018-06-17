@@ -8,6 +8,8 @@
 using namespace Rcpp;
 // [[Rcpp::depends(RcppArmadillo)]]
 
+static const double ZERO_      = 0.0;
+static const double NEAR_ZERO_ = 1.e-69;
 
 //'  Algorithm AS 274: Least Squares Routines to Supplement Those of Gentleman
 //'  Author(s): Alan J. Miller
@@ -61,9 +63,7 @@ using namespace Rcpp;
 class BoundedQr {
   
 private:
-  const double ZERO_      = 0.0;
-  const double NEAR_ZERO_ = 1.e-69;
-  
+
   int rbar_dim_;
   arma::vec lindep_;
   
