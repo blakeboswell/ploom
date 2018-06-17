@@ -20,31 +20,35 @@
 # anova.oomlm <- function(object, ...) { not possible }
 
 
+#' @method formula oomlm
 #' @export
 formula.oomlm <- function(x, ...) {
   formula(x$terms)
 }
 
 
+#' @method family oomlm
 #' @export
 family.oomlm <- function(object, ...) {
   gaussian()
 }
 
 
+#' @method deviance oomlm
 #' @export
-deviance.oomlm <- function(obj, ...) {
-  obj$qr$rss_full
+deviance.oomlm <- function(object, ...) {
+  object$qr$rss_full
 }
 
 
+#' @method AIC oomlm
 #' @export
-AIC.oomlm <- function(obj, ..., k = 2) {
+AIC.oomlm <- function(object, ..., k = 2) {
 
-  p   <- obj$qr$rank()
-  rss <- obj$qr$rss_full
-  n   <- obj$qr$num_obs
-  pw  <- obj$qr$pweights
+  p   <- object$qr$rank()
+  rss <- object$qr$rss_full
+  n   <- object$qr$num_obs
+  pw  <- object$qr$pweights
   
   (-(pw - n * (log(2 * pi) + 1 - log(n) + log(rss)))
     + k * (p + 1))
@@ -52,20 +56,22 @@ AIC.oomlm <- function(obj, ..., k = 2) {
 }
 
 
+#' @method coef oomlm
 #' @export
-coef.oomlm <- function(obj, ...) {
-  betas        <- coef(obj$qr)
-  names(betas) <- obj$names
+coef.oomlm <- function(object, ...) {
+  betas        <- coef(object$qr)
+  names(betas) <- object$names
   betas
 }
 
 
+#' @method vcov oomlm
 #' @export
-vcov.oomlm <- function(obj, ...) {
+vcov.oomlm <- function(object, ...) {
   
   ## cpp implementation / HC not supported ---------------------------
-  V <- vcov(obj$qr)
-  dimnames(V) <- list(obj$names, obj$names)
+  V <- vcov(object$qr)
+  dimnames(V) <- list(object$names, object$names)
 
   V
   

@@ -4,42 +4,42 @@
 
 
 #' @export
-summary.oomlm <- function(x,
+summary.oomlm <- function(object,
                           correlation  = FALSE,
                           symbolic.cor = FALSE,
                           ...) {
 
-  if(!inherits(x, "oomlm")) {
+  if(!inherits(object, "oomlm")) {
     stop("not an oomlm object.")
   }
   
-  rank <- x$qr$rank()
+  rank <- object$qr$rank()
   if(rank == 0) {
     # TODO
   }
   
-  if(is.null(x$terms)) {
+  if(is.null(object$terms)) {
     # TODO
   }
   
-  has_intercept  <- attr(x$terms, "intercept") > 0
-  lindep         <- as.logical(x$qr$lindep())
-  names(lindep)  <- x$names
+  has_intercept  <- attr(object$terms, "intercept") > 0
+  lindep         <- as.logical(object$qr$lindep())
+  names(lindep)  <- object$names
   
-  num_params     <- x$qr$num_params
-  num_obs        <- x$qr$num_obs
-  intercept_only <- rank == attr(x$terms, "intercept")
+  num_params     <- object$qr$num_params
+  num_obs        <- object$qr$num_obs
+  intercept_only <- rank == attr(object$terms, "intercept")
   
-  sumsqy     <- x$qr$sumsqy
-  rss        <- x$qr$rss()
+  sumsqy     <- object$qr$sumsqy
+  rss        <- object$qr$rss()
   rss_full   <- tail(rss, 1)
   rss_red    <- if(has_intercept) head(rss, 1) else sumsqy
   res_dof    <- num_obs - rank
   res_var    <- rss_full / res_dof
   res_std    <- sqrt(res_var)
   
-  beta       <- coef(x)
-  cov_mat    <- vcov(x)
+  beta       <- coef(object)
+  cov_mat    <- vcov(object)
   se         <- sqrt(diag(cov_mat))
   tval       <- beta / se
 
@@ -49,7 +49,7 @@ summary.oomlm <- function(x,
     "t value"    = tval,
     "Pr(>|t|)"   = 2 * pt(abs(tval), res_dof, lower.tail = FALSE)
   )
-  rownames(coef_mat) <- x$names
+  rownames(coef_mat) <- object$names
   
   if(!intercept_only) {
     
@@ -70,8 +70,8 @@ summary.oomlm <- function(x,
   }
   
   rval <- list(
-    call          = x$call,
-    terms         = x$terms,
+    call          = object$call,
+    terms         = object$terms,
     coefficients  = coef_mat,
     n             = num_obs,
     aliased       = lindep,

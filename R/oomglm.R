@@ -42,7 +42,7 @@ init_oomglm <- function(formula,
     deviance   = 0.0
   )
   
-  obj <- list(
+  object <- list(
     converged     = FALSE,
     iter          = 0,
     n             = 0,
@@ -59,8 +59,8 @@ init_oomglm <- function(formula,
     iwls          = iwls
   )
   
-  class(obj) <- c("oomglm", "oomlm")
-  obj
+  class(object) <- c("oomglm", "oomlm")
+  object
   
 }
 
@@ -72,18 +72,18 @@ init_oomglm <- function(formula,
 #' @param object `oomglm` model.
 #' @param chunk list created by `unpack_oomchunk`.
 #' @keywords internal
-glm_adjust <- function(obj, chunk) {
+glm_adjust <- function(object, chunk) {
 
   mm     <- chunk$data
   y      <- chunk$response
   w      <- chunk$weights
   offset <- chunk$offset
 
-  fam    <- obj$family
+  fam    <- object$family
 
-  beta   <- obj$iwls$beta
-  rss    <- obj$iwls$rss
-  dev    <- obj$iwls$deviance
+  beta   <- object$iwls$beta
+  rss    <- object$iwls$rss
+  dev    <- object$iwls$deviance
 
   if(is.null(beta)) {
     eta <- rep(0.0, nrow(mm)) + offset
@@ -122,37 +122,37 @@ glm_adjust <- function(obj, chunk) {
 #' @param object `oomglm` model.
 #' @param data `data.frame` of observations to be fit.
 #' @keywords internal
-update_oomglm <- function(obj, data) {
+update_oomglm <- function(object, data) {
 
-  chunk <- unpack_oomchunk(obj, data)
+  chunk <- unpack_oomchunk(object, data)
   
-  if(is.null(obj$assign)) {
-    obj$assign <- chunk$assign
-    obj$names  <- colnames(chunk$data)
+  if(is.null(object$assign)) {
+    object$assign <- chunk$assign
+    object$names  <- colnames(chunk$data)
   }
   
-  if(is.null(obj$qr)) {
+  if(is.null(object$qr)) {
     qr <- new_bounded_qr(chunk$p)
   } else {
-    qr <- obj$qr
+    qr <- object$qr
   }
   
-  trans  <- glm_adjust(obj, chunk)
+  trans  <- glm_adjust(object, chunk)
   
-  obj$qr <- update(qr,
-                   chunk$data,
-                   trans$z - chunk$offset,
-                   trans$w)
+  object$qr <- update(qr,
+                      chunk$data,
+                      trans$z - chunk$offset,
+                      trans$w)
   
-  intercept <- attr(obj$terms, "intercept") > 0L
+  intercept <- attr(object$terms, "intercept") > 0L
   
-  obj$n             <- obj$qr$num_obs
-  obj$df.residual   <- obj$n - chunk$p
-  obj$df.null       <- obj$n - as.integer(intercept)
-  obj$iwls$rss      <- trans$rss
-  obj$iwls$deviance <- trans$deviance
+  object$n             <- object$qr$num_obs
+  object$df.residual   <- object$n - chunk$p
+  object$df.null       <- object$n - as.integer(intercept)
+  object$iwls$rss      <- trans$rss
+  object$iwls$deviance <- trans$deviance
   
-  obj
+  object
   
 }
 
@@ -160,10 +160,11 @@ update_oomglm <- function(obj, data) {
 #' Update `oomglm` with new observations
 #' 
 #' @md
-#' @param obj `oomglm` model.
+#' @param object `oomglm` model.
 #' @param data an `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' @param ... ignored
 #' @export
-update.oomglm <- function(obj, data) {
+update.oomglm <- function(object, data, ...) {
   
   if(!inherits(data, c("function", "data.frame"))) {
     stop("class of `data` not recognized")
@@ -174,10 +175,10 @@ update.oomglm <- function(obj, data) {
   }
   
   while(!is.null(chunk <- data())){
-    obj <- update_oomglm(obj, chunk)
+    object <- update_oomglm(object, chunk)
   }
   
-  obj
+  object
   
 }
 
@@ -187,20 +188,20 @@ update.oomglm <- function(obj, data) {
 #' Reset variables used for IWLS calculation
 #' 
 #' @md
-#' @param obj `oomglm` model.
+#' @param object `oomglm` model.
 #' @export
-init_reweight <- function(obj) {
+init_reweight <- function(object) {
   
-  if(obj$iter > 0) {
-    obj$iwls$beta <- coef(obj)  
+  if(object$iter > 0) {
+    object$iwls$beta <- coef(object)  
   }
   
-  obj$iwls$rss      <- 0.0
-  obj$iwls$deviance <- 0.0
-  obj$qr   <- NULL
-  obj$n    <- 0L
+  object$iwls$rss      <- 0.0
+  object$iwls$deviance <- 0.0
+  object$qr   <- NULL
+  object$n    <- 0L
 
-  obj
+  object
  
 }
 
@@ -211,24 +212,24 @@ init_reweight <- function(obj) {
 #' determine if model has converged
 #' 
 #' @md
-#' @param obj `oomglm` model.
+#' @param object `oomglm` model.
 #' @param tolerance Tolerance for change in coefficient as a multiple
 #'  of standard error.
 #' @export
-end_reweight <- function(obj, tolerance = 1e-7) {
+end_reweight <- function(object, tolerance = 1e-7) {
 
-  obj$iter <- obj$iter + 1L 
-  beta_old <- obj$iwls$beta
+  object$iter <- object$iter + 1L 
+  beta_old    <- object$iwls$beta
   
   if(is.null(beta_old)) {
-    return(obj)
+    return(object)
   }
   
-  beta  <- coef(obj)
-  delta <- (beta_old - beta) / sqrt(diag(vcov(obj)))
-  obj$converged <- max(abs(delta)) < tolerance
+  beta  <- coef(object)
+  delta <- (beta_old - beta) / sqrt(diag(vcov(object)))
+  object$converged <- max(abs(delta)) < tolerance
   
-  obj
+  object
   
 } 
 
@@ -236,7 +237,7 @@ end_reweight <- function(obj, tolerance = 1e-7) {
 #' Reweight `oomglm` model via Iteratively Reweighted Least Squares (IWLS).
 #' 
 #' @md
-#' @param obj `oomglm` model.
+#' @param object `oomglm` model.
 #' @param data An `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
 #' @param max_iter Maximum number of IWLS iterations to perform. Will 
 #'   stop iterating if model converges before `max_iter` iterations.
@@ -246,16 +247,16 @@ end_reweight <- function(obj, tolerance = 1e-7) {
 #' @return `oomglm` object after performing `max_iter` IWLS iterations on
 #'  `data`.
 #' 
-#' @seealso [oomlm()]
+#' @seealso [`oomglm()`]
 #' @export
-reweight <- function(obj, data, max_iter, tolerance = 1e-7){
+reweight <- function(object, data, max_iter, tolerance = 1e-7){
   UseMethod("reweight")
 }
 setGeneric("reweight")
 
 
 #' @export
-reweight.oomglm <- function(obj,
+reweight.oomglm <- function(object,
                             data,
                             max_iter  = 1L,
                             tolerance = 1e-7) {
@@ -263,17 +264,17 @@ reweight.oomglm <- function(obj,
   
   for(i in 1:max_iter) {
     
-    if(obj$converged) {
+    if(object$converged) {
       break
     }
     
-    obj <- init_reweight(obj)
-    obj <- update(obj, data)
-    obj <- end_reweight(obj, tolerance)
+    object <- init_reweight(object)
+    object <- update(object, data)
+    object <- end_reweight(object, tolerance)
     
   }
   
-  obj
+  object
   
 }
 
@@ -299,8 +300,8 @@ reweight.oomglm <- function(obj,
 #' `ooglm` initializes an object of class `ooglm` inheriting from the
 #'   class `oomlm`. `ooglm` objects are intended to be iteratively 
 #'   updated with new data via calls to [update()]. Iterative fitting
-#'   over all data [updates()] are performed with the function [reweight()].
-#'   If `data` is provided to the `ooglm` function call, an [update()] round 
+#'   over all data updates are performed with the function [reweight()].
+#'   If `data` is provided to the `ooglm` function call, an `update()` round 
 #'   will be performed on initialization.
 #' 
 #'   A `oomglm` object can be in various states of fit depending on the number
@@ -320,11 +321,11 @@ reweight.oomglm <- function(obj,
 #' \item{n}{The number observations processed per round of IWLS.}
 #' \item{df.residual}{The residual degrees of freedom.}
 #' \item{df.null}{The residual degrees of freedom.}
-#' \item{formula}{the [stats::formula()] object specifying the linear model.}
-#' \item{family}{a [stats::family()] object describing the error distribution
+#' \item{formula}{the [`stats::formula()`] object specifying the linear model.}
+#' \item{family}{a [`stats::family()`] object describing the error distribution
 #'   and link function used in the model.}
-#' \item{terms}{The [stats::terms()] object used.}
-#' \item{weights}{The weights `formula` provided to the model.}
+#' \item{terms}{The [`stats::terms()`] object used.}
+#' \item{weights}{The weights [`stats::formula()`] provided to the model.}
 #' \item{call}{The matched call.}
 #' @export
 oomglm <- function(formula,
@@ -334,16 +335,16 @@ oomglm <- function(formula,
                    start    = NULL,
                    ...) {
 
-  obj <- init_oomglm(formula,
-                     family,
-                     weights,
-                     start)
+  object <- init_oomglm(formula,
+                        family,
+                        weights,
+                        start)
 
   if(!is.null(data)) {
-    obj <- update(obj, data)
+    object <- update(object, data)
   }
 
-  obj
+  object
 
 }
 

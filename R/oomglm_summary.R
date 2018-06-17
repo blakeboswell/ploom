@@ -1,19 +1,19 @@
 
-
+#' @method summary oomglm
 #' @export
-summary.oomglm <- function(x,
+summary.oomglm <- function(object,
                            correlation  = FALSE,
                            symbolic.cor = FALSE,
                            ...) {
 
-    rval <- summary.oomlm(x, correlation, symbolic.cor, ...)
+    rval <- summary.oomlm(object, correlation, symbolic.cor, ...)
     
-    rval$family      <- x$family  
-    rval$deviance    <- x$iwls$deviance
-    rval$aic         <- AIC(x)
-    rval$df.residual <- x$df.residual
-    rval$df.null     <- x$df.null
-    rval$iter        <- x$iter
+    rval$family      <- object$family  
+    rval$deviance    <- object$iwls$deviance
+    rval$aic         <- AIC(object)
+    rval$df.residual <- object$df.residual
+    rval$df.null     <- object$df.null
+    rval$iter        <- object$iter
     
     class(rval) <- "summary.oomglm"
     
@@ -21,6 +21,7 @@ summary.oomglm <- function(x,
 }
 
 
+#' @method print summary.oomglm
 #' @export
 print.summary.oomglm <- function(x,
                                  digits = max(3L, getOption("digits") - 3L),

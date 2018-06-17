@@ -17,7 +17,7 @@ init_oomlm <- function(formula, weights  = NULL) {
     stop("`weights` must be a formula")
   }
   
-  obj <- list(
+  object <- list(
     formula      = formula,
     terms        = terms(formula),
     weights      = weights,
@@ -29,8 +29,8 @@ init_oomlm <- function(formula, weights  = NULL) {
     assign       = NULL
   )
   
-  class(obj) <- "oomlm"
-  obj
+  class(object) <- "oomlm"
+  object
   
 }
 
@@ -41,35 +41,36 @@ init_oomlm <- function(formula, weights  = NULL) {
 #' @description
 #' Update `oomlm` linear model fit with new data. 
 #' 
-#' @param obj `oomlm` object to be updated.
+#' @param object `oomlm` object to be updated.
 #' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list`
 #'   or `environment`.
+#' @param ... ignored
 #' @seealso [oomlm()]
 #' @export
-update.oomlm <- function(obj, data) {
+update.oomlm <- function(object, data, ...) {
   
-  chunk <- unpack_oomchunk(obj, data)
+  chunk <- unpack_oomchunk(object, data)
   
-  if(is.null(obj$assign)) {
-    obj$assign <- chunk$assign
-    obj$names  <- colnames(chunk$data)
+  if(is.null(object$assign)) {
+    object$assign <- chunk$assign
+    object$names  <- colnames(chunk$data)
   }
   
-  if(is.null(obj$qr)) {
+  if(is.null(object$qr)) {
     qr <- new_bounded_qr(chunk$p)
   } else {
-    qr <- obj$qr
+    qr <- object$qr
   }
   
-  obj$qr <- update(qr,
-                   chunk$data,
-                   chunk$response - chunk$offset,
-                   chunk$weights)
+  object$qr <- update(qr,
+                      chunk$data,
+                      chunk$response - chunk$offset,
+                      chunk$weights)
   
-  obj$n            <- obj$qr$num_obs
-  obj$df.residual  <- obj$n - chunk$p
+  object$n            <- object$qr$num_obs
+  object$df.residual  <- object$n - chunk$p
   
-  obj
+  object
   
 }
 
@@ -113,13 +114,13 @@ update.oomlm <- function(obj, data) {
 #' @export
 oomlm <- function(formula, data = NULL, weights  = NULL, ...) {
   
-  obj <- init_oomlm(formula, weights)
+  object <- init_oomlm(formula, weights)
   
   if(!is.null(data)) {
-    obj <- update(obj, data)
+    object <- update(object, data)
   }
   
-  obj
+  object
   
 }
 
