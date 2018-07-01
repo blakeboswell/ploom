@@ -7,14 +7,6 @@
 #' @keywords internal
 stats_mf_class <- stats:::.MFclass
 
-#' @noRd
-#' @keywords internal
-stats_c_modelframe <- stats:::C_modelframe
-
-#' @noRd
-#' @keywords internal
-stats_c_modelmatrix <- stats:::C_modelmatrix
-
 
 #' @noRd
 #' @keywords internal
@@ -55,7 +47,7 @@ model_frame <- function(formula, data = NULL) {
   subset     <- NULL
   rownames   <- NULL
   
-  data       <- .External2(stats_c_modelframe,
+  data       <- .External2(stats:::C_modelframe,
                            formula,
                            rownames,
                            variables,
@@ -116,7 +108,7 @@ model_matrix <- function(terms, data) {
     data[["x"]] <- raw(nrow(data))
   }
   
-  ans <- .External2(stats_c_modelmatrix, terms, data)
+  ans <- .External2(stats:::C_modelmatrix, terms, data)
   
   if(any(isF)) {
     attr(ans, "contrasts") <- lapply(data[isF], attr, "contrasts")
