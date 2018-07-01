@@ -34,6 +34,7 @@ Collate:
     'biglm_vcov.R'
     'bounded_qr.R'
     'feed.R'
+    'model_frame.R'
     'ploom_shared.R'
     'oomglm.R'
     'oomglm_summary.R'
