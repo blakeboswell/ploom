@@ -2,12 +2,30 @@ library(rbenchmark)
 library(dplyr)
 library(biglm)
 
+# simple example --------------------------------------------------------
+
+# proxy for big data feed 
+chunks  <- purrr::pmap(mtcars, list)
+
+# initialize the model
+x <- oomlm(mpg ~ cyl + disp)
+
+# iteratively update model with data chunks
+for(chunk in chunks) {
+  x <- update(x, chunk)
+}
 
 # feed df test ----------------------------------------------------------
 
 airp <- read.table("http://faculty.washington.edu/tlumley/NO2.dat",
-                   col.names=c("logno2","logcars","temp","windsp",
-                               "tempgrad","winddir","hour","day"))
+                   col.names=c("logno2"
+                               , "logcars"
+                               , "temp"
+                               , "windsp"
+                               , "tempgrad"
+                               , "winddir"
+                               , "hour"
+                               , "day"))
 
 w <- oomglm(exp(logno2) ~ logcars + temp + windsp,
             family = Gamma(log),
@@ -20,7 +38,7 @@ summary(w)
 
 # feed file test --------------------------------------------------------
 
-# mtcars %>% write.table('data/mtcars.txt', row.names = FALSE)
+mtcars %>% write.table('data/mtcars.txt', row.names = FALSE)
 
 next_chunk <- oomfeed(file("data/mtcars.txt"),
                       chunksize = 10,
@@ -38,8 +56,14 @@ z <- reweight(z, data = next_chunk, max_iter = 10)
 
 next_chunk <- oomfeed(url("http://faculty.washington.edu/tlumley/NO2.dat"),
                       chunksize=150,
-                      col.names=c("logno2","logcars","temp","windsp",
-                                  "tempgrad","winddir","hour","day"))
+                      col.names=c("logno2"
+                                  , "logcars"
+                                  , "temp"
+                                  , "windsp"
+                                  , "tempgrad"
+                                  , "winddir"
+                                  , "hour"
+                                  , "day"))
 
 z <- oomglm(exp(logno2) ~ logcars + temp + windsp,
             family = Gamma(log),
@@ -78,8 +102,20 @@ df <- make_linear(alpha, betas, N) %>%
   rename(y = v1)
 
 
-w <- oomglm(y ~ v2 + v3 + v4 + v5)
-w <- reweight(w, oomfeed(df, chunk_size), max_iter = 8)
+i <- 0
+while(i < 5) {
+  w <- oomglm(y ~ v2 + v3 + v4 + v5)
+  w <- reweight(w, oomfeed(df, chunk_size), max_iter = 8)
+  i <- i + 1  
+}
+
+i <- 0
+while(i < 10) {
+  v <- bigglm(formula = y ~ v2 + v3 + v4 + v5,
+              data = df,
+              chunksize = chunk_size)
+  i <- i + 1
+}
 
 
 benchmark(
@@ -92,7 +128,7 @@ benchmark(
       i <- j + 1
     }
   },
-  "oomglm" = {
+  "oomlm" = {
     w <- oomlm(formula = y ~ v2 + v3 + v4 + v5)
     i <- 1
     for(j in seq(0, N, by = chunk_size)){
@@ -110,16 +146,16 @@ coef(w)
 
 
 benchmark(
+  "oomglm" = {
+    w <- reweight(oomglm(y ~ v2 + v3 + v4 + v5),
+                  oomfeed(df, chunk_size), max_iter = 8)
+  },
   "bigglm" = {
     v <- bigglm(formula = y ~ v2 + v3 + v4 + v5,
                 data = df,
                 chunksize = chunk_size)
   },
-  "oomglm" = {
-    w <- oomglm(y ~ v2 + v3 + v4 + v5)
-    w <- reweight(w, oomfeed(df, chunk_size), max_iter = 8)
-  },
-  replications = 10,
+  replications = 5,
   columns = c("test", "replications", "elapsed",
               "relative", "user.self", "sys.self")
 )
