@@ -1,4 +1,4 @@
-context("test-updating-lm_model.R")
+context("test-updating-lm-model.R")
 
 
 iter_model <- function(df, eqn, weights = NULL) {
@@ -31,7 +31,7 @@ expect_summary_equal <- function(sy, sx) {
   expect_equal(sy$r.squared, sx$r.squared)
   expect_equal(sy$sigma, sx$sigma)
   expect_equal(sy$terms, sx$terms)
-
+  
 }
 
 
@@ -46,6 +46,11 @@ test_that("updating oomlm", {
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
+  )
+  
+  expect_equal(
+    predict(y, mtcars),
+    drop(predict(x, mtcars))
   )
   
 })
@@ -67,6 +72,11 @@ test_that("weighted updating oomlm", {
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
+  
+  expect_equal(
+    predict(y, df),
+    drop(predict(x, df))
+  )
 
 })
 
@@ -84,6 +94,11 @@ test_that("updating oomlm without intercept", {
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
+  )
+  
+  expect_equal(
+    predict(y, df),
+    drop(predict(x, df))
   )
   
 })
@@ -104,6 +119,11 @@ test_that("weighted updating oomlm without intercept", {
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
+  )
+  
+  expect_equal(
+    predict(y, df),
+    drop(predict(x, df))
   )
 
 })

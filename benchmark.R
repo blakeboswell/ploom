@@ -15,6 +15,10 @@ for(chunk in chunks) {
   x <- update(x, chunk)
 }
 
+px <- predict(object = x, mtcars)
+py <- predict(lm(mpg ~ cyl + disp, data = mtcars), mtcars)
+
+
 # feed df test ----------------------------------------------------------
 
 airp <- read.table("http://faculty.washington.edu/tlumley/NO2.dat",

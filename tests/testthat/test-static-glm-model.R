@@ -1,4 +1,4 @@
-context("test-static-glm_model.R")
+context("test-static-glm-model.R")
 
 expect_summary_equal <- function(sy, sx) {
   
