@@ -3,8 +3,7 @@
 ##
 
 
-#' @noRd
-#' @keywords internal
+#' @export
 predict.oomlm <-function(object,
                          newdata = NULL,
                          se_fit  = FALSE,
@@ -22,8 +21,7 @@ predict.oomlm <-function(object,
 }
 
 
-#' @noRd
-#' @keywords internal
+#' @export
 predict.oomglm <- function(object,
                            newdata,
                            type   = c("link", "response"),
@@ -53,7 +51,7 @@ predict.oomglm <- function(object,
         }
         se <- function(x) {
           temp <- cbind(1,x) %*% vcov(object) %*% t(cbind(1,x))
-          temp %*% (family(object)$mu.eta(cbind(1,x) %*% coef(object)))^2
+          temp %*% (family(object)$mu.eta(cbind(1, x) %*% coef(object)))^2
         }
       })
     

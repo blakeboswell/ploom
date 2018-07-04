@@ -4,11 +4,17 @@
 
 
 #' @noRd
-#' @keywords internal
-stats_mf_class <- stats:::.MFclass
-
+cmodel_frame <- getFromNamespace("C_modelframe", "stats")
 
 #' @noRd
+cmodel_matrix <- getFromNamespace("C_modelmatrix", "stats")
+
+
+#' lifted as-is from `stats`
+#' 
+#' @md
+#' @noRd
+#' @param x variables extracted form `terms` object
 #' @keywords internal
 deparse2 <- function(x) {
   paste(deparse(x, width.cutoff = 500L, backtick = !is.symbol(x) && is.language(x)),
@@ -16,7 +22,12 @@ deparse2 <- function(x) {
 }
 
 
+#' lifted from `stats`. modified to be faster and less robust
+#' 
+#' @md
 #' @noRd
+#' @param formula `stats::terms` object
+#' @param data data.frame or list
 #' @keywords internal
 model_frame <- function(formula, data = NULL) {
   
@@ -47,7 +58,7 @@ model_frame <- function(formula, data = NULL) {
   subset     <- NULL
   rownames   <- NULL
   
-  data       <- .External2(stats:::C_modelframe,
+  data       <- .External2(getFromNamespace("C_modelframe", "stats"),
                            formula,
                            rownames,
                            variables,
@@ -57,14 +68,19 @@ model_frame <- function(formula, data = NULL) {
                            subset,
                            na.fail)
 
-  attr(formula, "dataClasses") <- vapply(data, stats_mf_class, "")
+  attr(formula, "dataClasses") <- vapply(data, .MFclass, "")
   attr(data, "terms")          <- formula
   data
     
 }
 
 
+#' lifted from `stats`. modified to be faster and less robust
+#' 
+#' @md
 #' @noRd
+#' @param formula `stats::terms` object
+#' @param data data.frame or list
 #' @keywords internal
 model_matrix <- function(terms, data) {
   
@@ -108,7 +124,8 @@ model_matrix <- function(terms, data) {
     data[["x"]] <- raw(nrow(data))
   }
   
-  ans <- .External2(stats:::C_modelmatrix, terms, data)
+  ans <- .External2(getFromNamespace("C_modelmatrix", "stats"),
+                    terms, data)
   
   if(any(isF)) {
     attr(ans, "contrasts") <- lapply(data[isF], attr, "contrasts")
@@ -119,7 +136,11 @@ model_matrix <- function(terms, data) {
 }
 
 
+#' lifted from `stats`. modified to be faster and less robust
+#' 
+#' @md
 #' @noRd
+#' @param x `stats::formula` object
 #' @keywords internal
 model_offset <- function(x) {
   
@@ -152,7 +173,12 @@ model_offset <- function(x) {
 }
 
 
+#' lifted from `stats`. modified to be faster and less robust
+#' 
+#' @md
 #' @noRd
+#' @param data data.frame or list
+#' @param type response type
 #' @keywords internal
 model_response <- function(data, type = "any") {
   

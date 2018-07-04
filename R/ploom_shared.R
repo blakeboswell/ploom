@@ -1,3 +1,4 @@
+#' @include stats_model.R
 
 #' @keywords internal
 unpack_oomchunk <- function(obj, data) {

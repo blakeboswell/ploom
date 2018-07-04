@@ -4,5 +4,7 @@
 #' @importFrom stats AIC coef deviance formula gaussian
 #'   pf printCoefmat pt symnum terms family as.formula
 #'   makepredictcall na.fail model.frame model.matrix
-#' @importFrom utils head read.table tail
+#'   contrasts<-
+#' @importFrom utils head read.table tail getFromNamespace
+#' @importFrom stats .MFclass
 NULL

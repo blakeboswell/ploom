@@ -20,7 +20,8 @@ Depends:
   R (>= 3.1.2),
   Rcpp (>= 0.12.15)
 Imports:
-  methods
+  methods,
+  stats
 LinkingTo:
   Rcpp (>= 0.12.15),
   RcppArmadillo
@@ -34,6 +35,7 @@ Collate:
     'biglm_vcov.R'
     'bounded_qr.R'
     'feed.R'
+    'stats_model.R'
     'ploom_shared.R'
     'oomglm.R'
     'oomglm_summary.R'
@@ -42,5 +44,4 @@ Collate:
     'ploom.R'
     'ploom_methods.R'
     'predict.R'
-    'stats_model.R'
     'zzz.R'

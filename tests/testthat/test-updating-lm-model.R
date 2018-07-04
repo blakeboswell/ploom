@@ -2,25 +2,25 @@ context("test-updating-lm-model.R")
 
 
 iter_model <- function(df, eqn, weights = NULL) {
-  
-  
+
+
   if(is.null(weights)){
     x <- ploom::oomlm(formula = eqn, data = df[1, ])
   }
   else {
     x <- ploom::oomlm(formula = eqn, data = df[1, ], weights = weights)
   }
-  
+
   for(i in 2:nrow(df)) {
       x <- update(x, df[i, ])
   }
-  
+
   x
 }
 
 
 expect_summary_equal <- function(sy, sx) {
-  
+
   expect_equal(sy$adj.r.squared, sx$adj.r.squared)
   expect_equal(sy$aliased, sx$aliased)
   expect_equal(sy$coefficients, sx$coefficients)
@@ -31,28 +31,28 @@ expect_summary_equal <- function(sy, sx) {
   expect_equal(sy$r.squared, sx$r.squared)
   expect_equal(sy$sigma, sx$sigma)
   expect_equal(sy$terms, sx$terms)
-  
+
 }
 
 
 test_that("updating oomlm", {
-  
+
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = mtcars)
   x <- iter_model(mtcars, f)
-  
+
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
-  
+
   expect_equal(
     predict(y, mtcars),
     drop(predict(x, mtcars))
   )
-  
+
 })
 
 
@@ -72,7 +72,7 @@ test_that("weighted updating oomlm", {
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
-  
+
   expect_equal(
     predict(y, df),
     drop(predict(x, df))
@@ -82,25 +82,25 @@ test_that("weighted updating oomlm", {
 
 
 test_that("updating oomlm without intercept", {
-  
+
   df <- mtcars
   f  <- mpg ~ 0 + cyl + disp + hp + wt
-  
+
   y <- lm(f, data = df)
   x <- iter_model(df, f)
-  
+
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
-  
+
   expect_equal(
     predict(y, df),
     drop(predict(x, df))
   )
-  
+
 })
 
 
@@ -120,7 +120,7 @@ test_that("weighted updating oomlm without intercept", {
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
-  
+
   expect_equal(
     predict(y, df),
     drop(predict(x, df))
