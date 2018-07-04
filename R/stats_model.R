@@ -1,13 +1,5 @@
-#' This is lifted directly from base stats.  Much of the flexibility and error checking 
-#' in the original code has been removed because it is not necessary within this
-#' package's use-case.
-
-
-#' @noRd
-cmodel_frame <- getFromNamespace("C_modelframe", "stats")
-
-#' @noRd
-cmodel_matrix <- getFromNamespace("C_modelmatrix", "stats")
+#' This is lifted directly from base `stats`.  Much of the flexibility and robustness
+#' of the original code is been removed to decrease processing time
 
 
 #' lifted as-is from `stats`

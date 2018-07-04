@@ -2,7 +2,7 @@
 ## based on code by Christophe Dutang <christophe.dutang@ensimag.fr>
 ##
 
-
+#' @method predict oomlm
 #' @export
 predict.oomlm <-function(object,
                          newdata = NULL,
@@ -21,6 +21,8 @@ predict.oomlm <-function(object,
 }
 
 
+
+#' @method predict oomglm
 #' @export
 predict.oomglm <- function(object,
                            newdata,
