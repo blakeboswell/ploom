@@ -59,7 +59,6 @@ oomfeed.data.frame <- function(data, chunk_size, ...) {
     data[start:cursor, ]
 
   }
-
 }
 
 
