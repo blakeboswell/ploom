@@ -171,7 +171,7 @@ update.oomglm <- function(object, data, ...) {
   }
   
   if(inherits(data, "data.frame")) {
-    data <- oomfeed(data, chunksize = nrow(data))
+    data <- oomfeed(data, chunk_size = nrow(data))
   }
   
   while(!is.null(chunk <- data())){

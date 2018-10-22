@@ -2,20 +2,15 @@ context("test-oomfeed-con.R")
 
 test_connection <- function(con, data_frame) {
 
-  cursor    <- 0  
-  chunksize <- 5
+  cursor     <- 0  
+  chunk_size <- 5
   n <- nrow(data_frame)
   
-  tmp <- oomfeed(con,
-                 chunksize = chunksize,
-                 header    = TRUE,
-                 col.names = colnames(data_frame))
-  
-  expect(!isOpen(con))
+  tmp <- oomfeed(con, chunk_size = chunk_size, header = TRUE)
   
   while(!is.null(x <- tmp())) {
     start  <- cursor + 1
-    cursor <- cursor + min(chunksize, n - cursor)
+    cursor <- cursor + min(chunk_size, n - cursor)
     rownames(x) <- start:cursor
     expect_equal(x, data_frame[start:cursor, ])
   }
@@ -35,3 +30,6 @@ test_that("gzfile", {
   rownames(df) <- NULL
   test_connection(gzfile("../testdata/mtcars.txt.gz"), df)
 })
+
+
+

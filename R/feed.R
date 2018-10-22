@@ -5,30 +5,33 @@
 #' @md
 #' @description
 #' Returns a function that repeats the following cycle:  
-#' iteratively return `chunksize` number of rows from `data` until data is exhausted;
+#' iteratively return `chunk_size` number of rows from `data` until data is exhausted;
 #' then return `NULL` once.
 #' 
 #' @param data `data.frame`, `file`, `gzfile`, or `url`connection`
-#' @param chunksize number of chunks to return with each iteration. overrides
+#' @param chunk_size number of chunks to return with each iteration. overrides
 #'   `nrow` parameter of `read.table` when `data` is a connection
-#' @param ... passed through to `read.table`
+#' @param header
+#' @param col_names
+#' @param ... passed through to `read.table`. note that `nrow`, and 
+#' `col.names` are ignored in favor of `chunk_size` and `col_names`
 #' @details `oomfeed` is a closure that creates a function for 
-#' returning `chunksize` number of rows from `data` until all
+#' returning `chunk_size` number of rows from `data` until all
 #' rows have been returned.  It will then return `NULL` once.  Then
-#' it will return `chunksize` number of rows from `data`.  It will repeat
+#' it will return `chunk_size` number of rows from `data`.  It will repeat
 #' this cycle ad-infinitum. When data is a `connection` it will recreate and open
 #' the connection with each cycle.  It reads from `connection` objects using
 #' `read.table`.  Additional parameters for `read.table` should be passed
 #' in via `...`.
 #' @export
-oomfeed <- function(data, chunksize, ...){
+oomfeed <- function(data, chunk_size, ...){
   UseMethod("oomfeed")
 }
 setGeneric("oomfeed")
 
 
 #' @export
-oomfeed.data.frame <- function(data, chunksize, ...) {
+oomfeed.data.frame <- function(data, chunk_size, ...) {
 
   reset  <- FALSE
   n      <- nrow(data)
@@ -47,7 +50,7 @@ oomfeed.data.frame <- function(data, chunksize, ...) {
     }
 
     start  <- cursor + 1
-    cursor <<- cursor + min(chunksize, n - cursor)
+    cursor <<- cursor + min(chunk_size, n - cursor)
 
     if(cursor == n) {
       reset <<- TRUE
@@ -61,16 +64,20 @@ oomfeed.data.frame <- function(data, chunksize, ...) {
 
 
 #' @export
-oomfeed.connection <- function(data, chunksize, ...) {
+oomfeed.connection <- function(data,
+                               chunk_size,
+                               header    = TRUE,
+                               col_names = NULL, ...) {
 
-  data_summary <- summary(data)
-  if(isOpen(data)) {
-    close(data)  
+  if(!header & is.null(col_names)) {
+    stop(cat("col_names must be provided if header is FALSE"))
   }
+  
+  data_summary <- summary(data)
+  close(data)
   
   first_iter   <- TRUE
   reset        <- FALSE
-  col_names    <- NULL
 
   conn_fxn <- function(class_name){
     switch(
@@ -98,13 +105,14 @@ oomfeed.connection <- function(data, chunksize, ...) {
       reset      <<- FALSE
     }
     
-    if(first_iter) {
-      rval <- read.table(data, nrows = chunksize, header = TRUE)
+    if(first_iter & header) {
+      rval <- read.table(data, nrows = chunk_size, header = TRUE)
       col_names  <<- colnames(rval)
-      first_iter <<- FALSE
     } else {
-      rval <- read.table(data, nrows = chunksize, col.names = col_names)
+      rval <- read.table(data, nrows = chunk_size, col.names = col_names)
     }
+    
+    first_iter <<- FALSE
     
     if(nrow(rval) == 0) {
       close(data)
