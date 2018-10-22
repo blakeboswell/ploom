@@ -1,6 +1,27 @@
 
+
+#' Repeatedly iterate over `data.frame` or `connection` in chunks.
+#' 
+#' @md
+#' @description
+#' Returns a function that repeats the following cycle:  
+#' iteratively return `chunksize` number of rows from `data` until data is exhausted;
+#' then return `NULL` once.
+#' 
+#' @param data `data.frame`, `file`, `gzfile`, or `url`connection`
+#' @param chunksize number of chunks to return with each iteration. overrides
+#'   `nrow` parameter of `read.table` when `data` is a connection
+#' @param ... passed through to `read.table`
+#' @details `oomfeed` is a closure that creates a function for 
+#' returning `chunksize` number of rows from `data` until all
+#' rows have been returned.  It will then return `NULL` once.  Then
+#' it will return `chunksize` number of rows from `data`.  It will repeat
+#' this cycle ad-infinitum. When data is a `connection` it will recreate and open
+#' the connection with each cycle.  It reads from `connection` objects using
+#' `read.table`.  Additional parameters for `read.table` should be passed
+#' in via `...`.
 #' @export
-oomfeed <- function(obj, chunksize, ...){
+oomfeed <- function(data, chunksize, ...){
   UseMethod("oomfeed")
 }
 setGeneric("oomfeed")
@@ -39,43 +60,51 @@ oomfeed.data.frame <- function(data, chunksize, ...) {
 }
 
 
-
 #' @export
 oomfeed.connection <- function(data, chunksize, ...) {
 
-  reset <- FALSE
-  deats <- summary(data)
-  close(data) # create fresh connection below
+  data_summary <- summary(data)
+  if(isOpen(data)) {
+    close(data)  
+  }
   
+  first_iter   <- TRUE
+  reset        <- FALSE
+  col_names    <- NULL
+
   conn_fxn <- function(class_name){
     switch(
       class_name,
       "file"        = file,
       "url-libcurl" = url,
       "gzfile"      = gzfile,
-      "bzfile"      = bzfile,
-      "xzfile"      = xzfile,
       NULL
     )
   }
   
-  if(is.null(fxn <- conn_fxn(deats$class))) {
-    stop(cat("oomfeed does not support connection type ", deats$class))
+  if(is.null(fxn <- conn_fxn(data_summary$class))) {
+    stop(cat("oomfeed does not support connection type ", data_summary$class))
   }
   
-  data <- fxn(deats$description, open = deats$mode)
+  data <- fxn(data_summary$description)
+  open(data)
   
   function() {
     
     if(reset) {
-      if(!is.null(data)) {
-        close(data)
-      }
-      data  <<- fxn(deats$description, open = deats$mode)
-      reset <<- FALSE
+      data  <<- fxn(data_summary$description)
+      open(data)
+      first_iter <<- TRUE
+      reset      <<- FALSE
     }
     
-    rval <- read.table(data, nrows = chunksize, ...)
+    if(first_iter) {
+      rval <- read.table(data, nrows = chunksize, header = TRUE)
+      col_names  <<- colnames(rval)
+      first_iter <<- FALSE
+    } else {
+      rval <- read.table(data, nrows = chunksize, col.names = col_names)
+    }
     
     if(nrow(rval) == 0) {
       close(data)
@@ -87,3 +116,4 @@ oomfeed.connection <- function(data, chunksize, ...) {
     rval
   }
 }
+
