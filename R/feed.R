@@ -1,5 +1,3 @@
-
-
 #' Repeatedly iterate over `data.frame` or `connection` in chunks.
 #' 
 #' @md
@@ -10,19 +8,21 @@
 #' 
 #' @param data `data.frame`, `file`, `gzfile`, or `url`connection`
 #' @param chunk_size number of chunks to return with each iteration. overrides
-#'   `nrow` parameter of `read.table` when `data` is a connection
-#' @param header
-#' @param col_names
+#'   `nrow` parameter of `read.table` when `data` is a connection.
+#' @param header logical, when TRUE colnames are determined from first row
+#'   of connection. if FALSE `col_names` must be provided.
+#' @param col_names, character vector. override `col_names` in first
+#'   row of connection when `header`is TRUE, or provide colnames
+#'   if `header` is FALSE.
 #' @param ... passed through to `read.table`. note that `nrow`, and 
-#' `col.names` are ignored in favor of `chunk_size` and `col_names`
+#'   `col.names` are ignored in favor of `chunk_size` and `col_names`
 #' @details `oomfeed` is a closure that creates a function for 
-#' returning `chunk_size` number of rows from `data` until all
-#' rows have been returned.  It will then return `NULL` once.  Then
-#' it will return `chunk_size` number of rows from `data`.  It will repeat
-#' this cycle ad-infinitum. When data is a `connection` it will recreate and open
-#' the connection with each cycle.  It reads from `connection` objects using
-#' `read.table`.  Additional parameters for `read.table` should be passed
-#' in via `...`.
+#'   returning `chunk_size` number of rows from `data` until all
+#'   rows have been returned.  It will then return `NULL` once. It will repeat
+#'   this cycle ad-infinitum. When data is a `connection` it will recreate and open
+#'   the connection with each cycle.  It reads from `connection` objects using
+#'   `read.table`.  Additional parameters for `read.table` should be passed
+#'   in via `...`.
 #' @export
 oomfeed <- function(data, chunk_size, ...){
   UseMethod("oomfeed")
