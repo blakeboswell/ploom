@@ -35,7 +35,7 @@ w <- oomglm(exp(logno2) ~ logcars + temp + windsp,
             family = Gamma(log),
             start=c(2, 0, 0, 0))
 
-w <- reweight(w, data = oomfeed(airp, chunksize = 150), max_iter = 20)
+w <- iter_weight(w, data = oomfeed(airp, chunksize = 150), max_iter = 20)
 
 summary(w)
 
@@ -53,7 +53,7 @@ while(!is.null(chunk <- next_chunk())) {
 }
 
 z <- oomglm(mpg ~ cyl + disp)
-z <- reweight(z, data = next_chunk, max_iter = 10)
+z <- iter_weight(z, data = next_chunk, max_iter = 10)
 
 
 # feed url test ---------------------------------------------------------
@@ -73,7 +73,7 @@ z <- oomglm(exp(logno2) ~ logcars + temp + windsp,
             family = Gamma(log),
             start=c(2, 0, 0, 0))
 
-z <- reweight(z, next_chunk, max_iter = 20)
+z <- iter_weight(z, next_chunk, max_iter = 20)
 
 z
 
@@ -109,7 +109,7 @@ df <- make_linear(alpha, betas, N) %>%
 i <- 0
 while(i < 5) {
   w <- oomglm(y ~ v2 + v3 + v4 + v5)
-  w <- reweight(w, oomfeed(df, chunk_size), max_iter = 8)
+  w <- iter_weight(w, oomfeed(df, chunk_size), max_iter = 8)
   i <- i + 1  
 }
 
@@ -151,8 +151,8 @@ coef(w)
 
 benchmark(
   "oomglm" = {
-    w <- reweight(oomglm(y ~ v2 + v3 + v4 + v5),
-                  oomfeed(df, chunk_size), max_iter = 8)
+    w <- iter_weight(oomglm(y ~ v2 + v3 + v4 + v5),
+                     oomfeed(df, chunk_size), max_iter = 8)
   },
   "bigglm" = {
     v <- bigglm(formula = y ~ v2 + v3 + v4 + v5,

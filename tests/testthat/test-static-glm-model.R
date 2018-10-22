@@ -24,7 +24,7 @@ test_that("oomglm", {
   f <- mpg ~ cyl + disp + hp + wt
 
   y <- glm(f, data = mtcars)
-  x <- reweight(oomglm(f), mtcars, max_iter = 8L)
+  x <- iter_weight(oomglm(f), mtcars, max_iter = 8L)
 
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -37,7 +37,7 @@ test_that("oomglm", {
 
   f2 <- mpg ~ cyl
   y2 <- glm(f2, data = mtcars)
-  x2 <- reweight(oomglm(f2), mtcars, max_iter = 8L)
+  x2 <- iter_weight(oomglm(f2), mtcars, max_iter = 8L)
 
   expect_equal(AIC(y) - AIC(y2),
                AIC(x) - AIC(x2))
@@ -55,7 +55,7 @@ test_that("weighted oomglm", {
   f <- mpg ~ cyl + disp + hp + wt
   y <- glm(f, data = df, weights = w)
   x <- oomglm(f, weights = ~w)
-  x <- reweight(x, df, max_iter = 8L)
+  x <- iter_weight(x, df, max_iter = 8L)
 
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -68,7 +68,7 @@ test_that("weighted oomglm", {
   f2 <- mpg ~ cyl
   y2 <- glm(f2, data = mtcars, weights = w)
   x2 <- oomglm(f2, weights = ~w)
-  x2 <- reweight(x2, mtcars, max_iter = 8L)
+  x2 <- iter_weight(x2, mtcars, max_iter = 8L)
 
   expect_equal(AIC(y) - AIC(y2),
                AIC(x) - AIC(x2))
@@ -88,7 +88,7 @@ test_that("weighted oomglm with zero weight", {
   f <- mpg ~ cyl + disp + hp + wt
   y <- glm(f, data = df, weights = w)
   x <- oomglm(f, weights = ~w)
-  x <- reweight(x, df, max_iter = 8L)
+  x <- iter_weight(x, df, max_iter = 8L)
 
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -103,7 +103,7 @@ test_that("weighted oomglm with zero weight", {
   # f2 <- mpg ~ cyl
   # y2 <- glm(f2, data = mtcars, weights = w)
   # x2 <- oomglm(f2, weights = ~w)
-  # x2 <- reweight(x2, mtcars, max_iter = 8L)
+  # x2 <- iter_weight(x2, mtcars, max_iter = 8L)
   #
   # expect_equal(AIC(y) - AIC(y2),
   #              AIC(x) - AIC(x2))
@@ -117,7 +117,7 @@ test_that("oomglm without intercept", {
   f  <- mpg ~ 0 + cyl + disp + hp + wt
 
   y <- glm(f, data = df)
-  x <- reweight(oomglm(f), data = df, max_iter = 8L)
+  x <- iter_weight(oomglm(f), data = df, max_iter = 8L)
 
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -129,7 +129,7 @@ test_that("oomglm without intercept", {
 
   f2 <- mpg ~ 0 + cyl
   y2 <- glm(f2, data = mtcars)
-  x2 <- reweight(oomglm(f2), mtcars, max_iter = 8L)
+  x2 <- iter_weight(oomglm(f2), mtcars, max_iter = 8L)
 
   expect_equal(AIC(y) - AIC(y2),
                AIC(x) - AIC(x2))
@@ -148,7 +148,7 @@ test_that("weighted oomglm without intercept", {
 
   y <- glm(f, data = df, weights = w)
   x <- oomglm(f, weights = ~w)
-  x <- reweight(x, data = df, max_iter = 8L)
+  x <- iter_weight(x, data = df, max_iter = 8L)
 
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -161,7 +161,7 @@ test_that("weighted oomglm without intercept", {
   f2 <- mpg ~ 0 + cyl
   y2 <- glm(f2, data = mtcars, weights = w)
   x2 <- oomglm(f2, weights = ~w)
-  x2 <- reweight(x2, mtcars, max_iter = 8L)
+  x2 <- iter_weight(x2, mtcars, max_iter = 8L)
 
   expect_equal(AIC(y) - AIC(y2),
                AIC(x) - AIC(x2))

@@ -49,7 +49,7 @@ to be fit in \code{p^2} memory.
 \code{ooglm} initializes an object of class \code{ooglm} inheriting from the
 class \code{oomlm}. \code{ooglm} objects are intended to be iteratively
 updated with new data via calls to \code{\link[=update]{update()}}. Iterative fitting
-over all data updates are performed with the function \code{\link[=reweight]{reweight()}}.
+over all data updates are performed with the function \code{\link[=iter_weight]{iter_weight()}}.
 If \code{data} is provided to the \code{ooglm} function call, an \code{update()} round
 will be performed on initialization.
 

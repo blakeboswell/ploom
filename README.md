@@ -73,7 +73,7 @@ The `ploom::oomglm` function fits generalized linear models via
 Iteratively Weighted Least Squares (IWLS).
 
 When fitting in-memory data the process is similar to `oomlm` but we use
-the function `reweight` instead of `update`. `reweight` fits the model
+the function `iter_weight` instead of `update`. `iter_weight` fits the model
 via iterative passes over the data until convergence.
 
 ``` r
@@ -81,7 +81,7 @@ via iterative passes over the data until convergence.
 x <- oomglm(mpg ~ cyl + disp)
 
 # re-weight 8 times or until convergence
-x <- reweight(x, mtcars, max_iter = 8)
+x <- iter_weight(x, mtcars, max_iter = 8)
 ```
 
 To fit data in chunks, use the `oomfeed` object:
@@ -91,11 +91,11 @@ To fit data in chunks, use the `oomfeed` object:
 x    <- oomglm(mpg ~ cyl + disp)
 feed <- oomfeed(mtcars, chunksize = 10)
 
-# iteratively reweight model
-x <- reweight(x, feed, max_iter = 8)
+# iteratively iter_weight model
+x <- iter_weight(x, feed, max_iter = 8)
 ```
 
-The `reweight` process can also be implemented directly with `ploom`
+The `iter_weight` process can also be implemented directly with `ploom`
 functions:
 
 ``` r

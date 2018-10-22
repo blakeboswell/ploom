@@ -4,7 +4,7 @@ context("test-updating-glm-model.R")
 iter_model <- function(df, eqn, weights = NULL) {
 
   x <- ploom::oomglm(formula = eqn, weights = weights)
-  reweight(x, df, max_iter = 8)
+  iter_weight(x, df, max_iter = 8)
 
 }
 

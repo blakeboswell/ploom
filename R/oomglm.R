@@ -190,7 +190,7 @@ update.oomglm <- function(object, data, ...) {
 #' @md
 #' @param object `oomglm` model.
 #' @export
-init_reweight <- function(object) {
+init_weight <- function(object) {
   
   if(object$iter > 0) {
     object$iwls$beta <- coef(object)  
@@ -216,7 +216,7 @@ init_reweight <- function(object) {
 #' @param tolerance Tolerance for change in coefficient as a multiple
 #'  of standard error.
 #' @export
-end_reweight <- function(object, tolerance = 1e-7) {
+end_weight <- function(object, tolerance = 1e-7) {
 
   object$iter <- object$iter + 1L 
   beta_old    <- object$iwls$beta
@@ -249,17 +249,17 @@ end_reweight <- function(object, tolerance = 1e-7) {
 #' 
 #' @seealso [`oomglm()`]
 #' @export
-reweight <- function(object, data, max_iter, tolerance = 1e-7){
-  UseMethod("reweight")
+iter_weight <- function(object, data, max_iter, tolerance = 1e-7){
+  UseMethod("iter_weight")
 }
-setGeneric("reweight")
+setGeneric("iter_weight")
 
 
 #' @export
-reweight.oomglm <- function(object,
-                            data,
-                            max_iter  = 1L,
-                            tolerance = 1e-7) {
+iter_weight.oomglm <- function(object,
+                               data,
+                               max_iter  = 1L,
+                               tolerance = 1e-7) {
   
   
   for(i in 1:max_iter) {
@@ -268,9 +268,9 @@ reweight.oomglm <- function(object,
       break
     }
     
-    object <- init_reweight(object)
+    object <- init_weight(object)
     object <- update(object, data)
-    object <- end_reweight(object, tolerance)
+    object <- end_weight(object, tolerance)
     
   }
   
@@ -300,7 +300,7 @@ reweight.oomglm <- function(object,
 #' `ooglm` initializes an object of class `ooglm` inheriting from the
 #'   class `oomlm`. `ooglm` objects are intended to be iteratively 
 #'   updated with new data via calls to [update()]. Iterative fitting
-#'   over all data updates are performed with the function [reweight()].
+#'   over all data updates are performed with the function [iter_weight()].
 #'   If `data` is provided to the `ooglm` function call, an `update()` round 
 #'   will be performed on initialization.
 #' 
