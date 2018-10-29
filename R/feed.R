@@ -124,3 +124,41 @@ oomfeed.connection <- function(data,
   }
 }
 
+
+oomfeed.DBIResult <- function(data,
+                              chunk_size,
+                              ...) {
+  reset  <- FALSE
+  con    <- data@conn
+  query  <- data@sql
+  rval_n <- 0
+  
+  dbClearResult(data)
+  data <- dbSendQuery(con, query)
+  
+  function() {
+    
+    if(reset) {
+      dbClearResult(result)
+      data  <<- dbSendQuery(con, query)
+      reset <<- FALSE
+    }
+    
+    if(!dbHasCompleted(data)) {
+      rval   <- dbFetch(data, chunk_size)
+      rval_n <- nrow(rval)
+    } else {
+      rval_n <- 0
+    }
+    
+    if(rval_n == 0) {
+      reset <<- TRUE
+      data  <<- NULL
+      return(NULL)
+    }
+    
+    rval
+  }
+  
+}
+
