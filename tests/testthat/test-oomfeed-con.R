@@ -57,8 +57,8 @@ test_that("dbi_connection", {
   
   con <- DBI::dbConnect(RSQLite::SQLite(), path = ":dbname:")
   
-  copy_to(con, mtcars, "mtcars", temporary = FALSE)
-  rs   <- dbSendQuery(con, "SELECT * FROM mtcars")
+  dplyr::copy_to(con, mtcars, "mtcars", temporary = FALSE)
+  rs   <- DBI::dbSendQuery(con, "SELECT * FROM mtcars")
   
   df <- mtcars
   rownames(df) <- NULL

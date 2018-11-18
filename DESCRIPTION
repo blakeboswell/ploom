@@ -9,11 +9,7 @@ Description: A collection of tools for out-of-memory linear model fitting and
 Date: 2018-02-25
 Authors@R: c(
     person("Boswell", "Blake", email = "j.blake.boswell@gmail.com",
-           role = c("aut", "cre")),
-    person("Lumley", "Thomas", role = "ctb",
-           comment = "general design influence and vcov code adapted from biglm"),
-    person("R Core Team", role = "ctb",
-           comment = "oomlm and oomglm interfaces adapted from R"))
+           role = c("aut", "cre")))
 Encoding: UTF-8
 License: GPL
 Depends:
@@ -26,7 +22,12 @@ LinkingTo:
   Rcpp (>= 0.12.15),
   RcppArmadillo
 Suggests:
-    testthat
+    dplyr (>= 0.7.5),
+    DBI (>= 1.0.0),
+    RMySQL (>= 0.10.13),
+    RPostgreSQL (>= 0.6.2),
+    RSQLite (>= 2.0),
+    testthat (>= 2.0.0)
 BugReports: https://github.com/bboswell/ploom/issues
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)

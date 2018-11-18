@@ -22,8 +22,6 @@ test_that("oomlm", {
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = mtcars)
   x <- oomlm(f, mtcars)
-  
-  print(x)
 
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))

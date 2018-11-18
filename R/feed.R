@@ -133,21 +133,21 @@ oomfeed.DBIResult <- function(data,
   query  <- data@sql
   rval_n <- 0
   
-  dbClearResult(data)
-  data <- dbSendQuery(con, query)
+  DBI::dbClearResult(data)
+  data <- DBI::dbSendQuery(con, query)
   
   function() {
     
     if(reset) {
-      if(dbIsValid(rs)) {
-        dbClearResult(data)
+      if(DBI::dbIsValid(data)) {
+        DBI::dbClearResult(data)
       }
-      data  <<- dbSendQuery(con, query)
+      data  <<- DBI::dbSendQuery(con, query)
       reset <<- FALSE
     }
     
-    if(!dbHasCompleted(data)) {
-      rval   <- dbFetch(data, chunk_size)
+    if(!DBI::dbHasCompleted(data)) {
+      rval   <- DBI::dbFetch(data, chunk_size)
       rval_n <- nrow(rval)
     } else {
       rval_n <- 0
@@ -155,7 +155,7 @@ oomfeed.DBIResult <- function(data,
     
     if(rval_n == 0) {
       reset <<- TRUE
-      dbClearResult(data)
+      DBI::dbClearResult(data)
       return(NULL)
     }
     
