@@ -15,8 +15,39 @@ for(chunk in chunks) {
   x <- update(x, chunk)
 }
 
+summary(x)
+
 px <- predict(object = x, mtcars)
 py <- predict(lm(mpg ~ cyl + disp, data = mtcars), mtcars)
+
+
+
+# dbi example -----------------------------------------------------------
+
+library(DBI)
+
+# lm
+
+con <- DBI::dbConnect(RSQLite::SQLite(), path = ":dbname:")
+
+copy_to(con, mtcars, "mtcars", temporary = FALSE)
+rs   <- dbSendQuery(con, "SELECT mpg, cyl, disp FROM mtcars")
+y    <- oomlm(mpg ~ cyl + disp)
+feed <- oomfeed(rs, 10)
+
+# iteratively update model with data chunks
+while(!is.null(chunk <- feed())) {
+  y <- update(y, chunk)
+}
+
+summary(y)
+
+
+# glm
+
+feed <- oomfeed(rs, 10)
+x    <- iter_weight(oomglm(mpg ~ cyl + disp), feed, 8)
+summary(x)
 
 
 # feed df test ----------------------------------------------------------
