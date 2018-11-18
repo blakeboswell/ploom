@@ -139,7 +139,9 @@ oomfeed.DBIResult <- function(data,
   function() {
     
     if(reset) {
-      dbClearResult(result)
+      if(dbIsValid(rs)) {
+        dbClearResult(data)
+      }
       data  <<- dbSendQuery(con, query)
       reset <<- FALSE
     }
@@ -153,7 +155,7 @@ oomfeed.DBIResult <- function(data,
     
     if(rval_n == 0) {
       reset <<- TRUE
-      data  <<- NULL
+      dbClearResult(data)
       return(NULL)
     }
     

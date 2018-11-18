@@ -17,16 +17,17 @@ test_connection <- function(con, data_frame) {
       expect_equal(x, data_frame[start:cursor, ])
     }
   }
+  
 }
 
 
 test_that("data.frame", {
-  
+
   chunk_size <- 5
   df     <- mtcars
   n      <- nrow(df)
   tmp    <- oomfeed(df, chunk_size = chunk_size)
-  
+
   for (i in 1:3) {
     cursor <- 0
     while(!is.null(x <- tmp())) {
@@ -50,4 +51,20 @@ test_that("gzfile", {
   rownames(df) <- NULL
   test_connection(gzfile("../testdata/mtcars.txt.gz"), df)
 })
+
+
+test_that("dbi_connection", {
+  
+  con <- DBI::dbConnect(RSQLite::SQLite(), path = ":dbname:")
+  
+  copy_to(con, mtcars, "mtcars", temporary = FALSE)
+  rs   <- dbSendQuery(con, "SELECT * FROM mtcars")
+  
+  df <- mtcars
+  rownames(df) <- NULL
+  
+  test_connection(rs, df)
+  
+})
+
 
