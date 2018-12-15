@@ -24,12 +24,13 @@
 #'   `read.table`.  Additional parameters for `read.table` should be passed
 #'   in via `...`.
 #' @export
+#' @name oomfeed
 oomfeed <- function(data, chunk_size, ...){
   UseMethod("oomfeed")
 }
 setGeneric("oomfeed")
 
-
+#' @rdname oomfeed
 #' @export
 oomfeed.data.frame <- function(data, chunk_size, ...) {
 
@@ -62,6 +63,7 @@ oomfeed.data.frame <- function(data, chunk_size, ...) {
 }
 
 
+#' @rdname oomfeed
 #' @export
 oomfeed.connection <- function(data,
                                chunk_size,
@@ -125,6 +127,8 @@ oomfeed.connection <- function(data,
 }
 
 
+#' @rdname oomfeed
+#' @export
 oomfeed.DBIResult <- function(data,
                               chunk_size,
                               ...) {

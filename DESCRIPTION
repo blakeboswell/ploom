@@ -1,6 +1,6 @@
 Package: ploom
 Version: 0.0
-Title: Out-of-memory Linear and Generalized Linear Models 
+Title: out-of-memory linear models
 Description: A collection of tools for out-of-memory linear model fitting and
     inference. Implements `lm` and `glm` analogs using Alan Miller's AS274
     updating QR factorization algorithm. Collects and reports an array of
@@ -8,7 +8,7 @@ Description: A collection of tools for out-of-memory linear model fitting and
     to stream in data and stream out results during fitting.
 Date: 2018-02-25
 Authors@R: c(
-    person("Boswell", "Blake", email = "j.blake.boswell@gmail.com",
+    person(family = "Boswell", given = "Blake", email = "j.blake.boswell@gmail.com",
            role = c("aut", "cre")))
 Encoding: UTF-8
 License: GPL
@@ -29,14 +29,13 @@ Suggests:
     RSQLite (>= 2.0),
     testthat (>= 2.0.0)
 BugReports: https://github.com/bboswell/ploom/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
 Collate: 
     'RcppExports.R'
     'biglm_vcov.R'
     'bounded_qr.R'
     'feed.R'
-    'stats_model.R'
     'ploom_shared.R'
     'oomglm.R'
     'oomglm_summary.R'
@@ -45,4 +44,6 @@ Collate:
     'ploom.R'
     'ploom_methods.R'
     'predict.R'
+    'stats_model.R'
+    'update.R'
     'zzz.R'
