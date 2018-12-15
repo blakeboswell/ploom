@@ -68,21 +68,15 @@ x <- oomlm(mpg ~ cyl + disp, data = mtcars)
 # then call `update()` on each data chunk.
 
 # proxy for big data feed 
-chunks  <- purrr::pmap(mtcars, list)
+chunks  <- oomfeed(mtcars, chunk_size = 10)
 
 # initialize the model
 x <- oomlm(mpg ~ cyl + disp)
 
 # iteratively update model with data chunks
-for(chunk in chunks) {
+while(!is.null(chunk <- chunks())) {
   x <- update(x, chunk)
 }
-
-print(x)
-
-# We can avoid loops with functional patterns like `reduce()`.
-
-x <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
 
 summary(x)
 

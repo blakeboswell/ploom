@@ -1,7 +1,7 @@
 
 #' Initialize Updating Generalized Linear Regression Model
 #' 
-#' Performs the details of intializing `oomglm` object called by `oomglm`
+#' Performs the details of intializing `oomglm` object called by `oomglm()`
 #'  function.
 #' 
 #' @md
@@ -243,11 +243,11 @@ iter_weight <- function(object,
 #' @param ... ignored.
 #' 
 #' @details
-#' `ooglm` initializes an object of class `ooglm` inheriting from the
-#'   class `oomlm`. `ooglm` objects are intended to be iteratively 
+#' `oomglm` initializes an object of class `oomglm` inheriting from the
+#'   class `oomlm`. `oomglm` objects are intended to be iteratively 
 #'   updated with new data via calls to [update()]. Iterative fitting
 #'   over all data updates are performed with the function [iter_weight()].
-#'   If `data` is provided to the `ooglm` function call, an `update()` round 
+#'   If `data` is provided to the `oomglm()` function call, an `update()` round 
 #'   will be performed on initialization.
 #' 
 #'   A `oomglm` object can be in various states of fit depending on the number
@@ -259,7 +259,7 @@ iter_weight <- function(object,
 #'
 #' @return It is up to the user to know when fitting is complete.
 #'   Therefore, only basic model characteristics are provided as values with 
-#'   the `ooglm` object. Statistics are available on demand via `summary` and 
+#'   the `oomglm` object. Statistics are available on demand via `summary` and 
 #'   extractor functions.
 #'
 #' \item{converged}{Indicates if the IRLS algorithm has converged.}
@@ -279,7 +279,7 @@ iter_weight <- function(object,
 #' @export
 #' @name oomglm
 #' @examples \donttest{
-#' # The `ploom::oomglm` function fits generalized linear models via 
+#' # The `oomglm()` function fits generalized linear models via 
 #' # Iteratively Weighted Least Squares (IWLS).  
 #'
 #' # When fitting in-memory data the process is similar to `oomlm()` but we use the 

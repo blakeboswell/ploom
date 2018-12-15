@@ -17,7 +17,7 @@ init_oomglm(formula, family, weights, start)
 \item{start}{starting values for the parameters in the linear predictor.}
 }
 \description{
-Performs the details of intializing \code{oomglm} object called by \code{oomglm}
+Performs the details of intializing \code{oomglm} object called by \code{oomglm()}
 function.
 }
 \keyword{internal}

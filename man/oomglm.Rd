@@ -29,7 +29,7 @@ oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
 \value{
 It is up to the user to know when fitting is complete.
 Therefore, only basic model characteristics are provided as values with
-the \code{ooglm} object. Statistics are available on demand via \code{summary} and
+the \code{oomglm} object. Statistics are available on demand via \code{summary} and
 extractor functions.
 
 \item{converged}{Indicates if the IRLS algorithm has converged.}
@@ -50,11 +50,11 @@ factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
 }
 \details{
-\code{ooglm} initializes an object of class \code{ooglm} inheriting from the
-class \code{oomlm}. \code{ooglm} objects are intended to be iteratively
+\code{oomglm} initializes an object of class \code{oomglm} inheriting from the
+class \code{oomlm}. \code{oomglm} objects are intended to be iteratively
 updated with new data via calls to \code{\link[=update]{update()}}. Iterative fitting
 over all data updates are performed with the function \code{\link[=iter_weight]{iter_weight()}}.
-If \code{data} is provided to the \code{ooglm} function call, an \code{update()} round
+If \code{data} is provided to the \code{oomglm()} function call, an \code{update()} round
 will be performed on initialization.
 
 A \code{oomglm} object can be in various states of fit depending on the number
@@ -66,7 +66,7 @@ and if the IRLS algorithm has converged (\code{converged}).
 }
 \examples{
 \donttest{
-# The `ploom::oomglm` function fits generalized linear models via 
+# The `oomglm()` function fits generalized linear models via 
 # Iteratively Weighted Least Squares (IWLS).  
 
 # When fitting in-memory data the process is similar to `oomlm()` but we use the 
