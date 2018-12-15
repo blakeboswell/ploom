@@ -4,6 +4,7 @@
 #' @param np int number of independent parameters in model
 #'   including the intercept when model has intercept
 #' @export
+#' @keywords internal
 new_bounded_qr <- function(np) {
   
   if(np < 1) {
@@ -22,6 +23,7 @@ new_bounded_qr <- function(np) {
 #' @param weights numeric vector of observation weights
 #' @param ... ignored
 #' @export
+#' @keywords internal
 update.Rcpp_BoundedQr <- function(object, X, y, weights, ...) {
   
   if(ncol(X) != object$num_params) {
@@ -49,6 +51,7 @@ update.Rcpp_BoundedQr <- function(object, X, y, weights, ...) {
 #' @param nvar int number of coefficients to return
 #' @param ... ignored
 #' @export
+#'@keywords internal
 coef.Rcpp_BoundedQr <- function(object, nvar = NULL, ...){
   
   if (is.null(nvar)) {
@@ -75,6 +78,7 @@ coef.Rcpp_BoundedQr <- function(object, nvar = NULL, ...){
 #' @param object BoundedQr object
 #' @param ... ignored
 #' @export
+#' @keywords internal
 vcov.Rcpp_BoundedQr <- function(object, ...) {
   
   vcov_vec <- object$vcov(object$num_params)

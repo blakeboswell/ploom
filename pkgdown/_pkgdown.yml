@@ -1,0 +1,42 @@
+url: https://github.com/blakeboswell/ploom
+
+authors:
+  Blake Boswell:
+    href: https://github.com/blakeboswell
+
+reference:
+- title: Data Feeds
+  contents:
+    - oomfeed
+
+- title: Models
+  contents:
+  - oomlm
+  - oomglm
+
+- title: Fit
+  contents:
+  - update
+  - iter_weight
+  - init_weight
+  - weight
+  - end_weight
+  
+navbar:
+  title: ploom
+  type: default
+  left:
+  - icon: fa-home fa-lg
+    href: index.html
+  - text: Reference
+    href: reference/index.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/blakeboswell/ploom
+
+
+articles:
+- title: All vignettes
+  desc: ~
+  contents: '``'
+

@@ -1,11 +1,10 @@
-#' This is lifted directly from base `stats`.  Much of the flexibility and robustness
-#' of the original code is been removed to decrease processing time
+# This is lifted directly from base `stats`.  Much of the flexibility and robustness
+# of the original code is been removed to decrease processing time
 
 
 #' lifted as-is from `stats`
 #' 
 #' @md
-#' @noRd
 #' @param x variables extracted form `terms` object
 #' @keywords internal
 deparse2 <- function(x) {
@@ -17,7 +16,6 @@ deparse2 <- function(x) {
 #' lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @noRd
 #' @param formula `stats::terms` object
 #' @param data data.frame or list
 #' @keywords internal
@@ -70,7 +68,6 @@ model_frame <- function(formula, data = NULL) {
 #' lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @noRd
 #' @param formula `stats::terms` object
 #' @param data data.frame or list
 #' @keywords internal
@@ -131,7 +128,6 @@ model_matrix <- function(terms, data) {
 #' lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @noRd
 #' @param x `stats::formula` object
 #' @keywords internal
 model_offset <- function(x) {
@@ -168,7 +164,6 @@ model_offset <- function(x) {
 #' lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @noRd
 #' @param data data.frame or list
 #' @param type response type
 #' @keywords internal
@@ -216,4 +211,66 @@ model_response <- function(data, type = "any") {
     
 }
 
+
+#' extract elements from data for updating
+#' 
+#' @param obj ploom model object
+#' @param data `data.frame`
+#' @keywords internal
+unpack_oomchunk <- function(obj, data) {
+  
+  chunk_data   <- model_frame(obj$terms, data)
+  chunk_assign <- attr(chunk_data, "assign")
+  
+  if(!is.null(obj$assign)) {
+    if (!identical(obj$assign, chunk_assign)) {
+      stop("model matrices incompatible")
+    }
+  }
+  
+  if(is.null(chunk_offset <- model_offset(chunk_data))) {
+    chunk_offset <- 0.0
+  }
+  
+  chunk_response <- model_response(chunk_data) - chunk_offset
+  chunk_data     <- model_matrix(obj$terms, chunk_data)
+  
+  p <- ncol(chunk_data)
+  n <- nrow(chunk_data)
+  
+  if(is.null(obj$weights)) {
+    chunk_weights <- rep(1.0, n)
+  } else {
+    chunk_weights <- model_frame(terms(obj$weights), data)[[1]]
+  }
+  
+  list(
+    data     = chunk_data,
+    n        = n,
+    p        = p,
+    response = chunk_response,
+    weights  = chunk_weights,
+    offset   = chunk_offset,
+    assign   = chunk_assign
+  )
+  
+}
+
+
+# update_sandwich <- function(qr, mm, n, p, y, w) {
+#   
+#   xx        <- matrix(nrow = n, ncol = p * (p + 1))
+#   xx[, 1:p] <- mm * (drop(y) - offset)
+#   
+#   for (i in 1:p) {
+#     xx[, p * i + (1:p)] <- mm * mm[, i]
+#   }
+#   
+#   if(is.null(qr)) {
+#     qr <- new_bounded_qr(p * (p + 1)) 
+#   }
+#   
+#   update(qr, xx, rep(0.0, n), w * w)
+#   
+# }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/oomglm.R
 \name{init_weight}
 \alias{init_weight}
-\title{Prepare model for IWLS iteration}
+\title{Prepare model for IRLS iteration}
 \usage{
 init_weight(object)
 }
@@ -10,5 +10,5 @@ init_weight(object)
 \item{object}{\code{oomglm} model.}
 }
 \description{
-Reset variables used for IWLS calculation
+Reset variables used for IRLS calculation
 }

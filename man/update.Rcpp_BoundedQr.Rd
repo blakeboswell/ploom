@@ -20,3 +20,4 @@
 \description{
 wrapper for \code{BoundedQr} method \code{update}
 }
+\keyword{internal}

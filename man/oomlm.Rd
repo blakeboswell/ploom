@@ -2,6 +2,16 @@
 % Please edit documentation in R/oomlm.R
 \name{oomlm}
 \alias{oomlm}
+\alias{AIC.oomlm}
+\alias{coef.oomlm}
+\alias{deviance.oomlm}
+\alias{family.oomlm}
+\alias{formula.oomlm}
+\alias{predict.oomlm}
+\alias{print.oomlm}
+\alias{print.summary.oomlm}
+\alias{summary.oomlm}
+\alias{vcov.oomlm}
 \title{Initialize Updating Linear model}
 \usage{
 oomlm(formula, data = NULL, weights = NULL, ...)
@@ -45,6 +55,38 @@ The provided \code{formula} must not contain any data-dependent terms to ensure
 consistency across calls to \code{\link[=update]{update()}}. Factors are permitted, but the
 levels of the factor must be the same across all data chunks. Empty factor
 levels are accepted.
+}
+\examples{
+\donttest{
+# The `ploom` linear model, `oomlm`, is similar to base `lm` for fitting
+# in-memory data.
+
+x <- oomlm(mpg ~ cyl + disp, data = mtcars)
+
+# Models are initalized with a call to `oomlm()` and updated with `update()`.
+# The intended pattern is to initialize models without referencing data,
+# then call `update()` on each data chunk.
+
+# proxy for big data feed 
+chunks  <- purrr::pmap(mtcars, list)
+
+# initialize the model
+x <- oomlm(mpg ~ cyl + disp)
+
+# iteratively update model with data chunks
+for(chunk in chunks) {
+  x <- update(x, chunk)
+}
+
+print(x)
+
+# We can avoid loops with functional patterns like `reduce()`.
+
+x <- purrr::reduce(chunks, update, .init = oomlm(mpg ~ cyl + disp))
+
+summary(x)
+
+}
 }
 \seealso{
 \code{\link[=oomglm]{oomglm()}}

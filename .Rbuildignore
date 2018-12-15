@@ -3,5 +3,7 @@
 dev-notes/
 benchmark\.R
 logo/
+docs/
+pkgdown/
 scratch\.R
 README\.Rmd

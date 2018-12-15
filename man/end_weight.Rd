@@ -2,7 +2,7 @@
 % Please edit documentation in R/oomglm.R
 \name{end_weight}
 \alias{end_weight}
-\title{Perform end of IWLS reweight iteration}
+\title{Complete model for IRLS iteration}
 \usage{
 end_weight(object, tolerance = 1e-07)
 }
@@ -13,6 +13,6 @@ end_weight(object, tolerance = 1e-07)
 of standard error.}
 }
 \description{
-Update variables used for IWLS calculation, increment \code{iter}, and
+Update variables used for IRLS calculation, increment \code{iter}, and
 determine if model has converged
 }
