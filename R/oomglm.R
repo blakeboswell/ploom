@@ -1,6 +1,3 @@
-#' @include ploom_shared.R
-
-
 #' Initialize Updating Generalized Linear Regression Model
 #' 
 #' @md

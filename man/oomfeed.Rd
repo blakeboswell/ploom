@@ -2,9 +2,19 @@
 % Please edit documentation in R/feed.R
 \name{oomfeed}
 \alias{oomfeed}
+\alias{oomfeed.data.frame}
+\alias{oomfeed.connection}
+\alias{oomfeed.DBIResult}
 \title{Repeatedly iterate over \code{data.frame} or \code{connection} in chunks.}
 \usage{
 oomfeed(data, chunk_size, ...)
+
+oomfeed.data.frame(data, chunk_size, ...)
+
+oomfeed.connection(data, chunk_size, header = TRUE, col_names = NULL,
+  ...)
+
+oomfeed.DBIResult(data, chunk_size, ...)
 }
 \arguments{
 \item{data}{\code{data.frame}, \code{file}, \code{gzfile}, or \code{url}connection`}

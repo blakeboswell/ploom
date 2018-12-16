@@ -75,43 +75,53 @@ vcov.oomlm <- function(object, ...) {
 
   V
   
+}
+
+
+#' @method vcov oomlm_robust
+#' @export
+vcov.oomlm_robust <- function(object, ...) {
+  
+  if(object$se_type == "classical") {
+    return(vcov.oomlm(object, ...))
+  }
+  
   # biglm implementation --------------------------------------------
   
-  # nobs  <- obj$qr$num_obs
-  # np    <- obj$qr$num_params
-  # sserr <- obj$qr$rss_full
-  # ok    <- !obj$qr$lindep()
-  # 
-  # R  <- rvcov_biglm(
-  #   np,
-  #   obj$qr$D,
-  #   obj$qr$rbar,
-  #   ok
-  # )
-  # 
-  # dimnames(R) <- list(obj$names, obj$names)
-  # 
-  # if(!is.null(obj$sandwich)) {
-  #   
-  #   betas <- coef(obj$qr)
-  #   
-  #   V <- sandwich_rcov_biglm(
-  #     np,
-  #     obj$sandwich$xy$D,
-  #     obj$sandwich$xy$rbar,
-  #     R,
-  #     betas,
-  #     ok
-  #   )
-  #   
-  #   dimnames(V) <- list(obj$names, obj$names)
-  #   attr(V, "model-based") <- R * sserr / (nobs - np + sum(!ok))
-  #   
-  # } else {
-  #   V <- R * sserr / (nobs - np + sum(!ok))
-  # }
-  # 
-  # V
+  nobs  <- object$qr$num_obs
+  np    <- object$qr$num_params
+  sserr <- object$qr$rss_full
+  ok    <- !object$qr$lindep()
+  
+  R  <- rvcov_biglm(
+    np,
+    object$qr$D,
+    object$qr$rbar,
+    ok
+  )
+  
+  dimnames(R) <- list(object$names, object$names)
+
+  betas <- coef(object$qr)
+  
+  V <- sandwich_rcov_biglm(
+    np,
+    object$sandwich$xy$D,
+    object$sandwich$xy$rbar,
+    R,
+    betas,
+    ok
+  )
+  
+  dimnames(V) <- list(object$names, object$names)
+  
+  if(object$se_type %in% c("HC1", "stata")) {
+    V * nobs / (nobs - sum(ok))
+  } else {
+    # HCO
+    V
+  }
+
   
 }
 

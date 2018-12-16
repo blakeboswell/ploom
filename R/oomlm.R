@@ -1,5 +1,3 @@
-#' @include ploom_shared.R
-
 #' Initialize Updating Linear Model
 #' 
 #' @noRd

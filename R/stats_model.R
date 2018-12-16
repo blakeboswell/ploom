@@ -262,6 +262,7 @@ unpack_oomchunk <- function(obj, data) {
 }
 
 
+#'
 #' @keywords internal
 update_sandwich <- function(qr, mm, n, p, y, offset, w) {
 

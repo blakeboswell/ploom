@@ -6,11 +6,13 @@
 #'   of class `formula`.
 #' @param weights A one-sided, single term `formula` specifying weights.
 #' @keywords internal
-init_oomlm_robust <- function(formula, weights = NULL) {
+init_oomlm_robust <- function(formula, weights = NULL, se_type) {
   
   object          <- init_oomlm(formula, weights)
+  object$call     <- sys.call(-1)
   object$sandwich <- list(xy = NULL)
-  class(object)   <- c(class(object), "oomlm_robust")
+  object$se_type  <- se_type
+  class(object)   <- c("oomlm_robust", class(object))
   
   object
   
@@ -29,6 +31,8 @@ init_oomlm_robust <- function(formula, weights = NULL) {
 #' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or 
 #'   `environment`.
 #' @param weights a one-sided, single term `formula` specifying weights.
+#' @param se_type string indicating what se type to usecan be "HC0", "HC1"
+#'   "stata", or "classical"
 #' @param ... ignored.
 #' @details `oomlm` initializes an object of class `oomlm`. `oomlm` objects
 #'   are intended to be iteratively updated with new data via the function 
@@ -52,8 +56,7 @@ init_oomlm_robust <- function(formula, weights = NULL) {
 #' \item{weights}{a one-sided, single term `formula` specifying weights.}
 #' \item{call}{the matched call.}
 #' @seealso [oomglm()]
-#' @aliases AIC.oomlm coef.oomlm deviance.oomlm family.oomlm formula.oomlm
-#'   predict.oomlm print.oomlm print.summary.oomlm summary.oomlm vcov.oomlm
+#' @aliases vcov.oomlm_robust
 #' @export
 #' @name oomlm
 #' @examples \donttest{
@@ -70,7 +73,7 @@ init_oomlm_robust <- function(formula, weights = NULL) {
 #' chunks  <- oomfeed(mtcars, chunk_size = 10)
 #' 
 #' # initialize the model
-#' x <- oomlm(mpg ~ cyl + disp)
+#' x <- oomlm_robust(mpg ~ cyl + disp)
 #' 
 #' # iteratively update model with data chunks
 #' while(!is.null(chunk <- chunks())) {
@@ -80,9 +83,18 @@ init_oomlm_robust <- function(formula, weights = NULL) {
 #' summary(x)
 #' 
 #' }
-oomlm_robust <- function(formula, data = NULL, weights = NULL, ...) {
+oomlm_robust <- function(formula,
+                         data    = NULL,
+                         weights = NULL,
+                         se_type = "HC1", ...) {
   
-  object <- init_oomlm_robust(formula, weights)
+  if(!(se_type %in% c("HC0", "HC1", "stata", "classical"))) {
+    msg <- c('`se_type` must be one of "HC0", "HC1", "stata", or "classical"',
+             "See ?oomlm_robust for details.")
+    stop(paste(msg, collapse = "\n"))
+  }
+  
+  object <- init_oomlm_robust(formula, weights, se_type)
   
   if(!is.null(data)) {
     object <- update(object, data)
@@ -115,11 +127,11 @@ update.oomlm_robust <- function(object, data, ...) {
                       chunk$response - chunk$offset,
                       chunk$weights)
   
-  object$n            <- object$qr$num_obs
-  object$df.residual  <- object$n - chunk$p
+  object$n           <- object$qr$num_obs
+  object$df.residual <- object$n - chunk$p
   
   object$sandwich$xy <-
-    update_sandwich(obj$sandwich$xy,
+    update_sandwich(object$sandwich$xy,
                     chunk$data,
                     chunk$n,
                     chunk$p,
