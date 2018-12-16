@@ -1,4 +1,4 @@
-context("test-oomfeed-con.R")
+context("test-oom_data-con.R")
 
 test_connection <- function(con, data_frame) {
 
@@ -6,7 +6,7 @@ test_connection <- function(con, data_frame) {
   chunk_size <- 5
   n <- nrow(data_frame)
   
-  tmp <- oomfeed(con, chunk_size = chunk_size, header = TRUE)
+  tmp <- oom_data(con, chunk_size = chunk_size, header = TRUE)
   
   for (i in 1:3) {
     cursor <- 0
@@ -26,7 +26,7 @@ test_that("data.frame", {
   chunk_size <- 5
   df     <- mtcars
   n      <- nrow(df)
-  tmp    <- oomfeed(df, chunk_size = chunk_size)
+  tmp    <- oom_data(df, chunk_size = chunk_size)
 
   for (i in 1:3) {
     cursor <- 0
