@@ -10,7 +10,7 @@ authors:
 reference:
   - title: Data Feeds
     contents:
-    - oomfeed
+    - oom_data
   - title: Models
     contents:
     - oomlm

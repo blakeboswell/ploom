@@ -83,7 +83,7 @@ update.oomglm_robust <- function(object, data, ...) {
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
 #'   `formula`.
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or
+#' @param data an optional `oom_data`, `tibble`, `data.frame`, `list` or
 #'   `environment`.
 #' @param family A `glm` family object.
 #' @param weights a one-sided, single term `formula` specifying weights.
@@ -142,11 +142,11 @@ update.oomglm_robust <- function(object, data, ...) {
 #' # re-weight 8 times or until convergence
 #' x <- iter_weight(x, mtcars, max_iter = 8)
 #' 
-#' # To fit data in chunks, use `oomfeed()`:
+#' # To fit data in chunks, use `oom_data()`:
 #' 
 #' # initialize the model
 #' x    <- oomglm(mpg ~ cyl + disp)
-#' feed <- oomfeed(mtcars, chunk_size = 10)
+#' feed <- oom_data(mtcars, chunk_size = 10)
 #' 
 #' # iteratively reweight model
 #' x <- iter_weight(x, feed, max_iter = 8)
@@ -155,7 +155,7 @@ update.oomglm_robust <- function(object, data, ...) {
 #' # component `ploom` functions:
 #' 
 #' x    <- oomglm(mpg ~ cyl + disp)
-#' feed <- oomfeed(mtcars, chunk_size = 10)
+#' feed <- oom_data(mtcars, chunk_size = 10)
 #' 
 #' # a first pass over the data
 #' x <- init_weight(x)

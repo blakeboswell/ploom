@@ -69,7 +69,7 @@ update.oomlm_robust <- function(object, data, ...) {
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
 #'   `formula`.
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or 
+#' @param data an optional `oom_data`, `tibble`, `data.frame`, `list` or 
 #'   `environment`.
 #' @param weights a one-sided, single term `formula` specifying weights.
 #' @param se_type string indicating what se type to usecan be "HC0", "HC1"
@@ -111,7 +111,7 @@ update.oomlm_robust <- function(object, data, ...) {
 #' # then call `update()` on each data chunk.
 #' 
 #' # proxy for big data feed 
-#' chunks  <- oomfeed(mtcars, chunk_size = 10)
+#' chunks  <- oom_data(mtcars, chunk_size = 10)
 #' 
 #' # initialize the model
 #' x <- oomlm_robust(mpg ~ cyl + disp)

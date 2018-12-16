@@ -151,7 +151,7 @@ weight <- function(object, data) {
   }
   
   if(inherits(data, "data.frame")) {
-    data <- oomfeed(data, chunk_size = nrow(data))
+    data <- oom_data(data, chunk_size = nrow(data))
   }
   
   while(!is.null(chunk <- data())){
@@ -196,7 +196,7 @@ end_weight <- function(object, tolerance = 1e-7) {
 #' 
 #' @md
 #' @param object `oomglm` model.
-#' @param data An `oomfeed`, `tibble`, `dataframe`, `list` or `environment`.
+#' @param data An `oom_data`, `tibble`, `data.frame`, `list` or `environment`.
 #' @param max_iter Maximum number of IRLS iterations to perform. Will 
 #'   stop iterating if model converges before `max_iter` iterations.
 #' @param tolerance Tolerance for change in coefficient as a multiple
@@ -239,7 +239,7 @@ iter_weight <- function(object,
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
 #'   `formula`.
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or
+#' @param data an optional `oom_data`, `tibble`, `dataframe`, `list` or
 #'   `environment`.
 #' @param family A `glm` family object.
 #' @param weights a one-sided, single term `formula` specifying weights.
@@ -296,11 +296,11 @@ iter_weight <- function(object,
 #' # re-weight 8 times or until convergence
 #' x <- iter_weight(x, mtcars, max_iter = 8)
 #' 
-#' # To fit data in chunks, use `oomfeed()`:
+#' # To fit data in chunks, use `oom_data()`:
 #' 
 #' # initialize the model
 #' x    <- oomglm(mpg ~ cyl + disp)
-#' feed <- oomfeed(mtcars, chunk_size = 10)
+#' feed <- oom_data(mtcars, chunk_size = 10)
 #' 
 #' # iteratively reweight model
 #' x <- iter_weight(x, feed, max_iter = 8)
@@ -309,7 +309,7 @@ iter_weight <- function(object,
 #' # component `ploom` functions:
 #' 
 #' x    <- oomglm(mpg ~ cyl + disp)
-#' feed <- oomfeed(mtcars, chunk_size = 10)
+#' feed <- oom_data(mtcars, chunk_size = 10)
 #' 
 #' # a first pass over the data
 #' x <- init_weight(x)

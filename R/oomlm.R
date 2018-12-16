@@ -39,7 +39,7 @@ init_oomlm <- function(formula, weights = NULL) {
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
 #'   `formula`.
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list` or 
+#' @param data an optional `oom_data`, `tibble`, `data.frame`, `list` or 
 #'   `environment`.
 #' @param weights a one-sided, single term `formula` specifying weights.
 #' @param ... ignored.
@@ -80,7 +80,7 @@ init_oomlm <- function(formula, weights = NULL) {
 #' # then call `update()` on each data chunk.
 #' 
 #' # proxy for big data feed 
-#' chunks  <- oomfeed(mtcars, chunk_size = 10)
+#' chunks  <- oom_data(mtcars, chunk_size = 10)
 #' 
 #' # initialize the model
 #' x <- oomlm(mpg ~ cyl + disp)

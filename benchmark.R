@@ -33,7 +33,7 @@ con <- DBI::dbConnect(RSQLite::SQLite(), path = ":dbname:")
 copy_to(con, mtcars, "mtcars", temporary = FALSE)
 rs   <- dbSendQuery(con, "SELECT mpg, cyl, disp FROM mtcars")
 y    <- oomlm(mpg ~ cyl + disp)
-feed <- oomfeed(rs, 10)
+feed <- oom_data(rs, 10)
 
 # iteratively update model with data chunks
 while(!is.null(chunk <- feed())) {
@@ -45,7 +45,7 @@ summary(y)
 
 # glm
 
-feed <- oomfeed(rs, 10)
+feed <- oom_data(rs, 10)
 x    <- iter_weight(oomglm(mpg ~ cyl + disp), feed, 8)
 summary(x)
 
@@ -66,7 +66,7 @@ w <- oomglm(exp(logno2) ~ logcars + temp + windsp,
             family = Gamma(log),
             start=c(2, 0, 0, 0))
 
-w <- iter_weight(w, data = oomfeed(airp, chunksize = 150), max_iter = 20)
+w <- iter_weight(w, data = oom_data(airp, chunksize = 150), max_iter = 20)
 
 summary(w)
 
@@ -75,9 +75,9 @@ summary(w)
 
 mtcars %>% write.table('data/mtcars.txt', row.names = FALSE)
 
-next_chunk <- oomfeed(file("data/mtcars.txt"),
-                      chunksize = 10,
-                      col.names = colnames(mtcars))
+next_chunk <- oom_data(file("data/mtcars.txt"),
+                       chunksize = 10,
+                       col.names = colnames(mtcars))
 
 while(!is.null(chunk <- next_chunk())) {
   print(head(chunk))
@@ -89,16 +89,16 @@ z <- iter_weight(z, data = next_chunk, max_iter = 10)
 
 # feed url test ---------------------------------------------------------
 
-next_chunk <- oomfeed(url("http://faculty.washington.edu/tlumley/NO2.dat"),
-                      chunksize=150,
-                      col.names=c("logno2"
-                                  , "logcars"
-                                  , "temp"
-                                  , "windsp"
-                                  , "tempgrad"
-                                  , "winddir"
-                                  , "hour"
-                                  , "day"))
+next_chunk <- oom_data(url("http://faculty.washington.edu/tlumley/NO2.dat"),
+                       chunksize=150,
+                       col.names=c("logno2"
+                                   , "logcars"
+                                   , "temp"
+                                   , "windsp"
+                                   , "tempgrad"
+                                   , "winddir"
+                                   , "hour"
+                                   , "day"))
 
 z <- oomglm(exp(logno2) ~ logcars + temp + windsp,
             family = Gamma(log),
@@ -140,7 +140,7 @@ df <- make_linear(alpha, betas, N) %>%
 i <- 0
 while(i < 5) {
   w <- oomglm(y ~ v2 + v3 + v4 + v5)
-  w <- iter_weight(w, oomfeed(df, chunk_size), max_iter = 8)
+  w <- iter_weight(w, oom_data(df, chunk_size), max_iter = 8)
   i <- i + 1  
 }
 
@@ -183,7 +183,7 @@ coef(w)
 benchmark(
   "oomglm" = {
     w <- iter_weight(oomglm(y ~ v2 + v3 + v4 + v5),
-                     oomfeed(df, chunk_size), max_iter = 8)
+                     oom_data(df, chunk_size), max_iter = 8)
   },
   "bigglm" = {
     v <- bigglm(formula = y ~ v2 + v3 + v4 + v5,
