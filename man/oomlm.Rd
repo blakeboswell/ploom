@@ -20,7 +20,7 @@ oomlm(formula, data = NULL, weights = NULL, ...)
 \item{formula}{a symbolic description of the model to be fitted of class
 \code{formula}.}
 
-\item{data}{an optional \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or
+\item{data}{an optional \code{oom_data}, \code{tibble}, \code{data.frame}, \code{list} or
 \code{environment}.}
 
 \item{weights}{a one-sided, single term \code{formula} specifying weights.}
@@ -68,7 +68,7 @@ x <- oomlm(mpg ~ cyl + disp, data = mtcars)
 # then call `update()` on each data chunk.
 
 # proxy for big data feed 
-chunks  <- oomfeed(mtcars, chunk_size = 10)
+chunks  <- oom_data(mtcars, chunk_size = 10)
 
 # initialize the model
 x <- oomlm(mpg ~ cyl + disp)

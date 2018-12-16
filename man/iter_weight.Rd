@@ -9,7 +9,7 @@ iter_weight(object, data, max_iter = 1L, tolerance = 1e-07)
 \arguments{
 \item{object}{\code{oomglm} model.}
 
-\item{data}{An \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
+\item{data}{An \code{oom_data}, \code{tibble}, \code{data.frame}, \code{list} or \code{environment}.}
 
 \item{max_iter}{Maximum number of IRLS iterations to perform. Will
 stop iterating if model converges before \code{max_iter} iterations.}
