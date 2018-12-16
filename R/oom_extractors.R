@@ -73,12 +73,6 @@ vcov.oomlm_robust <- function(object, ...) {
   ok    <- !object$qr$lindep()
   
   R <- object$qr$sdm_inv()
-  # R  <- squared_design_inv(
-  #   np,
-  #   object$qr$D,
-  #   object$qr$rbar
-  # )
-  
   dimnames(R) <- list(object$names, object$names)
 
   betas <- coef(object$qr)

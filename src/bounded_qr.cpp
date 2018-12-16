@@ -54,7 +54,7 @@ double BoundedQr::rank() {
 //'
 //' @keywords internal
 arma::mat BoundedQr::sdm_inv() {
-  
+
   // upper triangular r_bar
   arma::mat R = arma::eye<arma::mat>(num_params_, num_params_);
   int n = 0;
@@ -66,7 +66,7 @@ arma::mat BoundedQr::sdm_inv() {
       }
     }
   }
-  
+
   // R * sqrt(D_)
   arma::vec work = arma::sqrt(D_);
   for(int i = 0; i < num_params_; ++i) {
@@ -74,20 +74,20 @@ arma::mat BoundedQr::sdm_inv() {
       R(i, j) = R(i, j) * work[i];
     }
   }
-  
+
   // ok        <- D != 0
   // R[ok, ok] <- chol2inv(R[ok, ok, drop = FALSE])
   // R[!ok, ]  <- NA
   // R[, !ok]  <- NA
-  
+
   // chol2Inv
   arma::mat RCI = arma::solve(
     arma::trans(arma::trimatu(R)) * arma::trimatu(R),
     arma::eye(num_params_, num_params_)
   );
-  
+
   return RCI;
-  
+
 }
 
 

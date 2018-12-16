@@ -58,11 +58,38 @@ summary.oomlm <- function(object,
     r_squared     <- 1 - rss_full / rss_red
     adj_r_squared <- 1 - (1 - r_squared) * ((num_obs - df_int) / res_dof)
     
-    fstatistic <- c(
-      value = (rss_red - rss_full) / (rank - df_int) / res_var,
-      numdf = rank - df_int,
-      dendf = res_dof
-    )
+    if(FALSE) {
+      fstatistic <- c(
+        value = (rss_red - rss_full) / (rank - df_int) / res_var,
+        numdf = rank - df_int,
+        dendf = res_dof
+      )      
+    } else {
+      
+      indices <- seq.int(has_intercept + 1, rank, by = 1)
+      coefs   <- as.matrix(beta)
+      
+      value   <- tryCatch({
+        sapply(seq_len(ncol(coefs)),
+               function(x) {
+                 vcov_indices <- indices + (x - 1) * rank
+                 crossprod(
+                   coefs[indices, x],
+                   chol2inv(chol(cov_mat[vcov_indices, vcov_indices])) %*% coefs[indices, x]
+                 ) / (rank - df_int)
+               })
+      },
+      error = function(e) {
+        NA
+      })
+      
+      fstatistic <- c(
+        value = value,
+        numdf = rank - df_int,
+        dendf = res_dof
+      )  
+      
+    }
     
   } else {
     r_squared  <- adj_rsquared <- 0

@@ -7,3 +7,4 @@ docs/
 pkgdown/
 scratch\.R
 README\.Rmd
+tests/gen_testdata.R
