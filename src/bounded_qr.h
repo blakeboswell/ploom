@@ -123,6 +123,7 @@ public:
   arma::vec vcov(int nreq);
   arma::mat vcov_sugar(int nreq);
   arma::vec beta();
+  arma::mat sdm_inv();
   
   // accessors
   arma::vec rss();
@@ -158,6 +159,7 @@ RCPP_MODULE(BoundedQrModule) {
     .method("rss",     &BoundedQr::rss)
     .method("lindep",  &BoundedQr::lindep)
     .method("rank",    &BoundedQr::rank)
+    .method("sdm_inv", &BoundedQr::sdm_inv)
     ;
   
 }

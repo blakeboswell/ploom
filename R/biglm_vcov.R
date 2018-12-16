@@ -1,26 +1,54 @@
 
-#' vcov implementation for updating linear model
-#' (Miller AS274 QR factorization) as implemented
-#' in package `biglm`
-#' @param np number of parameters in model
-#' @param D diagonals of cross products matrix
-#' @param rbar the off diagonal portion of the R matrix
+#' update HC sandwich estimator
+#' 
+#' @param qr BoundedQr object
+#' @param mm 
+#' @param n number of observations
+#' @param p number of covariates
+#' @param y response
+#' @param offset response offset
+#' @param w weights
 #' @keywords internal
-rvcov_biglm <- function(np, D, rbar, ok) {
+update_sandwich <- function(qr, mm, n, p, y, offset, w) {
   
-  R         <- diag(np)
-  R[row(R) > col(R)] <- rbar
-  R         <- t(R)
-  R         <- sqrt(D) * R
+  xx        <- matrix(nrow = n, ncol = p * (p + 1))
+  xx[, 1:p] <- mm * (drop(y) - offset)
   
-  ok        <- D != 0
-  R[ok, ok] <- chol2inv(R[ok, ok, drop = FALSE])
-  R[!ok, ]  <- NA
-  R[, !ok]  <- NA
-
-  R
+  for (i in 1:p) {
+    xx[, p * i + (1:p)] <- mm * mm[, i]
+  }
+  
+  if(is.null(qr)) {
+    qr <- new_bounded_qr(p * (p + 1))
+  }
+  
+  update(qr, xx, rep(0.0, n), w * w)
   
 }
+
+
+# #' vcov implementation for updating linear model
+# #' (Miller AS274 QR factorization) as implemented
+# #' in package `biglm`
+# #' @param np number of parameters in model
+# #' @param D diagonals of cross products matrix
+# #' @param rbar the off diagonal portion of the R matrix
+# #' @keywords internal
+# squared_design_inv <- function(np, D, rbar) {
+#   
+#   R         <- diag(np)
+#   R[row(R) > col(R)] <- rbar
+#   R         <- t(R)
+#   R         <- sqrt(D) * R
+#   
+#   ok        <- D != 0
+#   R[ok, ok] <- chol2inv(R[ok, ok, drop = FALSE])
+#   R[!ok, ]  <- NA
+#   R[, !ok]  <- NA
+# 
+#   R
+#   
+# }
 
 
 #' Hubert/White sandwich vcov implementation for updating linear
