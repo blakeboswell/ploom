@@ -14,3 +14,4 @@
 \description{
 wrapper for \code{BoundedQr} method \code{vcov}
 }
+\keyword{internal}

@@ -16,3 +16,4 @@
 \description{
 wrapper for \code{BoundedQr} method \code{betas}
 }
+\keyword{internal}

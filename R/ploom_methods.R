@@ -1,48 +1,28 @@
 
-# predict.oomlm <- function(object,
-#                          newdata,
-#                          se.fit = FALSE,
-#                          scale = NULL,
-#                          df = Inf, 
-#                          interval = c("none", "confidence", "prediction"),
-#                          level = .95,
-#                          type = c("response", "terms"),
-#                          terms = NULL,
-#                          na.action = na.pass,
-#                          pred.var = res.var/weights,
-#                          weights = 1,
-#                          ...) { next in line }
-#
-# variable.names.oomlm <- function(object, full = FALSE, ...) { not possible }
-#
-# case.names.oomlm <- function(object, full = FALSE, ...) { not possible }
-#
-# anova.oomlm <- function(object, ...) { not possible }
 
-
-#' @method formula oomlm
 #' @export
+#' @method formula oomlm
 formula.oomlm <- function(x, ...) {
   formula(x$terms)
 }
 
 
-#' @method family oomlm
 #' @export
+#' @method family oomlm
 family.oomlm <- function(object, ...) {
   gaussian()
 }
 
 
-#' @method deviance oomlm
 #' @export
+#' @method deviance oomlm
 deviance.oomlm <- function(object, ...) {
   object$qr$rss_full
 }
 
 
-#' @method AIC oomlm
 #' @export
+#' @method AIC oomlm
 AIC.oomlm <- function(object, ..., k = 2) {
 
   p   <- object$qr$rank()
@@ -56,8 +36,8 @@ AIC.oomlm <- function(object, ..., k = 2) {
 }
 
 
-#' @method coef oomlm
 #' @export
+#' @method coef oomlm
 coef.oomlm <- function(object, ...) {
   betas        <- coef(object$qr)
   names(betas) <- object$names
@@ -65,8 +45,8 @@ coef.oomlm <- function(object, ...) {
 }
 
 
-#' @method vcov oomlm
 #' @export
+#' @method vcov oomlm
 vcov.oomlm <- function(object, ...) {
   
   ## cpp implementation / HC not supported ---------------------------
@@ -125,3 +105,9 @@ vcov.oomlm_robust <- function(object, ...) {
   
 }
 
+
+#' @method vcov oomglm_robust
+#' @export
+vcov.oomglm_robust <- function(object, ...) {
+  vcov.oomlm_robust(object, ...)
+}

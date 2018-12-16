@@ -13,3 +13,4 @@ including the intercept when model has intercept}
 \description{
 initialize new \code{BoundedQr} object
 }
+\keyword{internal}

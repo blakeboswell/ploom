@@ -1,0 +1,42 @@
+url: https://github.com/blakeboswell/ploom
+
+home:
+  strip_header: true
+
+authors:
+  Blake Boswell:
+    href: https://github.com/blakeboswell
+
+reference:
+  - title: Data Feeds
+    contents:
+    - oomfeed
+  - title: Models
+    contents:
+    - oomlm
+    - oomlm_robust
+    - oomglm
+  - title: Fit
+    contents:
+    - update
+    - iter_weight
+    - init_weight
+    - weight
+    - end_weight
+  
+navbar:
+  type: default
+  left:
+  - icon: fa-github fa-lg
+    href: https://github.com/blakeboswell/ploom
+  right:
+  - text: Intro
+    href: articles/oomlm.html
+  - text: Reference
+    href: reference/index.html
+  - text: Articles
+    menu:
+    - text: Linear Model
+      href: articles/oomlm.html
+    - text: Generalized Linear Model
+      href: articles/oomlm.html

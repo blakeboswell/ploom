@@ -2,6 +2,10 @@
 % Please edit documentation in R/oomglm.R
 \name{oomglm}
 \alias{oomglm}
+\alias{predict.oomglm}
+\alias{print.oomglm}
+\alias{print.summary.oomglm}
+\alias{summary.oomglm}
 \title{Initialize Updating Generalized Linear model}
 \usage{
 oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
@@ -25,12 +29,12 @@ oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
 \value{
 It is up to the user to know when fitting is complete.
 Therefore, only basic model characteristics are provided as values with
-the \code{ooglm} object. Statistics are available on demand via \code{summary} and
+the \code{oomglm} object. Statistics are available on demand via \code{summary} and
 extractor functions.
 
-\item{converged}{Indicates if the IWLS algorithm has converged.}
-\item{iter}{The number of iterations of IWLS performed.}
-\item{n}{The number observations processed per round of IWLS.}
+\item{converged}{Indicates if the IRLS algorithm has converged.}
+\item{iter}{The number of iterations of IRLS performed.}
+\item{n}{The number observations processed per round of IRLS.}
 \item{df.residual}{The residual degrees of freedom.}
 \item{df.null}{The residual degrees of freedom.}
 \item{formula}{the \code{\link[stats:formula]{stats::formula()}} object specifying the linear model.}
@@ -46,17 +50,67 @@ factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
 }
 \details{
-\code{ooglm} initializes an object of class \code{ooglm} inheriting from the
-class \code{oomlm}. \code{ooglm} objects are intended to be iteratively
+\code{oomglm} initializes an object of class \code{oomglm} inheriting from the
+class \code{oomlm}. \code{oomglm} objects are intended to be iteratively
 updated with new data via calls to \code{\link[=update]{update()}}. Iterative fitting
 over all data updates are performed with the function \code{\link[=iter_weight]{iter_weight()}}.
-If \code{data} is provided to the \code{ooglm} function call, an \code{update()} round
+If \code{data} is provided to the \code{oomglm()} function call, an \code{update()} round
 will be performed on initialization.
 
 A \code{oomglm} object can be in various states of fit depending on the number
-of seen observations and rounds of IWLS that have been performed.
+of seen observations and rounds of IRLS that have been performed.
 It is important to view the model within the context of:
-the number of observations processed per round of IWLS (\code{n});
-the number of IWLS iterations that have been performed (\code{iter});
-and if the IWLS algorithm has converged (\code{converged}).
+the number of observations processed per round of IRLS (\code{n});
+the number of IRLS iterations that have been performed (\code{iter});
+and if the IRLS algorithm has converged (\code{converged}).
+}
+\examples{
+\donttest{
+# The `oomglm()` function fits generalized linear models via 
+# Iteratively Weighted Least Squares (IWLS).  
+
+# When fitting in-memory data the process is similar to `oomlm()` but we use the 
+# function `iter_weight()` instead of `update()`. `iter_weight()` fits the model
+# via iterative passes over the data until convergence.
+
+# initialize the model
+x <- oomglm(mpg ~ cyl + disp)
+
+# re-weight 8 times or until convergence
+x <- iter_weight(x, mtcars, max_iter = 8)
+
+# To fit data in chunks, use `oomfeed()`:
+
+# initialize the model
+x    <- oomglm(mpg ~ cyl + disp)
+feed <- oomfeed(mtcars, chunk_size = 10)
+
+# iteratively reweight model
+x <- iter_weight(x, feed, max_iter = 8)
+
+# The `iter_weight()` process can also be implemented directly with
+# component `ploom` functions:
+
+x    <- oomglm(mpg ~ cyl + disp)
+feed <- oomfeed(mtcars, chunk_size = 10)
+
+# a first pass over the data
+x <- init_weight(x)
+x <- weight(x, feed)
+x <- end_weight(x)
+x
+
+# a second pass over the data
+x <- init_weight(x)
+x <- weight(x, feed)
+x <- end_weight(x)
+x
+
+# This is meant to be useful when debugging / evaluating models with long 
+# runtimes by exposing the individual steps of the model process for inspection. 
+
+}
+}
+\seealso{
+\code{\link[=oomlm]{oomlm()}}
 }

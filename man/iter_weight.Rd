@@ -2,27 +2,27 @@
 % Please edit documentation in R/oomglm.R
 \name{iter_weight}
 \alias{iter_weight}
-\title{Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS).}
+\title{Fit \code{oomglm} model via Iteratively Reweighted Least Squares (IRLS).}
 \usage{
-iter_weight(object, data, max_iter, tolerance = 1e-07)
+iter_weight(object, data, max_iter = 1L, tolerance = 1e-07)
 }
 \arguments{
 \item{object}{\code{oomglm} model.}
 
 \item{data}{An \code{oomfeed}, \code{tibble}, \code{dataframe}, \code{list} or \code{environment}.}
 
-\item{max_iter}{Maximum number of IWLS iterations to perform. Will
+\item{max_iter}{Maximum number of IRLS iterations to perform. Will
 stop iterating if model converges before \code{max_iter} iterations.}
 
 \item{tolerance}{Tolerance for change in coefficient as a multiple
 of standard error.}
 }
 \value{
-\code{oomglm} object after performing \code{max_iter} IWLS iterations on
+\code{oomglm} object after performing \code{max_iter} IRLS iterations on
 \code{data}.
 }
 \description{
-Reweight \code{oomglm} model via Iteratively Reweighted Least Squares (IWLS).
+Fit \code{oomglm} model via Iteratively Reweighted Least Squares (IRLS).
 }
 \seealso{
 \code{\link[=oomglm]{oomglm()}}

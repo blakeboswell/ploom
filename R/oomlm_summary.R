@@ -2,7 +2,7 @@
 # (unofficial reference ..)
 # https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
 
-
+# @method summary oomlm
 #' @export
 summary.oomlm <- function(object,
                           correlation  = FALSE,
@@ -95,7 +95,7 @@ summary.oomlm <- function(object,
   
 }
 
-
+#' @method print summary.oomlm
 #' @export
 print.summary.oomlm <- function(x,
                                 digits = max(3L, getOption("digits") - 3L),

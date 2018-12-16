@@ -1,11 +1,10 @@
-#' This is lifted directly from base `stats`.  Much of the flexibility and robustness
-#' of the original code is been removed to decrease processing time
+# This is lifted directly from base `stats`.  Much of the flexibility and robustness
+# of the original code is been removed to decrease processing time
 
 
 #' lifted as-is from `stats`
 #' 
 #' @md
-#' @noRd
 #' @param x variables extracted form `terms` object
 #' @keywords internal
 deparse2 <- function(x) {
@@ -17,7 +16,6 @@ deparse2 <- function(x) {
 #' lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @noRd
 #' @param formula `stats::terms` object
 #' @param data data.frame or list
 #' @keywords internal
@@ -70,7 +68,6 @@ model_frame <- function(formula, data = NULL) {
 #' lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @noRd
 #' @param formula `stats::terms` object
 #' @param data data.frame or list
 #' @keywords internal
@@ -131,7 +128,6 @@ model_matrix <- function(terms, data) {
 #' lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @noRd
 #' @param x `stats::formula` object
 #' @keywords internal
 model_offset <- function(x) {
@@ -168,7 +164,6 @@ model_offset <- function(x) {
 #' lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @noRd
 #' @param data data.frame or list
 #' @param type response type
 #' @keywords internal
@@ -262,7 +257,15 @@ unpack_oomchunk <- function(obj, data) {
 }
 
 
-#'
+#' update HC sandwhich estimator
+#' 
+#' @param qr BoundedQr object
+#' @param mm 
+#' @param n number of observations
+#' @param p number of covariates
+#' @param y response
+#' @param offset response offset
+#' @param w weights
 #' @keywords internal
 update_sandwich <- function(qr, mm, n, p, y, offset, w) {
 
