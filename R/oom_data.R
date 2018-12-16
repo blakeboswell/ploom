@@ -16,7 +16,7 @@
 #'   if `header` is FALSE.
 #' @param ... passed through to `read.table`. note that `nrow`, and 
 #'   `col.names` are ignored in favor of `chunk_size` and `col_names`
-#' @details `oomfeed` is a closure that creates a function for 
+#' @details `oom_data` is a closure that creates a function for 
 #'   returning `chunk_size` number of rows from `data` until all
 #'   rows have been returned.  It will then return `NULL` once. It will repeat
 #'   this cycle ad-infinitum. When data is a `connection` it will recreate and open
@@ -24,15 +24,15 @@
 #'   `read.table`.  Additional parameters for `read.table` should be passed
 #'   in via `...`.
 #' @export
-#' @name oomfeed
-oomfeed <- function(data, chunk_size, ...){
-  UseMethod("oomfeed")
+#' @name oom_data
+oom_data <- function(data, chunk_size, ...){
+  UseMethod("oom_data")
 }
-setGeneric("oomfeed")
+setGeneric("oom_data")
 
-#' @rdname oomfeed
+#' @rdname oom_data
 #' @export
-oomfeed.data.frame <- function(data, chunk_size, ...) {
+oom_data.data.frame <- function(data, chunk_size, ...) {
 
   reset  <- FALSE
   n      <- nrow(data)
@@ -63,12 +63,12 @@ oomfeed.data.frame <- function(data, chunk_size, ...) {
 }
 
 
-#' @rdname oomfeed
+#' @rdname oom_data
 #' @export
-oomfeed.connection <- function(data,
-                               chunk_size,
-                               header    = TRUE,
-                               col_names = NULL, ...) {
+oom_data.connection <- function(data,
+                                chunk_size,
+                                header    = TRUE,
+                                col_names = NULL, ...) {
 
   if(!header & is.null(col_names)) {
     stop(cat("col_names must be provided if header is FALSE"))
@@ -91,7 +91,7 @@ oomfeed.connection <- function(data,
   }
   
   if(is.null(fxn <- conn_fxn(data_summary$class))) {
-    stop(cat("oomfeed does not support connection type ", data_summary$class))
+    stop(paste0("oom_data does not support connection type ", data_summary$class))
   }
   
   data <- fxn(data_summary$description)
@@ -127,11 +127,11 @@ oomfeed.connection <- function(data,
 }
 
 
-#' @rdname oomfeed
+#' @rdname oom_data
 #' @export
-oomfeed.DBIResult <- function(data,
-                              chunk_size,
-                              ...) {
+oom_data.DBIResult <- function(data,
+                               chunk_size,
+                               ...) {
   reset  <- FALSE
   con    <- data@conn
   query  <- data@sql

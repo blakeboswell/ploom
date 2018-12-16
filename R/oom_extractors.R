@@ -1,5 +1,4 @@
 
-
 #' @export
 #' @method formula oomlm
 formula.oomlm <- function(x, ...) {
@@ -58,8 +57,8 @@ vcov.oomlm <- function(object, ...) {
 }
 
 
-#' @method vcov oomlm_robust
 #' @export
+#' @method vcov oomlm_robust
 vcov.oomlm_robust <- function(object, ...) {
   
   if(object$se_type == "classical") {
@@ -73,12 +72,12 @@ vcov.oomlm_robust <- function(object, ...) {
   sserr <- object$qr$rss_full
   ok    <- !object$qr$lindep()
   
-  R  <- rvcov_biglm(
-    np,
-    object$qr$D,
-    object$qr$rbar,
-    ok
-  )
+  R <- object$qr$sdm_inv()
+  # R  <- squared_design_inv(
+  #   np,
+  #   object$qr$D,
+  #   object$qr$rbar
+  # )
   
   dimnames(R) <- list(object$names, object$names)
 
@@ -106,8 +105,8 @@ vcov.oomlm_robust <- function(object, ...) {
 }
 
 
-#' @method vcov oomglm_robust
 #' @export
+#' @method vcov oomglm_robust
 vcov.oomglm_robust <- function(object, ...) {
   vcov.oomlm_robust(object, ...)
 }

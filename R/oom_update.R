@@ -6,7 +6,7 @@
 #' Update ploom model fit with new data. 
 #' 
 #' @param object `oomlm` or `oomglm` object to be updated.
-#' @param data an optional `oomfeed`, `tibble`, `dataframe`, `list`
+#' @param data an optional `oom_data`, `tibble`, `data.frame`, `list`
 #'   or `environment`.
 #' @param ... ignored
 #' @seealso [oomlm()]
