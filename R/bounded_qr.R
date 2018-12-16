@@ -98,9 +98,9 @@ coef.Rcpp_BoundedQr <- function(object, nvar = NULL, ...){
 #' @keywords internal
 vcov.Rcpp_BoundedQr <- function(object, ...) {
   
-  vcov_vec <- object$vcov(object$num_params)
-  k        <- length(vcov_vec)
   np       <- object$num_params
+  vcov_vec <- object$vcov(np)
+  k        <- length(vcov_vec)
   V        <- matrix(nrow = np, ncol = np)
   pos      <- 1
   
