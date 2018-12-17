@@ -17,8 +17,8 @@ oomlm_robust(formula, data = NULL, weights = NULL, se_type = "HC1",
 
 \item{weights}{a one-sided, single term \code{formula} specifying weights.}
 
-\item{se_type}{string indicating what se type to usecan be "HC0", "HC1"
-"stata", or "classical". see \link{details}.  default "HC1".}
+\item{se_type}{string method for robust standard error estimation.
+"HC0", "HC1", "stata", or "classical". see \link{details}.  default "HC1".}
 
 \item{...}{ignored.}
 }

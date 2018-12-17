@@ -128,6 +128,17 @@ update.oomlm <- function(object, data, ...) {
                       chunk$response - chunk$offset,
                       chunk$weights)
   
+  if(!is.null(object$sandwich)) {
+    object$sandwich$xy <-
+      update_sandwich(object$sandwich$xy,
+                      chunk$data,
+                      chunk$n,
+                      chunk$p,
+                      chunk$response,
+                      chunk$offset,
+                      chunk$weights)
+  }
+  
   object$n            <- object$qr$num_obs
   object$df.residual  <- object$n - chunk$p
   
@@ -146,6 +157,10 @@ print.oomlm <- function(x,
       paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n",
       sep = "")
+  
+  if(!is.null(x$se_type)) {
+    cat(paste("Standard error type:", x$se_type), "\n\n")  
+  }
   
   beta <- coef(x)
   

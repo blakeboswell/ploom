@@ -1,7 +1,5 @@
 library(estimatr)
 
-
-
 gen_models <- function(fxn, data) {
   
   se_types <- c("classical", "HC0", "HC1", "stata")
@@ -37,18 +35,3 @@ saveRDS(list(
   weights = mdls_wt,
   weights_noint = mdls_noint_wt
 ), file = "tests/testdata/robust-models.Rds")
-
-
-# x <- mdls[["classical"]]
-# sx <- summary(x)
-# class(x)
-# 
-# sx$coefficients
-# 
-# 
-# y <- oomlm_robust(mpg ~ cyl + disp + hp + wt)
-# y <- update(y, data = df)
-# sy <- summary(y)
-# sy$coefficients
-
-

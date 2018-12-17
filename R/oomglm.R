@@ -372,6 +372,17 @@ update.oomglm <- function(object, data, ...) {
                       trans$z - chunk$offset,
                       trans$w)
   
+  if(!is.null(object$sandwich)) {
+    object$sandwich$xy <-
+      update_sandwich(object$sandwich$xy,
+                      chunk$data,
+                      chunk$n,
+                      chunk$p,
+                      trans$z,
+                      chunk$offset,
+                      trans$w)
+  }
+  
   intercept <- attr(object$terms, "intercept") > 0L
   
   object$n             <- object$qr$num_obs
@@ -392,7 +403,12 @@ print.oomglm <- function(x,
                          ...) {
   
   cat("\nCall:  ",
-      paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
+      paste(deparse(x$call), sep = "\n", collapse = "\n"),
+      "\n\n", sep = "")
+  
+  if(!is.null(x$se_type)) {
+    cat(paste("Standard error type:", x$se_type), "\n\n")  
+  }
   
   beta <- coef(x)
   if(length(beta)) {

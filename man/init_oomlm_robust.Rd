@@ -11,6 +11,8 @@ init_oomlm_robust(formula, weights = NULL, se_type)
 of class \code{formula}.}
 
 \item{weights}{A one-sided, single term \code{formula} specifying weights.}
+
+\item{se_type}{method for robust standard error estimation}
 }
 \description{
 initialize generalized linear model with robust standard errors

@@ -17,12 +17,13 @@ Depends:
   Rcpp (>= 0.12.15)
 Imports:
   methods,
-  stats
+  generics,
+  stats,
+  tibble
 LinkingTo:
   Rcpp (>= 0.12.15),
   RcppArmadillo
 Suggests:
-    dplyr (>= 0.7.5),
     DBI (>= 1.0.0),
     RMySQL (>= 0.10.13),
     RPostgreSQL (>= 0.6.2),
@@ -43,6 +44,7 @@ Collate:
     'oomlm.R'
     'oomlm_robust.R'
     'oomlm_summary.R'
+    'oom_tidy.R'
     'ploom.R'
     'oom_extractors.R'
     'oom_predict.R'

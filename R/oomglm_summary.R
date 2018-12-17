@@ -33,6 +33,10 @@ print.summary.oomglm <- function(x,
       paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
   
+  if(!is.null(x$se_type)) {
+    cat(paste("Standard error type:", x$se_type), "\n\n")  
+  }
+  
   printCoefmat(x$coefficients,
                digits = digits,
                signif.stars = signif.stars,

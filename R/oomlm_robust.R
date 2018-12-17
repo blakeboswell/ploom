@@ -5,6 +5,7 @@
 #' @param formula a symbolic description of the model to be fitted
 #'   of class `formula`.
 #' @param weights A one-sided, single term `formula` specifying weights.
+#' @param se_type method for robust standard error estimation
 #' @keywords internal
 init_oomlm_robust <- function(formula, weights = NULL, se_type) {
   
@@ -14,46 +15,6 @@ init_oomlm_robust <- function(formula, weights = NULL, se_type) {
   object$sandwich <- list(xy = NULL)
   object$se_type  <- se_type
   class(object)   <- c("oomlm_robust", class(object))
-  
-  object
-  
-}
-
-
-#' @export
-#' @rdname update
-update.oomlm_robust <- function(object, data, ...) {
-  
-  chunk <- unpack_oomchunk(object, data)
-  
-  if(is.null(object$assign)) {
-    object$assign <- chunk$assign
-    object$names  <- colnames(chunk$data)
-  }
-  
-  if(is.null(object$qr)) {
-    qr <- new_bounded_qr(chunk$p)
-  } else {
-    qr <- object$qr
-  }
-  
-  object$qr <- update(qr,
-                      chunk$data,
-                      chunk$response - chunk$offset,
-                      chunk$weights)
-  
-  object$n           <- object$qr$num_obs
-  object$df.residual <- object$n - chunk$p
-  
-  object$sandwich$xy <-
-    update_sandwich(object$sandwich$xy,
-                    chunk$data,
-                    chunk$n,
-                    chunk$p,
-                    chunk$response,
-                    chunk$offset,
-                    chunk$weights)
-
   
   object
   
@@ -72,8 +33,8 @@ update.oomlm_robust <- function(object, data, ...) {
 #' @param data an optional `oom_data`, `tibble`, `data.frame`, `list` or 
 #'   `environment`.
 #' @param weights a one-sided, single term `formula` specifying weights.
-#' @param se_type string indicating what se type to usecan be "HC0", "HC1"
-#'   "stata", or "classical". see [details].  default "HC1".
+#' @param se_type string method for robust standard error estimation.
+#'   "HC0", "HC1", "stata", or "classical". see [details].  default "HC1".
 #' @param ... ignored.
 #' @details `oomlm` initializes an object of class `oomlm`. `oomlm` objects
 #'   are intended to be iteratively updated with new data via the function 

@@ -1,6 +1,6 @@
+
 # mimic base `lm` as closely as possible
-# (unofficial reference ..)
-# https://github.com/wch/r-source/blob/trunk/src/library/stats/R/lm.R
+#
 
 # @method summary oomlm
 #' @export
@@ -75,7 +75,9 @@ summary.oomlm <- function(object,
                  vcov_indices <- indices + (x - 1) * rank
                  crossprod(
                    coefs[indices, x],
-                   chol2inv(chol(cov_mat[vcov_indices, vcov_indices])) %*% coefs[indices, x]
+                   chol2inv(
+                     chol(cov_mat[vcov_indices, vcov_indices])
+                   ) %*% coefs[indices, x]
                  ) / (rank - df_int)
                })
       },
@@ -122,6 +124,7 @@ summary.oomlm <- function(object,
   
 }
 
+
 #' @method print summary.oomlm
 #' @export
 print.summary.oomlm <- function(x,
@@ -133,6 +136,10 @@ print.summary.oomlm <- function(x,
   cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
+  
+  if(!is.null(x$se_type)) {
+    cat(paste("Standard error type:", x$se_type), "\n\n")  
+  }
   
   printCoefmat(x$coefficients,
                digits = digits,

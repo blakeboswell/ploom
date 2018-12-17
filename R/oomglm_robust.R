@@ -1,3 +1,4 @@
+
 #' Initialize Updating Generalized Linear Regression Model
 #' with robust standard errors
 #'
@@ -27,52 +28,6 @@ init_oomglm_robust <- function(formula,
   
 }
 
-
-#' @export
-#' @rdname update
-update.oomglm_robust <- function(object, data, ...) {
-  
-  chunk <- unpack_oomchunk(object, data)
-  
-  if(is.null(object$assign)) {
-    object$assign <- chunk$assign
-    object$names  <- colnames(chunk$data)
-  }
-  
-  if(is.null(object$qr)) {
-    qr <- new_bounded_qr(chunk$p)
-  } else {
-    qr <- object$qr
-  }
-  
-  trans  <- glm_adjust(object, chunk)
-  
-  object$qr <- update(qr,
-                      chunk$data,
-                      trans$z - chunk$offset,
-                      trans$w)
-  
-  object$sandwich$xy <-
-    update_sandwich(object$sandwich$xy,
-                    chunk$data,
-                    chunk$n,
-                    chunk$p,
-                    trans$z,
-                    chunk$offset,
-                    trans$w)
-  
-  
-  intercept <- attr(object$terms, "intercept") > 0L
-  
-  object$n             <- object$qr$num_obs
-  object$df.residual   <- object$n - chunk$p
-  object$df.null       <- object$n - as.integer(intercept)
-  object$iwls$rss      <- trans$rss
-  object$iwls$deviance <- trans$deviance
-  
-  object
-  
-}
 
 #' Out of Memory Generalized Linear model with robust standard errors
 #' 
