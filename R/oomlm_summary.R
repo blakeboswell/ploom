@@ -2,8 +2,8 @@
 # mimic base `lm` as closely as possible
 #
 
-# @method summary oomlm
 #' @export
+#' @method summary oomlm
 summary.oomlm <- function(object,
                           correlation  = FALSE,
                           symbolic.cor = FALSE,
@@ -125,8 +125,8 @@ summary.oomlm <- function(object,
 }
 
 
-#' @method print summary.oomlm
 #' @export
+#' @method print summary.oomlm
 print.summary.oomlm <- function(x,
                                 digits = max(3L, getOption("digits") - 3L),
                                 symbolic.cor = x$symbolic.cor,

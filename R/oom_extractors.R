@@ -45,6 +45,20 @@ coef.oomlm <- function(object, ...) {
 
 
 #' @export
+#' @method coef oomlm
+confint.oomlm <- function(object, parm, level = 0.95, ...) {
+  confint.lm(object, parm, level = 0.95, ...)  
+}
+
+
+#' @export
+#' @method coef oomglm
+confint.oomglm <- function(object, parm, level = 0.95, ...) {
+  confint.glm(object, parm, level = 0.95, ...)  
+}
+
+
+#' @export
 #' @method vcov oomlm
 vcov.oomlm <- function(object, ...) {
   

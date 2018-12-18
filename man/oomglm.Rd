@@ -2,6 +2,7 @@
 % Please edit documentation in R/oomglm.R, R/oomglm_robust.R
 \name{oomglm}
 \alias{oomglm}
+\alias{confint.oomglm}
 \alias{predict.oomglm}
 \alias{print.oomglm}
 \alias{print.summary.oomglm}

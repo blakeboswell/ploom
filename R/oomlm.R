@@ -65,8 +65,9 @@ init_oomlm <- function(formula, weights = NULL) {
 #' \item{weights}{a one-sided, single term `formula` specifying weights.}
 #' \item{call}{the matched call.}
 #' @seealso [oomglm()]
-#' @aliases AIC.oomlm coef.oomlm deviance.oomlm family.oomlm formula.oomlm
-#'   predict.oomlm print.oomlm print.summary.oomlm summary.oomlm vcov.oomlm
+#' @aliases AIC.oomlm coef.oomlm confint.oomlm deviance.oomlm family.oomlm 
+#'   formula.oomlm predict.oomlm print.oomlm print.summary.oomlm summary.oomlm 
+#'   vcov.oomlm
 #' @export
 #' @name oomlm
 #' @examples \donttest{
@@ -147,8 +148,9 @@ update.oomlm <- function(object, data, ...) {
 }
 
 
-#' @method print oomlm
+
 #' @export
+#' @method print oomlm
 print.oomlm <- function(x,
                         digits = max(3L, getOption("digits") - 3L),
                         ...) {

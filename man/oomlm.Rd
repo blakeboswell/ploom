@@ -4,6 +4,7 @@
 \alias{oomlm}
 \alias{AIC.oomlm}
 \alias{coef.oomlm}
+\alias{confint.oomlm}
 \alias{deviance.oomlm}
 \alias{family.oomlm}
 \alias{formula.oomlm}

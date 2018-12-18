@@ -278,7 +278,7 @@ iter_weight <- function(object,
 #' \item{weights}{The weights [`stats::formula()`] provided to the model.}
 #' \item{call}{The matched call.}
 #' @seealso [oomlm()]
-#' @aliases predict.oomglm print.oomglm print.summary.oomglm
+#' @aliases confint.oomglm predict.oomglm print.oomglm print.summary.oomglm
 #'   summary.oomglm
 #' @export
 #' @name oomglm
