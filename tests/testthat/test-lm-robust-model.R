@@ -104,7 +104,7 @@ test_that("weighted robust oomlm", {
 })
  
 
-test_that("updating oomlm without intercept", {
+test_that("robust oomlm without intercept", {
 
   df <- mtcars
   f  <- mpg ~ 0 + cyl + disp + hp + wt
@@ -131,7 +131,7 @@ test_that("updating oomlm without intercept", {
 })
 
 
-test_that("weighted updating oomlm without intercept", {
+test_that("weighted robust oomlm without intercept", {
 
   df      <- mtcars
   set.seed(42)

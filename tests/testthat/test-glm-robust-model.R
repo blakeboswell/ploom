@@ -28,7 +28,7 @@ expect_summary_equal <- function(sy, sx) {
 }
 
 
-test_that("updating oomglm", {
+test_that("robust oomglm", {
   
   f <- mpg ~ cyl + disp + hp + wt
   y <- glm(f, data = mtcars)
@@ -49,7 +49,7 @@ test_that("updating oomglm", {
 })
 
 
-test_that("weighted updating oomglm", {
+test_that("weighted robust oomglm", {
   
   df      <- mtcars
   w       <- runif(nrow(mtcars))
@@ -74,7 +74,7 @@ test_that("weighted updating oomglm", {
 })
 
 
-test_that("updating oomglm without intercept", {
+test_that("robust oomglm without intercept", {
   
   df <- mtcars
   f  <- mpg ~ 0 + cyl + disp + hp + wt
@@ -97,7 +97,7 @@ test_that("updating oomglm without intercept", {
 })
 
 
-test_that("weighted updating oomglm without intercept", {
+test_that("weighted robust oomglm without intercept", {
   
   df      <- mtcars
   w       <- runif(nrow(mtcars))

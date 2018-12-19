@@ -34,6 +34,6 @@ tidy.oomlm <- function(x, ...) {
     "conf.high"
   )
   
-  as_tibble(coef_df)
+  tibble::as_tibble(coef_df)
   
 }

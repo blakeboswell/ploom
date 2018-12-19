@@ -1,27 +1,27 @@
 
-#' @export
 #' @method formula oomlm
+#' @export
 formula.oomlm <- function(x, ...) {
   formula(x$terms)
 }
 
 
-#' @export
 #' @method family oomlm
+#' @export
 family.oomlm <- function(object, ...) {
   gaussian()
 }
 
 
-#' @export
 #' @method deviance oomlm
+#' @export
 deviance.oomlm <- function(object, ...) {
   object$qr$rss_full
 }
 
 
-#' @export
 #' @method AIC oomlm
+#' @export
 AIC.oomlm <- function(object, ..., k = 2) {
 
   p   <- object$qr$rank()
@@ -35,8 +35,8 @@ AIC.oomlm <- function(object, ..., k = 2) {
 }
 
 
-#' @export
 #' @method coef oomlm
+#' @export
 coef.oomlm <- function(object, ...) {
   betas        <- coef(object$qr)
   names(betas) <- object$names
@@ -44,22 +44,15 @@ coef.oomlm <- function(object, ...) {
 }
 
 
+#' @method confint oomlm
 #' @export
-#' @method coef oomlm
 confint.oomlm <- function(object, parm, level = 0.95, ...) {
   confint.lm(object, parm, level = 0.95, ...)  
 }
 
 
-#' @export
-#' @method coef oomglm
-confint.oomglm <- function(object, parm, level = 0.95, ...) {
-  confint.glm(object, parm, level = 0.95, ...)  
-}
-
-
-#' @export
 #' @method vcov oomlm
+#' @export
 vcov.oomlm <- function(object, ...) {
   
   ## cpp implementation / HC not supported ---------------------------
@@ -71,8 +64,8 @@ vcov.oomlm <- function(object, ...) {
 }
 
 
-#' @export
 #' @method vcov oomlm_robust
+#' @export
 vcov.oomlm_robust <- function(object, ...) {
   
   if(object$se_type == "classical") {
@@ -113,8 +106,8 @@ vcov.oomlm_robust <- function(object, ...) {
 }
 
 
-#' @export
 #' @method vcov oomglm_robust
+#' @export
 vcov.oomglm_robust <- function(object, ...) {
   vcov.oomlm_robust(object, ...)
 }
