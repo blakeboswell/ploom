@@ -34,9 +34,9 @@ init_oomlm_robust <- function(formula, weights = NULL, se_type) {
 #'   `environment`.
 #' @param weights a one-sided, single term `formula` specifying weights.
 #' @param se_type string method for robust standard error estimation.
-#'   "HC0", "HC1", "stata", or "classical". see [details].  default "HC1".
+#'   "HC0", "HC1", "stata", or "classical".  default "HC1".
 #' @param ... ignored.
-#' @details `oomlm` initializes an object of class `oomlm`. `oomlm` objects
+#' @details `oomlm_robust` initializes an object of class `oomlm`. `oomlm` objects
 #'   are intended to be iteratively updated with new data via the function 
 #'   [update()]. If `data` is provided to the `oolm` function call, an 
 #'   [update()] round will be performed on initialization.
@@ -59,32 +59,8 @@ init_oomlm_robust <- function(formula, weights = NULL, se_type) {
 #' \item{call}{the matched call.}
 #' @seealso [oomglm()]
 #' @aliases vcov.oomlm_robust
-#' @export
 #' @name oomlm_robust
-#' @examples \donttest{
-#' # The `ploom` linear model, `oomlm`, is similar to base `lm` for fitting
-#' # in-memory data.
-#' 
-#' x <- oomlm(mpg ~ cyl + disp, data = mtcars)
-#' 
-#' # Models are initalized with a call to `oomlm()` and updated with `update()`.
-#' # The intended pattern is to initialize models without referencing data,
-#' # then call `update()` on each data chunk.
-#' 
-#' # proxy for big data feed 
-#' chunks  <- oom_data(mtcars, chunk_size = 10)
-#' 
-#' # initialize the model
-#' x <- oomlm_robust(mpg ~ cyl + disp)
-#' 
-#' # iteratively update model with data chunks
-#' while(!is.null(chunk <- chunks())) {
-#'   x <- update(x, chunk)
-#' }
-#' 
-#' summary(x)
-#' 
-#' }
+#' @export
 oomlm_robust <- function(formula,
                          data    = NULL,
                          weights = NULL,

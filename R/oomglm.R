@@ -245,7 +245,6 @@ iter_weight <- function(object,
 #' @param weights a one-sided, single term `formula` specifying weights.
 #' @param start starting values for the parameters in the linear predictor.
 #' @param ... ignored.
-#' 
 #' @details
 #' `oomglm` initializes an object of class `oomglm` inheriting from the
 #'   class `oomlm`. `oomglm` objects are intended to be iteratively 
@@ -271,11 +270,11 @@ iter_weight <- function(object,
 #' \item{n}{The number observations processed per round of IRLS.}
 #' \item{df.residual}{The residual degrees of freedom.}
 #' \item{df.null}{The residual degrees of freedom.}
-#' \item{formula}{the [`stats::formula()`] object specifying the linear model.}
-#' \item{family}{a [`stats::family()`] object describing the error distribution
+#' \item{formula}{the [`formula()`] object specifying the linear model.}
+#' \item{family}{a [`family()`] object describing the error distribution
 #'   and link function used in the model.}
-#' \item{terms}{The [`stats::terms()`] object used.}
-#' \item{weights}{The weights [`stats::formula()`] provided to the model.}
+#' \item{terms}{The [`terms()`] object used.}
+#' \item{weights}{The weights [`formula()`] provided to the model.}
 #' \item{call}{The matched call.}
 #' @seealso [oomlm()]
 #' @aliases predict.oomglm print.oomglm print.summary.oomglm summary.oomglm

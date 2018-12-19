@@ -18,7 +18,7 @@ oomlm_robust(formula, data = NULL, weights = NULL, se_type = "HC1",
 \item{weights}{a one-sided, single term \code{formula} specifying weights.}
 
 \item{se_type}{string method for robust standard error estimation.
-"HC0", "HC1", "stata", or "classical". see \link{details}.  default "HC1".}
+"HC0", "HC1", "stata", or "classical".  default "HC1".}
 
 \item{...}{ignored.}
 }
@@ -41,7 +41,7 @@ factorization algorithm enables models with \code{p} variables with
 \code{p} variables  to be fit with robust standard errors in \code{p^4} memory.
 }
 \details{
-\code{oomlm} initializes an object of class \code{oomlm}. \code{oomlm} objects
+\code{oomlm_robust} initializes an object of class \code{oomlm}. \code{oomlm} objects
 are intended to be iteratively updated with new data via the function
 \code{\link[=update]{update()}}. If \code{data} is provided to the \code{oolm} function call, an
 \code{\link[=update]{update()}} round will be performed on initialization.
@@ -50,32 +50,6 @@ The provided \code{formula} must not contain any data-dependent terms to ensure
 consistency across calls to \code{\link[=update]{update()}}. Factors are permitted, but the
 levels of the factor must be the same across all data chunks. Empty factor
 levels are accepted.
-}
-\examples{
-\donttest{
-# The `ploom` linear model, `oomlm`, is similar to base `lm` for fitting
-# in-memory data.
-
-x <- oomlm(mpg ~ cyl + disp, data = mtcars)
-
-# Models are initalized with a call to `oomlm()` and updated with `update()`.
-# The intended pattern is to initialize models without referencing data,
-# then call `update()` on each data chunk.
-
-# proxy for big data feed 
-chunks  <- oom_data(mtcars, chunk_size = 10)
-
-# initialize the model
-x <- oomlm_robust(mpg ~ cyl + disp)
-
-# iteratively update model with data chunks
-while(!is.null(chunk <- chunks())) {
-  x <- update(x, chunk)
-}
-
-summary(x)
-
-}
 }
 \seealso{
 \code{\link[=oomglm]{oomglm()}}

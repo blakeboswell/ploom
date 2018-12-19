@@ -52,7 +52,7 @@ init_oomlm <- function(formula, weights = NULL) {
 #'   consistency across calls to [update()]. Factors are permitted, but the
 #'   levels of the factor must be the same across all data chunks. Empty factor
 #'   levels are accepted.
-#'   
+#'
 #' @return A `oomlm` object is perpetually in an _in-progress_ state. It is up
 #'   to the user to know when fitting is complete.  Therefore, only basic model
 #'   characteristics are provided as values with the `oolm` object. Statistics
