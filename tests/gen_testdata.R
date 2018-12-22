@@ -6,7 +6,7 @@ gen_models <- function(fxn, data) {
   mdls     <- lapply(
     se_types, 
     function(se_type) {
-      lm_robust(fxn, data = data, se_type = se_type, weights = w)
+      summary(lm_robust(fxn, data = data, se_type = se_type, weights = w))
     })
   
   names(mdls) <- se_types
@@ -35,3 +35,4 @@ saveRDS(list(
   weights = mdls_wt,
   weights_noint = mdls_noint_wt
 ), file = "tests/testdata/robust-models.Rds")
+
