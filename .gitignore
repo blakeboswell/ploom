@@ -7,3 +7,4 @@ scratch.R
 logo/
 *.txt
 *.txt.gz
+*.Rds
