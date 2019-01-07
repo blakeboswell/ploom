@@ -19,16 +19,23 @@ linear_params <- function(p,
                           betas_mu_lim  = 10,
                           betas_sd_lim  = 4) {
   
-  p     <- p + (2 - p %% 2)
+  p <- 2 * ceiling(p / 2)
   
   betas_mu  <- runif(p, -betas_mu_lim, betas_mu_lim)
   betas_sd  <- runif(p, 1, betas_sd_lim)
   
   X <- map2_dbl(betas_mu, betas_sd, function(x, y) rnorm(1, x, y))
+  
+  col_names <- c(
+    "real_alpha",
+    str_c("real", 1:(p/2), sep = "_"),
+    str_c("int", 1:(p/2), sep = "_")
+  )
 
   list(
     alpha = runif(1, -alpha_lim, alpha_lim),
-    betas = matrix(X, ncol = 1)
+    betas = matrix(X, ncol = 1),
+    names = col_names
   )
 }
 
@@ -39,11 +46,11 @@ linear_params <- function(p,
 #' @param params
 #' @param col_names
 #' @keywords internal
-params_as_tibble <- function(params, col_names) {
+params_as_tibble <- function(params) {
   
   matrix(c(params$alpha, params$betas), nrow = 1) %>%
     as_tibble() %>%
-    set_names(c("real_alpha", col_names %>% tail(-1)))
+    set_names(params$names)
   
 } 
 
@@ -56,7 +63,7 @@ params_as_tibble <- function(params, col_names) {
 #' @param sigma
 #' 
 #' @keywords internal
-generate_data <- function(alpha, betas, nrows, sigma = 1) {
+generate_data <- function(alpha, betas, nrows, sigma = 10) {
 
   p <- length(betas) / 2
   

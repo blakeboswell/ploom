@@ -1,8 +1,6 @@
 
 library(biglm)
 library(speedglm)
-library(estimatr)
-
 
 library(glue)
 library(purrr)
@@ -11,7 +9,7 @@ library(stringr)
 library(RPostgres)
 library(dplyr)
 
-TABLE_PREFIX <- "test"
+TABLE_PREFIX <- "linear"
 
 con <- RPostgres::dbConnect(
   drv      =  RPostgres::Postgres(),
@@ -26,14 +24,14 @@ vars <-
   RPostgres::dbSendQuery(con, glue("select * from {TABLE_PREFIX}_data")) %>%
   RPostgres::dbColumnInfo() %>%
   pull(name) %>%
-  discard(function(x) x == "index")
+  discard(function(x) x %in% c("index", "real_alpha"))
 
 
 vars_nm <- str_c(vars, collapse = "\n, ")
 query   <- glue(
   "select {vars_nm}
    from {TABLE_PREFIX}_data
-   limit 10^7;
+   limit 5 * 10^6;
 ")
 
 
@@ -58,66 +56,28 @@ benchmark_lm <- function(n) {
     "lm" = {
       u <- lm(formula = vars_fun, data = df[1:n, ])
     },
-    "lm_robust" = {
-      v <- lm_robust(
-        formula = vars_fun, data = df[1:n, ],
-        se_type = "classical"
-      )
-    },
     "oomlm" = {
-      
-      feed  <- oom_data(df[1:n, ], 5 * 10^5)
-      x     <- oomlm(formula = vars_fun)
-      
-      while(!is.null(chunk <- feed())) {
-        x <- update(x, data = chunk)
-      }
-      
+      x  <- update(oomlm(formula = vars_fun), data = df[1:n, ])
     },
     "biglm" = {
-
-      feed  <- oom_data(df[1:n, ], 5 * 10^5)
-      count <- 0
-
-      while(!is.null(chunk <- feed())) {
-        count <- count + 1
-        if(count == 1) {
-          y <- biglm(formula = vars_fun, data = chunk)
-        } else {
-          y <- update(y, chunk)
-        }
-      }
-
+      y <- biglm(formula = vars_fun, data = df[1:n, ])
     },
     "speedlm" = {
-      
-      feed  <- oom_data(df[1:n, ], 5 * 10^5)
-      count <- 0
-
-      while(!is.null(chunk <- feed())) {
-
-        count <- count + 1
-        if(count == 1) {
-          z <- speedlm(formula = vars_fun, data = chunk)
-        } else {
-          z <- update(z, data = chunk)
-        }
-      }
-
+      z <- speedlm(formula = vars_fun, data = df[1:n, ])
     },
     times = 5
   ) %>%
     summary() %>%
     as_tibble() %>%
     mutate(num_obs = n)
-  
 }
 
 
-tbl_bm <- map_df(1:10*10^6, benchmark_lm)
+tbl_bm  <- map_df(1:10*(1/2)*10^6, benchmark_lm)
+
 
 tbl_bm %>%
-  saveRDS(file = "benchmark/tbl_bm.Rds")
+  saveRDS(file = "benchmark/tbl_bm2.Rds")
 
 
 library(ggplot2)
@@ -138,11 +98,4 @@ tbl_bm %>%
     x        = "Number of Observations",
     caption  = "Mean seconds "
   )
-
-
-
-
-
-
-
 

@@ -1,11 +1,13 @@
 
 library(dplyr)
+library(furrr)
 library(purrr)
 library(stringr)
 library(glue)
 library(RPostgres)
 
 source(file.path(getwd(), "benchmark", "generate_data.R"))
+util <- source(file.path(getwd(), "benchmark", "util.R"))$value
 
 # -----------------------------------------------------------------------
 
@@ -42,7 +44,6 @@ psql_specs <- function(col_names, type_override = NULL) {
 #' @keywords internal
 covariate_ddl <- function(col_names, table_name) {
   
-  col_names <- c("real_alpha", col_names %>% tail(-1))
   col_specs <- psql_specs(col_names, "real")
   
   glue("create table {table_name} (
@@ -50,7 +51,36 @@ covariate_ddl <- function(col_names, table_name) {
     );"
        
   )
+}
 
+
+#' create and load covariate table
+#' 
+#' @param con
+#' @param seed
+#' @param p
+#' @param table_prefix
+#' @keywords internal
+create_load_covariate_psql <- function(con, seed, params, table_prefix) {
+  
+  set.seed(covr_seed)
+  
+  params_df  <- params_as_tibble(params)
+  table_name <- str_c(table_prefix, "_covariate")
+  
+  RPostgres::dbExecute(
+    con,
+    params$names %>%
+      covariate_ddl(., table_name)
+  )
+  
+  RPostgres::dbWriteTable(
+    con,
+    table_name,
+    params_as_tibble(params),
+    append = TRUE, row.names = FALSE
+  )
+  
 }
 
 
@@ -71,78 +101,113 @@ data_ddl <- function(col_names, table_name) {
 }
 
 
+#' create data table
+#'
+#' @param con
+#' @param p
+#' @param table_prefix
+#' @keywords internal
+create_data_psql <- function(con, params, table_prefix) {
+  
+  col_names <- c("real_y", params$names)
+  table_name <- str_c(table_prefix, "_data")
+  
+  RPostgres::dbExecute(
+    con = util$con(),
+    col_names %>%
+      data_ddl(., table_name)
+  )
+  
+}
+
+
 #' generate data and linear response and load to psql
 #' 
-#' @param con Rpostgres connection
+#' @param seed seed for the rng used in this load process
 #' @param N number of rows to insert
 #' @param p number of column in X
 #' @param chunk_size number of rows to insert per loop
 #' @param table_name name of table to insert rows
 #'
 #' @keywords internal
-psql_load <- function(con, N, p, chunk_size, table_prefix, seed = 42) {
+load_data_psql <- function(seed, N, p, params, chunk_size, table_prefix) {
+  
+  con <- util$con()
   
   set.seed(seed)
-  
-  params <- linear_params(p)
-  count  <- 0
-  
-  data_name      <- str_c(table_prefix, "_data")
-  covariate_name <- str_c(table_prefix, "_covariate")
+  count <- 0
   
   while(count < N) {
     
     df <- generate_data(params$alpha, params$betas, chunk_size)
     
-    if(count < 1) {
-      
-      RPostgres::dbExecute(
-        con,
-        colnames(df) %>%
-          covariate_ddl(., covariate_name)
-      )
-      
-      params_df <- params_as_tibble(params, colnames(df))
-      
-      RPostgres::dbWriteTable(
-        con, covariate_name, params_df, append = TRUE, row.names = FALSE
-      )
-      
-      RPostgres::dbExecute(
-        con,
-        colnames(df) %>%
-          data_ddl(., data_name)
-      )
-
-    }
-    
-    RPostgres::dbWriteTable(con, data_name, df, append = TRUE, row.names = FALSE)
-    
+    RPostgres::dbWriteTable(
+      con,
+      str_c(table_prefix, "_data"), 
+      df,
+      append = TRUE, row.names = FALSE
+    )
     count <- count + chunk_size
-    message(count / chunk_size)
-    
   }
   
+  count
 }
 
 
-# load data to psql -----------------------------------------------------
+# load data to psql --------------------------------------------
+#
 
-con <- RPostgres::dbConnect(
-  drv      =  RPostgres::Postgres(),
-  dbname   = "ploom_benchmark",
-  host     = "localhost",
-  port     = 5432,
-  user     = "blakeboswell",
-  password = rstudioapi::askForPassword("Database password")
+nprocs <- 4
+seed   <- 2001
+
+N              <- 10^8
+chunk_size     <- 10^5
+p              <- 50
+table_prefix   <- "linear"
+
+set.seed(seed)
+covr_seed <- runif(1, 0L, .Machine$integer.max)
+data_seed <- runif(nprocs, 0L, .Machine$integer.max)
+
+
+# create and load covariate table ---------------------------------------
+#
+
+params     <- linear_params(p)
+
+create_load_covariate_psql(
+  con    = util$con(),
+  seed   = covr_seed,
+  params = params,
+  table_prefix = table_prefix
 )
 
-psql_load(
-  con,
-  N          = 10^7,
-  p          = 20,
-  chunk_size = 10^6,
-  table_prefix = "test",
-  seed         = 2001
+# create data table ------------------------------------------------------
+
+create_data_psql(
+  con    = util$con(),
+  params = params,
+  table_prefix = table_prefix
 )
 
+# load data table -------------------------------------------------------
+
+plan(multiprocess)
+
+TIME_BM <- Sys.time()
+
+temp <- furrr::future_map_dbl(
+  data_seed,
+  function(seed) {
+    load_data_psql(
+      seed,
+      N = N / nprocs,
+      p = p,
+      params       = params,
+      chunk_size   = chunk_size,
+      table_prefix = table_prefix
+    )
+  }
+)
+
+run_time <- Sys.time() - TIME_BM
