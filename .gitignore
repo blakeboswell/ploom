@@ -5,6 +5,8 @@
 docs/
 scratch.R
 logo/
+benchmark/results/
+benchmark/archive/
 *.txt
 *.txt.gz
 *.Rds
