@@ -21,37 +21,34 @@ make_formula <- function(vars) {
 }
 
 
-benchmark_lm <- function(num_obs, chunk_size, table_prefix) {
+benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
   
   message(glue("benchmark num_obs (M): {num_obs/10^6}"))
-  
-  vars       <- model_vars(psql_con(), table_prefix)
   query      <- feed_query(table_prefix, vars, num_obs)
-  lm_formula <- vars %>% make_formula()
-
+  
   bench::mark(
     "oomlm" = {
-      
+
       con   <- psql_con()
       rs    <- RPostgres::dbSendQuery(con, query)
       feed  <- oom_data(rs, chunk_size = chunk_size)
       x     <- oomlm(formula = lm_formula)
-      
+
       while(!is.null(chunk <- feed())) {
         x <- update(x, data = chunk)
       }
 
       RPostgres::dbDisconnect(con)
-      
+
     },
     "biglm" = {
-      
+
       con   <- psql_con()
       rs    <- RPostgres::dbSendQuery(con, query)
       feed  <- oom_data(rs, chunk_size = chunk_size)
-      
+
       count <- 0
-      
+
       while(!is.null(chunk <- feed())) {
         count <- count + 1
         if(count == 1) {
@@ -62,32 +59,37 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix) {
       }
 
       RPostgres::dbDisconnect(con)
-      
+
     },
-    # "speedlm" = {
-    #   
-    #   con   <- psql_con()
-    #   rs    <- RPostgres::dbSendQuery(con, query)
-    #   feed  <- oom_data(rs, chunk_size = chunk_size)
-    #   
-    #   count <- 0
-    #   
-    #   while(!is.null(chunk <- feed())) {
-    #     count <- count + 1
-    #     if(count == 1) {
-    #       z <- speedlm(formula = lm_formula, data = chunk)
-    #     } else {
-    #       z <- update(z, data = chunk)
-    #     }
-    #   }
-    # 
-    #   RPostgres::dbDisconnect(con)
-    #   
-    # },
+    "speedlm" = {
+
+      con   <- psql_con()
+      rs    <- RPostgres::dbSendQuery(con, query)
+      feed  <- oom_data(rs, chunk_size = chunk_size)
+
+      count <- 0
+
+      while(!is.null(chunk <- feed())) {
+        count <- count + 1
+        if(count == 1) {
+          z <- speedlm(formula = lm_formula, data = chunk)
+        } else {
+          z <- update(z, data = chunk)
+        }
+      }
+
+      RPostgres::dbDisconnect(con)
+
+    },
     min_time   = Inf,
     iterations = 5,
     check      = FALSE
-  )
+  ) %>%
+    mutate(
+      num_obs    = num_obs,
+      chunk_size = chunk_size
+    ) %>%
+    select(-memory, -gc)
   
 }
 
@@ -95,18 +97,27 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix) {
 main <- function(table_prefix, num_obs) {
   
   num_obs_vec <- 1:5*(1/2)*(num_obs/5)
-  chunk_sizes <- num_obs_vec / 10
+  chunk_sizes <- num_obs_vec / 5
   
-  map2_df(
+  vars       <- model_vars(psql_con(), table_prefix)
+  lm_formula <- vars %>% make_formula()
+  
+  # speedlm requires that the formula be in the global environment
+  assign("lm_formula", lm_formula, envir = globalenv())
+  
+  res <- map2_df(
     .x = num_obs_vec,
     .y = chunk_sizes,
     benchmark_lm,
-    table_prefix = table_prefix
+    table_prefix = table_prefix,
+    vars         = vars
   )
-  
+
+  rm(lm_formula, pos = 1)
+
+  res
+
 }
-
-
 
 
 # check  <-

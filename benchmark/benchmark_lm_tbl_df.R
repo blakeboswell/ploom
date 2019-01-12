@@ -32,8 +32,6 @@ benchmark_lm <- function(num_obs, df) {
   
   message(glue("benchmark num_obs (M): {num_obs/10^6}"))
   
-  lm_formula <- df %>% colnames() %>% make_formula()
-  
   bench::mark(
     "lm" = {
       u <- lm(formula = lm_formula, data = df[1:num_obs, ])
@@ -44,26 +42,39 @@ benchmark_lm <- function(num_obs, df) {
     "biglm" = {
       y <- biglm(formula = lm_formula, data = df[1:num_obs, ])
     },
-    # "speedlm" = {
-    #   z <- speedlm(formula = lm_formula, data = df[1:num_obs, ])
-    # },
+    "speedlm" = {
+      z <- speedlm(formula = lm_formula, data = df[1:num_obs, ])
+    },
     min_time   = Inf,
     iterations = 5,
     check      = FALSE
   ) %>%
     summary()   %>%
-    mutate(num_obs = num_obs)
+    mutate(num_obs = num_obs) %>%
+    select(-memory, -gc)
   
 }
 
 
 main <- function(table_prefix, num_obs) {
+  
+  df         <- select_data(table_prefix, num_obs)
+  lm_formula <- df %>% colnames() %>% make_formula()
+  
+  # speedlm requires that the formula be in the global environment
+  assign("lm_formula", lm_formula, envir = globalenv())
+  
+  res  <- map_df(1:5*(1/2)*(num_obs/5), benchmark_lm, df = df)
 
-  df      <- select_data(table_prefix, num_obs)
-  tbl_bm  <- map_df(1:5*(1/2)*(num_obs/5), benchmark_lm, df = df)
+  rm(lm_formula, pos = 1)
   
-  tbl_bm
-  
+  res
+
 }
+
+
+
+
+
 
 
