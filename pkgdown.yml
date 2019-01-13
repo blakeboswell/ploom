@@ -1,0 +1,9 @@
+pandoc: 2.1.2
+pkgdown: 1.1.0
+pkgdown_sha: ~
+articles:
+  oomlm: oomlm.html
+urls:
+  reference: https://github.com/blakeboswell/ploom/reference
+  article: https://github.com/blakeboswell/ploom/articles
+
