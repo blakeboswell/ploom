@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-dev-notes/
-benchmark\.R
+benchmark/
 logo/
 docs/
 pkgdown/
