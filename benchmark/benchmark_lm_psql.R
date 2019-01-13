@@ -40,6 +40,8 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       }
 
       RPostgres::dbDisconnect(con)
+      
+      coef(x)
 
     },
     "biglm" = {
@@ -60,6 +62,8 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       }
 
       RPostgres::dbDisconnect(con)
+      
+      coef(y)
 
     },
     "speedlm" = {
@@ -80,6 +84,8 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       }
 
       RPostgres::dbDisconnect(con)
+      
+      coef(z)
 
     },
     min_time   = Inf,
@@ -91,10 +97,6 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       chunk_size = chunk_size
     ) %>%
     select(-memory, -gc)
-  
-  # print(coef(x))
-  # print(coef(y))
-  # print(coef(z))
   
   bm
   

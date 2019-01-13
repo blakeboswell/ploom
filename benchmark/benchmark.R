@@ -34,17 +34,17 @@ psql_con <- function() {
 
 ## create data  ----------------------------------------------------------
 
-data_gen <- new.env()
+benchmark_env <- new.env()
 
 sys.source(
   file  = file.path(getwd(), "benchmark", "benchmark_data.R"),
-  envir        = data_gen,
-  toplevel.env = data_gen
+  envir        = benchmark_env,
+  toplevel.env = benchmark_env
 )
 
-data_gen$main(
-  N            = 10^7,
-  p            = 50,
+benchmark_env$main(
+  N            = 10^6,
+  p            = 20,
   chunk_size   = 10^5,
   table_prefix = "linear",
   nprocs       = 4,
@@ -54,64 +54,65 @@ data_gen$main(
 
 ## in-memory lm benchmark -----------------------------------------------
 
-lm_tbl_df_env <- new.env()
+benchmark_env <- new.env()
 
 sys.source(
   file  = file.path(getwd(), "benchmark", "benchmark_lm_tbl_df.R"),
-  envir        = lm_tbl_df_env,
-  toplevel.env = lm_tbl_df_env
+  envir        = benchmark_env,
+  toplevel.env = benchmark_env
 )
 
-result_tbl <- lm_tbl_df_env$main(table_prefix = "linear", num_obs = 10^6)
+result <- benchmark_env$main(table_prefix = "linear", num_obs = 10^6)
 
-result_lm_tbl %>%
+result %>%
   saveRDS("benchmark/results/lm_tbl_df.Rds")
 
 
 ## in-memory glm benchmark ----------------------------------------------
 
-glm_tbl_df_env <- new.env()
+benchmark_env <- new.env()
 
 sys.source(
   file  = file.path(getwd(), "benchmark", "benchmark_glm_tbl_df.R"),
-  envir        = glm_tbl_df_env,
-  toplevel.env = glm_tbl_df_env
+  envir        = benchmark_env,
+  toplevel.env = benchmark_env
 )
 
-result_glm_tbl <- glm_tbl_df_env$main(table_prefix = "linear", num_obs = 10^6)
+result <- benchmark_env$main(table_prefix = "linear", num_obs = 10^6)
 
-result_glm_tbl %>%
+result %>%
   saveRDS("benchmark/results/glm_tbl_df.Rds")
+
 
 
 # psql lm benchmark -----------------------------------------------------
 
-lm_psql_env <- new.env()
+benchmark_env <- new.env()
 
 sys.source(
   file  = file.path(getwd(), "benchmark", "benchmark_lm_psql.R"),
-  envir        = lm_psql_env,
-  toplevel.env = lm_psql_env
+  envir        = benchmark_env,
+  toplevel.env = benchmark_env
 )
 
-result_lm_psql <- lm_psql_env$main(table_prefix = "linear", num_obs = 10^7)
+result <- benchmark_env$main(table_prefix = "linear", num_obs = 10^6)
 
-result_lm_psql %>%
+result %>%
   saveRDS("benchmark/results/lm_psql.Rds")
 
 
 # psql glm benchmark ----------------------------------------------------
 
-glm_psql_env <- new.env()
+benchmark_env <- new.env()
 
 sys.source(
   file  = file.path(getwd(), "benchmark", "benchmark_glm_psql.R"),
-  envir        = glm_psql_env,
-  toplevel.env = glm_psql_env
+  envir        = benchmark_env,
+  toplevel.env = benchmark_env
 )
 
-result_glm_psql <- glm_psql_env$main(table_prefix = "linear", num_obs = 10^6)
+result <- benchmark_env$main(table_prefix = "linear", num_obs = 10^6)
 
-result_glm_psql %>%
+result %>%
   saveRDS("benchmark/results/glm_psql.Rds")
 

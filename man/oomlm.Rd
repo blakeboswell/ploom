@@ -24,7 +24,7 @@ oomlm(formula, data = NULL, weights = NULL, ...)
 \item{data}{an optional \code{oom_data}, \code{tibble}, \code{data.frame}, \code{list} or
 \code{environment}.}
 
-\item{weights}{a one-sided, single term \code{formula} specifying weights.}
+\item{weights}{a one-sided, single term \link{formula} specifying weights.}
 
 \item{...}{ignored.}
 }
@@ -36,9 +36,9 @@ are available on demand via \code{summary} and extractor functions.
 
 \item{n}{the number of observations processed.}
 \item{df.residual}{the residual degrees of freedom.}
-\item{formula}{the \code{\link[stats:formula]{stats::formula()}} object specifying the linear model.}
-\item{terms}{the \code{\link[stats:terms]{stats::terms()}} object specifying the terms of the linear model.}
-\item{weights}{a one-sided, single term \code{formula} specifying weights.}
+\item{formula}{the \link{formula} object specifying the linear model.}
+\item{terms}{the \link{terms} object specifying the terms of the linear model.}
+\item{weights}{a one-sided, single term \link{formula} specifying weights.}
 \item{call}{the matched call.}
 }
 \description{
@@ -59,11 +59,6 @@ levels are accepted.
 }
 \examples{
 \donttest{
-# The `ploom` linear model, `oomlm`, is similar to base `lm` for fitting
-# in-memory data.
-
-x <- oomlm(mpg ~ cyl + disp, data = mtcars)
-
 # Models are initalized with a call to `oomlm()` and updated with `update()`.
 # The intended pattern is to initialize models without referencing data,
 # then call `update()` on each data chunk.
@@ -79,10 +74,10 @@ while(!is.null(chunk <- chunks())) {
   x <- update(x, chunk)
 }
 
-summary(x)
+tidy(x)
 
 }
 }
 \seealso{
-\code{\link[=oomglm]{oomglm()}}
+\code{\link[=oomglm]{oomglm()}}, \code{\link[=oom_data]{oom_data()}}
 }

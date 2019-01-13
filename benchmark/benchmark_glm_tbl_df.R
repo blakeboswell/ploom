@@ -35,6 +35,7 @@ benchmark_lm <- function(num_obs, df) {
   bm <- bench::mark(
     "glm" = {
       u <- glm(formula = lm_formula, data = df[1:num_obs, ])
+      coef(u)
     },
     "oomglm" = {
       x  <- iter_weight(
@@ -42,12 +43,15 @@ benchmark_lm <- function(num_obs, df) {
         data = df[1:num_obs, ],
         max_iter = 8
       )
+      coef(x)
     },
     "bigglm" = {
       y <- bigglm(formula = lm_formula, data = df[1:num_obs, ])
+      coef(y)
     },
     "speedglm" = {
       z <- speedglm(formula = lm_formula, data = df[1:num_obs, ])
+      coef(z)
     },
     min_time   = Inf,
     iterations = 1,
@@ -55,25 +59,7 @@ benchmark_lm <- function(num_obs, df) {
   ) %>%
     summary()   %>%
     mutate(num_obs = num_obs) %>%
-    select(-memory, -gc, -result)
-  
-  # print("glm")
-  # print(u$converged)
-  # print(u$iter)
-  # 
-  # print("oomglm")
-  # print(x$converged)
-  # print(x$iter)
-  # print(all.equal(coef(u), coef(x)))
-  # 
-  # print("bigglm")
-  # print(y$converged)
-  # print(y$iteration)
-  # 
-  # print("speedglm")
-  # print(z$convergence)
-  # print(z$iter)
-  # print(all.equal(coef(u), coef(z)))
+    select(-memory, -gc)
   
   bm
   

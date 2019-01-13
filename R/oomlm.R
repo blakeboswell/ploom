@@ -41,7 +41,7 @@ init_oomlm <- function(formula, weights = NULL) {
 #'   `formula`.
 #' @param data an optional `oom_data`, `tibble`, `data.frame`, `list` or 
 #'   `environment`.
-#' @param weights a one-sided, single term `formula` specifying weights.
+#' @param weights a one-sided, single term [formula] specifying weights.
 #' @param ... ignored.
 #' @details `oomlm` initializes an object of class `oomlm`. `oomlm` objects
 #'   are intended to be iteratively updated with new data via the function 
@@ -60,22 +60,17 @@ init_oomlm <- function(formula, weights = NULL) {
 #'
 #' \item{n}{the number of observations processed.}
 #' \item{df.residual}{the residual degrees of freedom.}
-#' \item{formula}{the [stats::formula()] object specifying the linear model.}
-#' \item{terms}{the [stats::terms()] object specifying the terms of the linear model.}
-#' \item{weights}{a one-sided, single term `formula` specifying weights.}
+#' \item{formula}{the [formula] object specifying the linear model.}
+#' \item{terms}{the [terms] object specifying the terms of the linear model.}
+#' \item{weights}{a one-sided, single term [formula] specifying weights.}
 #' \item{call}{the matched call.}
-#' @seealso [oomglm()]
+#' @seealso [oomglm()], [oom_data()]
 #' @aliases AIC.oomlm coef.oomlm confint.oomlm deviance.oomlm family.oomlm 
 #'   formula.oomlm predict.oomlm print.oomlm print.summary.oomlm summary.oomlm 
 #'   vcov.oomlm
 #' @export
 #' @name oomlm
 #' @examples \donttest{
-#' # The `ploom` linear model, `oomlm`, is similar to base `lm` for fitting
-#' # in-memory data.
-#' 
-#' x <- oomlm(mpg ~ cyl + disp, data = mtcars)
-#' 
 #' # Models are initalized with a call to `oomlm()` and updated with `update()`.
 #' # The intended pattern is to initialize models without referencing data,
 #' # then call `update()` on each data chunk.
@@ -91,8 +86,8 @@ init_oomlm <- function(formula, weights = NULL) {
 #'   x <- update(x, chunk)
 #' }
 #' 
-#' summary(x)
-#' 
+#' tidy(x)
+#'
 #' }
 oomlm <- function(formula, data = NULL, weights  = NULL, ...) {
   

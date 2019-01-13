@@ -28,11 +28,13 @@ Suggests:
     RMySQL (>= 0.10.13),
     RPostgreSQL (>= 0.6.2),
     RSQLite (>= 2.0),
-    testthat (>= 2.0.0)
+    testthat (>= 2.0.0),
+    knitr,
+    rmarkdown
 BugReports: https://github.com/bboswell/ploom/issues
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
-Collate: 
+Collate:
     'RcppExports.R'
     'biglm_vcov.R'
     'bounded_qr.R'
@@ -50,3 +52,4 @@ Collate:
     'oom_predict.R'
     'stats_model.R'
     'zzz.R'
+VignetteBuilder: knitr

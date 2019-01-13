@@ -30,10 +30,10 @@ navbar:
   - icon: fa-github fa-lg
     href: https://github.com/blakeboswell/ploom
   right:
-  - text: Intro
-    href: articles/oomlm.html
   - text: Reference
     href: reference/index.html
+  - text: Benchmarking
+    href: articles/benchmark.html
   - text: Articles
     menu:
     - text: Linear Model

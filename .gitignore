@@ -11,3 +11,4 @@ benchmark/archive/
 *.txt
 *.txt.gz
 *.Rds
+inst/doc

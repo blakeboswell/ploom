@@ -35,15 +35,19 @@ benchmark_lm <- function(num_obs, df) {
   bm <- bench::mark(
     "lm" = {
       u <- lm(formula = lm_formula, data = df[1:num_obs, ])
+      coef(u)
     },
     "oomlm" = {
       x  <- update(oomlm(formula = lm_formula), data = df[1:num_obs, ])
+      coef(x)
     },
     "biglm" = {
       y <- biglm(formula = lm_formula, data = df[1:num_obs, ])
+      coef(y)
     },
     "speedlm" = {
       z <- speedlm(formula = lm_formula, data = df[1:num_obs, ])
+      coef(z)
     },
     min_time   = Inf,
     iterations = 5,
@@ -51,12 +55,7 @@ benchmark_lm <- function(num_obs, df) {
   ) %>%
     summary()   %>%
     mutate(num_obs = num_obs) %>%
-    select(-memory, -gc, -result)
-  
-  # print(coef(u))
-  # print(coef(x))
-  # print(coef(y))
-  # print(coef(z))
+    select(-memory, -gc)
   
   bm
   
@@ -81,10 +80,3 @@ main <- function(table_prefix, num_obs) {
   res
 
 }
-
-
-
-
-
-
-

@@ -1,12 +1,10 @@
 
-# plot results ----------------------------------------------------------
-
-
 library(ggplot2)
 library(RColorBrewer)
 library(grid)
 
-files <- list.files("benchmark/results", full.names = TRUE)
+
+# -----------------------------------------------------------------------
 
 
 model_color <- rep(brewer.pal(4, "Set2"), each = 2) %>%
@@ -21,7 +19,12 @@ model_color <- rep(brewer.pal(4, "Set2"), each = 2) %>%
     , "speedglm"
   )
 
-title_subtitle <- function(file_name) {
+
+#' return title, subtitle text based on title type
+#' 
+#' @param title_type character backed or model type
+#' @keywords internal
+title_subtitle <- function(title_type) {
 
   y <- tibble(
     backend  = c("tbl", "psql"),
@@ -32,7 +35,7 @@ title_subtitle <- function(file_name) {
     subtitle = str_c("Data stored in ", c("tibble", "PostgreSQL table"), " ")
   )
   
-  x   <- str_split(str_remove(file_name, ".Rds"), "_", simplify = TRUE)
+  x   <- str_split(title_type, "_", simplify = TRUE)
   
   title <- y %>%
     filter(model == x[1]) %>%
@@ -56,9 +59,19 @@ title_subtitle <- function(file_name) {
     
 }
 
-plot_benchmark <- function(df, nm, yval, ylab) {
+
+#' make benchmark plots
+#' 
+#' @param df benchmark data
+#' @param title_type indicator for title text
+#' @param yval value to plot on y axis
+#' @param ylab y axis label
+#' 
+#' @returns gtable object
+#' @keywords internal
+plot_benchmark <- function(df, title_type, yval, ylab) {
   
-  lbls <- title_subtitle(nm)
+  lbls <- title_subtitle(title_type)
   
   df <- df %>%
     mutate(
@@ -119,9 +132,14 @@ plot_benchmark <- function(df, nm, yval, ylab) {
   
 }
 
-save_plot <- function(gt_name, gt) {
+#' write gtable to svg
+#' 
+#' @param file_name name of svg files
+#' @param gt gtable
+#' @keywords internal
+save_plot <- function(file_name, gt) {
   svg(
-    filename = glue("benchmark/results/{gt_name}.svg"),
+    filename = glue("benchmark/results/{file_name}.svg"),
     width = 11, height = 8.5
   )
   grid.draw(gt)
@@ -129,17 +147,30 @@ save_plot <- function(gt_name, gt) {
 }
 
 
-results <- map(files, readRDS) %>%
+# build and save plots --------------------------------------------------
+#
+
+files   <- list.files("../benchmark/results", full.names = TRUE, pattern = "*.Rds")
+results <- files %>%
+  map(readRDS)   %>%
   map(~mutate(.x, mem_alloc = mem_alloc / 10^9)) %>%
   set_names(str_remove(basename(files), ".Rds"))
 
-time_plots <- map2(results, names(results), plot_benchmark,
-                   yval = "mean", ylab = "Mean Seconds")
-
-walk2(.x = names(time_plots), .y = time_plots, save_plot)
-
-
-memr_plots <- map2(results, names(results), plot_benchmark,
-                   yval = "mem_alloc", ylab = "Memory Allocated")
-
+  
+# time_plots <- map2(
+#   .x = results,
+#   .y = names(results),
+#   .f = plot_benchmark, yval = "mean", ylab = "Mean Seconds"
+# )
+# 
+# walk2(.x = names(time_plots), .y = time_plots, .f = save_plot)
+# 
+# 
+# memr_plots <- map2(
+#   .x = results,
+#   .y = names(results),
+#   .f = plot_benchmark, yval = "mem_alloc", ylab = "Memory Allocated"
+# )
+# 
+# walk2(.x = names(memr_plots), .y = memr_plots, .f = save_plot)
 

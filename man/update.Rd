@@ -6,9 +6,9 @@
 \alias{update.oomlm}
 \title{Fit Updating Models to more data}
 \usage{
-update.oomglm(object, data, ...)
+\method{update}{oomglm}(object, data, ...)
 
-update.oomlm(object, data, ...)
+\method{update}{oomlm}(object, data, ...)
 }
 \arguments{
 \item{object}{\code{oomlm} or \code{oomglm} object to be updated.}

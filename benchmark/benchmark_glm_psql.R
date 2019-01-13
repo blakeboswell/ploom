@@ -75,6 +75,8 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       print(x$iter)
 
       RPostgres::dbDisconnect(con)
+      
+      coef(x)
 
     },
     "bigglm" = {
@@ -84,6 +86,8 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       y     <- bigglm(formula = lm_formula, data = feed)
 
       RPostgres::dbDisconnect(con)
+      
+      coef(y)
 
     },
     "speedglm" = {
@@ -93,6 +97,8 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       z     <- shglm(formula = lm_formula, datafun = feed)
 
       RPostgres::dbDisconnect(con)
+      
+      coef(z)
 
     },
     min_time   = Inf,
@@ -104,16 +110,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       chunk_size = chunk_size
     ) %>%
     select(-memory, -gc)
-  
-  print(x$converged)
-  print(x$iter)
-  
-  print(y$converged)
-  print(y$iterations)
-  
-  print(z$convergence)
-  print(z$iter)
-  
+
   bm
   
 }
