@@ -14,7 +14,7 @@
 linear_params <- function(p, 
                           alpha_lim     = 10,
                           betas_mu_lim  = 10,
-                          betas_sd_lim  = 4) {
+                          betas_sd_lim  = 1) {
   
   p <- 2 * ceiling(p / 2)
   

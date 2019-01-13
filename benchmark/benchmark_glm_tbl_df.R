@@ -32,7 +32,7 @@ benchmark_lm <- function(num_obs, df) {
   
   message(glue("benchmark num_obs (M): {num_obs/10^6}"))
   
-  bench::mark(
+  bm <- bench::mark(
     "glm" = {
       u <- glm(formula = lm_formula, data = df[1:num_obs, ])
     },
@@ -50,26 +50,48 @@ benchmark_lm <- function(num_obs, df) {
       z <- speedglm(formula = lm_formula, data = df[1:num_obs, ])
     },
     min_time   = Inf,
-    iterations = 5,
+    iterations = 1,
     check      = FALSE
   ) %>%
     summary()   %>%
     mutate(num_obs = num_obs) %>%
-    select(-memory, -gc)
+    select(-memory, -gc, -result)
+  
+  # print("glm")
+  # print(u$converged)
+  # print(u$iter)
+  # 
+  # print("oomglm")
+  # print(x$converged)
+  # print(x$iter)
+  # print(all.equal(coef(u), coef(x)))
+  # 
+  # print("bigglm")
+  # print(y$converged)
+  # print(y$iteration)
+  # 
+  # print("speedglm")
+  # print(z$convergence)
+  # print(z$iter)
+  # print(all.equal(coef(u), coef(z)))
+  
+  bm
   
 }
 
 
 main <- function(table_prefix, num_obs) {
   
+  num_div <- 5
+  divs    <- 1:num_div*(num_obs/num_div)
+  
   df          <- select_data(table_prefix, num_obs)
   lm_formula  <- df %>% colnames() %>% make_formula()
-  num_obs_vec <- 1:5*(1/2)*(num_obs/5)
   
   # speedlm requires that the formula be in the global environment
   assign("lm_formula", lm_formula, envir = globalenv())
   
-  res  <- map_df(num_obs_vec, benchmark_lm, df = df)
+  res  <- map_df(divs, benchmark_lm, df = df)
 
   rm(lm_formula, pos = 1)
   

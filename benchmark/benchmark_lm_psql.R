@@ -10,6 +10,7 @@ feed_query <- function(table_prefix, vars, num_obs) {
   glue(
     "select {str_c(vars, collapse = '\n, ')}
     from {table_prefix}_data
+    order by index
     limit {num_obs};
     ")
 }
@@ -26,7 +27,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
   message(glue("benchmark num_obs (M): {num_obs/10^6}"))
   query      <- feed_query(table_prefix, vars, num_obs)
   
-  bench::mark(
+  bm <- bench::mark(
     "oomlm" = {
 
       con   <- psql_con()
@@ -91,13 +92,20 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
     ) %>%
     select(-memory, -gc)
   
+  # print(coef(x))
+  # print(coef(y))
+  # print(coef(z))
+  
+  bm
+  
 }
 
 
 main <- function(table_prefix, num_obs) {
   
-  num_obs_vec <- 1:5*(1/2)*(num_obs/5)
-  chunk_sizes <- num_obs_vec / 5
+  num_div <- 5
+  divs    <- 1:num_div*(num_obs/num_div)
+  chunk_sizes <- divs / 20
   
   vars       <- model_vars(psql_con(), table_prefix)
   lm_formula <- vars %>% make_formula()
@@ -106,7 +114,7 @@ main <- function(table_prefix, num_obs) {
   assign("lm_formula", lm_formula, envir = globalenv())
   
   res <- map2_df(
-    .x = num_obs_vec,
+    .x = divs,
     .y = chunk_sizes,
     benchmark_lm,
     table_prefix = table_prefix,

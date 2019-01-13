@@ -12,6 +12,7 @@ library(furrr)
 library(purrr)
 library(stringr)
 library(glue)
+library(broom)
 library(dplyr)
 
 
@@ -33,37 +34,37 @@ psql_con <- function() {
 
 ## create data  ----------------------------------------------------------
 
-# data_gen <- new.env()
-# 
-# sys.source(
-#   file  = file.path(getwd(), "benchmark", "benchmark_data.R"),
-#   envir        = data_gen,
-#   toplevel.env = data_gen
-# )
-# 
-# data_gen$main(
-#   N            = 10^6,
-#   p            = 50,
-#   chunk_size   = 10^5,
-#   table_prefix = "linear", 
-#   nprocs       = 4,
-#   seed         = 2001  
-# )
+data_gen <- new.env()
+
+sys.source(
+  file  = file.path(getwd(), "benchmark", "benchmark_data.R"),
+  envir        = data_gen,
+  toplevel.env = data_gen
+)
+
+data_gen$main(
+  N            = 10^7,
+  p            = 50,
+  chunk_size   = 10^5,
+  table_prefix = "linear",
+  nprocs       = 4,
+  seed         = 2001
+)
 
 
 ## in-memory lm benchmark -----------------------------------------------
 
-tbl_df_env <- new.env()
+lm_tbl_df_env <- new.env()
 
 sys.source(
   file  = file.path(getwd(), "benchmark", "benchmark_lm_tbl_df.R"),
-  envir        = tbl_df_env,
-  toplevel.env = tbl_df_env
+  envir        = lm_tbl_df_env,
+  toplevel.env = lm_tbl_df_env
 )
 
-result_tbl <- tbl_df_env$main(table_prefix = "linear", num_obs = 10^6)
+result_tbl <- lm_tbl_df_env$main(table_prefix = "linear", num_obs = 10^6)
 
-result_tbl %>%
+result_lm_tbl %>%
   saveRDS("benchmark/results/lm_tbl_df.Rds")
 
 
@@ -93,7 +94,7 @@ sys.source(
   toplevel.env = lm_psql_env
 )
 
-result_lm_psql <- lm_psql_env$main(table_prefix = "linear", num_obs = 10^6)
+result_lm_psql <- lm_psql_env$main(table_prefix = "linear", num_obs = 10^7)
 
 result_lm_psql %>%
   saveRDS("benchmark/results/lm_psql.Rds")
@@ -113,5 +114,4 @@ result_glm_psql <- glm_psql_env$main(table_prefix = "linear", num_obs = 10^6)
 
 result_glm_psql %>%
   saveRDS("benchmark/results/glm_psql.Rds")
-
 

@@ -32,7 +32,7 @@ benchmark_lm <- function(num_obs, df) {
   
   message(glue("benchmark num_obs (M): {num_obs/10^6}"))
   
-  bench::mark(
+  bm <- bench::mark(
     "lm" = {
       u <- lm(formula = lm_formula, data = df[1:num_obs, ])
     },
@@ -51,12 +51,22 @@ benchmark_lm <- function(num_obs, df) {
   ) %>%
     summary()   %>%
     mutate(num_obs = num_obs) %>%
-    select(-memory, -gc)
+    select(-memory, -gc, -result)
+  
+  # print(coef(u))
+  # print(coef(x))
+  # print(coef(y))
+  # print(coef(z))
+  
+  bm
   
 }
 
 
 main <- function(table_prefix, num_obs) {
+  
+  num_div <- 5
+  divs    <- 1:num_div*(num_obs/num_div)
   
   df         <- select_data(table_prefix, num_obs)
   lm_formula <- df %>% colnames() %>% make_formula()
@@ -64,7 +74,7 @@ main <- function(table_prefix, num_obs) {
   # speedlm requires that the formula be in the global environment
   assign("lm_formula", lm_formula, envir = globalenv())
   
-  res  <- map_df(1:5*(1/2)*(num_obs/5), benchmark_lm, df = df)
+  res  <- map_df(divs, benchmark_lm, df = df)
 
   rm(lm_formula, pos = 1)
   

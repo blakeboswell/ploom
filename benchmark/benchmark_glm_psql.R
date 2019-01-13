@@ -8,7 +8,8 @@ feed_w_reset <- function(con, query, chunksize) {
     
     if(reset) {
       if(got > 0) {
-        if(DBI::dbIsValid(data)) {
+        
+        if(DBI::dbIsValid(result)) {
           RPostgres::dbClearResult(result)
         }
         result <<- RPostgres::dbSendQuery(con, query)
@@ -41,6 +42,7 @@ feed_query <- function(table_prefix, vars, num_obs) {
   glue(
     "select {str_c(vars, collapse = '\n, ')}
     from {table_prefix}_data
+    order by index
     limit {num_obs};
     ")
 }
@@ -57,7 +59,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
   message(glue("benchmark num_obs (M): {num_obs/10^6}"))
   query      <- feed_query(table_prefix, vars, num_obs)
   
-  bench::mark(
+  bm <- bench::mark(
     "oomglm" = {
 
       con   <- psql_con()
@@ -75,24 +77,24 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       RPostgres::dbDisconnect(con)
 
     },
-    # "bigglm" = {
-    # 
-    #   con   <- psql_con()
-    #   feed  <- feed_w_reset(con, query, chunksize = chunk_size)
-    #   y     <- bigglm(formula = lm_formula, data = feed)
-    # 
-    #   RPostgres::dbDisconnect(con)
-    # 
-    # },
-    # "speedglm" = {
-    # 
-    #   con   <- psql_con()
-    #   feed  <- feed_w_reset(con, query, chunksize = chunk_size)
-    #   z     <- shglm(formula = lm_formula, datafun = feed)
-    # 
-    #   RPostgres::dbDisconnect(con)
-    # 
-    # },
+    "bigglm" = {
+
+      con   <- psql_con()
+      feed  <- feed_w_reset(con, query, chunksize = chunk_size)
+      y     <- bigglm(formula = lm_formula, data = feed)
+
+      RPostgres::dbDisconnect(con)
+
+    },
+    "speedglm" = {
+
+      con   <- psql_con()
+      feed  <- feed_w_reset(con, query, chunksize = chunk_size)
+      z     <- shglm(formula = lm_formula, datafun = feed)
+
+      RPostgres::dbDisconnect(con)
+
+    },
     min_time   = Inf,
     iterations = 1,
     check      = FALSE
@@ -102,6 +104,17 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       chunk_size = chunk_size
     ) %>%
     select(-memory, -gc)
+  
+  print(x$converged)
+  print(x$iter)
+  
+  print(y$converged)
+  print(y$iterations)
+  
+  print(z$convergence)
+  print(z$iter)
+  
+  bm
   
 }
 
