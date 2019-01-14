@@ -4,7 +4,7 @@
 \alias{iter_weight}
 \title{Fit \code{oomglm} model via Iteratively Reweighted Least Squares (IRLS).}
 \usage{
-iter_weight(object, data, max_iter = 1L, tolerance = 1e-07)
+iter_weight(object, data, max_iter = 4L, tolerance = 1e-08)
 }
 \arguments{
 \item{object}{\code{oomglm} model.}

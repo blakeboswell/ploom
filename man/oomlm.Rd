@@ -59,22 +59,32 @@ levels are accepted.
 }
 \examples{
 \donttest{
-# Models are initalized with a call to `oomlm()` and updated with `update()`.
-# The intended pattern is to initialize models without referencing data,
-# then call `update()` on each data chunk.
+# `oomglm` is similar to `lm` for fitting in memory data
 
-# proxy for big data feed 
-chunks  <- oom_data(mtcars, chunk_size = 10)
+x <- oomlm(mpg ~ cyl + disp, mtcars)
+print(x)
 
-# initialize the model
-x <- oomlm(mpg ~ cyl + disp)
 
-# iteratively update model with data chunks
-while(!is.null(chunk <- chunks())) {
-  x <- update(x, chunk)
+# For iteratively updating models, initalize with a call to `oomlm()` and
+# update with the `update()` function
+
+chunks <- purrr::pmap(mtcars, list)
+
+y <- oomlm(mpg ~ cyl + disp)
+
+for(chunk in chunks) {
+  y <- update(x, chunk)
 }
 
 tidy(x)
+
+# [oom_data()] facilitates iterating through data rows in chunks
+chunks  <- oom_data(mtcars, chunk_size = 1)
+
+# [oomlm] will automatically fit to all chunks in an [oom_data()] function
+z <- oomlm(mpg ~ cyl + disp, data = chunks)
+
+summary(z)
 
 }
 }

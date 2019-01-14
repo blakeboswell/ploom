@@ -13,14 +13,13 @@ oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted of class
-\code{formula}.}
+\link{formula}.}
 
-\item{data}{an optional \code{oom_data}, \code{tibble}, \code{dataframe}, \code{list} or
-\code{environment}.}
+\item{data}{an optional \link{oom_data}, \link{tibble}, \link{dataframe}, or \link{list}}
 
-\item{family}{A \code{glm} family object.}
+\item{family}{a \link{family} object.}
 
-\item{weights}{a one-sided, single term \code{formula} specifying weights.}
+\item{weights}{a one-sided, single term \link{formula} specifying weights.}
 
 \item{start}{starting values for the parameters in the linear predictor.}
 
@@ -50,12 +49,9 @@ factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
 }
 \details{
-\code{oomglm} initializes an object of class \code{oomglm} inheriting from the
-class \code{oomlm}. \code{oomglm} objects are intended to be iteratively
-updated with new data via calls to \code{\link[=update]{update()}}. Iterative fitting
-over all data updates are performed with the function \code{\link[=iter_weight]{iter_weight()}}.
-If \code{data} is provided to the \code{oomglm()} function call, an \code{update()} round
-will be performed on initialization.
+\code{oomglm()} initializes an object of class \code{oomglm} inheriting from the
+class \code{oomlm}. \code{oomglm} objects are fit via iteratively IRLS
+Iterative fitting is performed with the function \code{\link[=iter_weight]{iter_weight()}}.
 
 A \code{oomglm} object can be in various states of fit depending on the number
 of seen observations and rounds of IRLS that have been performed.
@@ -66,48 +62,23 @@ and if the IRLS algorithm has converged (\code{converged}).
 }
 \examples{
 \donttest{
-# The `oomglm()` function fits generalized linear models via 
-# Iteratively Weighted Least Squares (IWLS).  
+# The `oomglm()` function employs Iteratively Weighted Least Squares (IWLS).
+# The IWLS iterations are performed by the function `iter_weight()` which
+# makes passes over the data until estimate convergence.
 
-# When fitting in-memory data the process is similar to `oomlm()` but we use the 
-# function `iter_weight()` instead of `update()`. `iter_weight()` fits the model
-# via iterative passes over the data until convergence.
-
-# initialize the model
+# re-weight 4 times or until convergence
 x <- oomglm(mpg ~ cyl + disp)
+x <- iter_weight(x, mtcars, max_iter = 4)
 
-# re-weight 8 times or until convergence
-x <- iter_weight(x, mtcars, max_iter = 8)
+tidy(x)
 
 # To fit data in chunks, use `oom_data()`:
 
-# initialize the model
-x    <- oomglm(mpg ~ cyl + disp)
-feed <- oom_data(mtcars, chunk_size = 10)
+y      <- oomglm(mpg ~ cyl + disp)
+chunks <- oom_data(mtcars, chunk_size = 10)
+y      <- iter_weight(x, chunks, max_iter = 4)
 
-# iteratively reweight model
-x <- iter_weight(x, feed, max_iter = 8)
-
-# The `iter_weight()` process can also be implemented directly with
-# component `ploom` functions:
-
-x    <- oomglm(mpg ~ cyl + disp)
-feed <- oom_data(mtcars, chunk_size = 10)
-
-# a first pass over the data
-x <- init_weight(x)
-x <- weight(x, feed)
-x <- end_weight(x)
-x
-
-# a second pass over the data
-x <- init_weight(x)
-x <- weight(x, feed)
-x <- end_weight(x)
-x
-
-# This is meant to be useful when debugging / evaluating models with long 
-# runtimes by exposing the individual steps of the model process for inspection. 
+tidy(y)
 
 }
 }

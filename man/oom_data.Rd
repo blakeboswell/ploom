@@ -5,7 +5,7 @@
 \alias{oom_data.data.frame}
 \alias{oom_data.connection}
 \alias{oom_data.DBIResult}
-\title{Repeatedly iterate over \code{data.frame} or \code{connection} in chunks.}
+\title{Iterate over data or connection in chunks.}
 \usage{
 oom_data(data, chunk_size, ...)
 
@@ -17,16 +17,15 @@ oom_data.connection(data, chunk_size, header = TRUE, col_names = NULL,
 oom_data.DBIResult(data, chunk_size, ...)
 }
 \arguments{
-\item{data}{\code{data.frame}, \code{file}, \code{gzfile}, or \code{url}connection`}
+\item{data}{data or connection}
 
-\item{chunk_size}{number of chunks to return with each iteration. overrides
-\code{nrow} parameter of \code{read.table} when \code{data} is a connection.}
+\item{chunk_size}{number of chunks to return with each iteration}
 
 \item{...}{passed through to \code{read.table}. note that \code{nrow}, and
 \code{col.names} are ignored in favor of \code{chunk_size} and \code{col_names}}
 
 \item{header}{logical, when TRUE colnames are determined from first row
-of connection. if FALSE \code{col_names} must be provided.}
+of file connection. if FALSE \code{col_names} must be provided.}
 
 \item{col_names, }{character vector. override \code{col_names} in first
 row of connection when \code{header}is TRUE, or provide colnames
