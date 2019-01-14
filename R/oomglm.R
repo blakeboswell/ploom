@@ -146,19 +146,11 @@ init_weight <- function(object) {
 #' @export
 weight <- function(object, data) {
   
-  if(!inherits(data, c("function", "data.frame"))) {
+  if(!inherits(data, c("oom_data", "function", "data.frame"))) {
     stop("class of `data` not recognized")
   }
   
-  if(inherits(data, "data.frame")) {
-    data <- oom_data(data, chunk_size = nrow(data))
-  }
-  
-  while(!is.null(chunk <- data())){
-    object <- update(object, chunk)
-  }
-  
-  object
+  update(object, data)
   
 }
 
@@ -209,8 +201,8 @@ end_weight <- function(object, tolerance = 1e-7) {
 #' @export
 iter_weight <- function(object,
                         data,
-                        max_iter  = 1L,
-                        tolerance = 1e-7) {
+                        max_iter  = 4L,
+                        tolerance = 1e-8) {
   
   
   for(i in 1:max_iter) {
@@ -238,20 +230,16 @@ iter_weight <- function(object,
 #'   
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
-#'   `formula`.
-#' @param data an optional `oom_data`, `tibble`, `dataframe`, `list` or
-#'   `environment`.
-#' @param family A `glm` family object.
-#' @param weights a one-sided, single term `formula` specifying weights.
+#'   [formula].
+#' @param data an optional [oom_data], [tibble], [dataframe], or [list]
+#' @param family a [family] object.
+#' @param weights a one-sided, single term [formula] specifying weights.
 #' @param start starting values for the parameters in the linear predictor.
 #' @param ... ignored.
 #' @details
-#' `oomglm` initializes an object of class `oomglm` inheriting from the
-#'   class `oomlm`. `oomglm` objects are intended to be iteratively 
-#'   updated with new data via calls to [update()]. Iterative fitting
-#'   over all data updates are performed with the function [iter_weight()].
-#'   If `data` is provided to the `oomglm()` function call, an `update()` round 
-#'   will be performed on initialization.
+#' `oomglm()` initializes an object of class `oomglm` inheriting from the
+#'   class `oomlm`. `oomglm` objects are fit via iteratively IRLS
+#'   Iterative fitting is performed with the function [iter_weight()].
 #' 
 #'   A `oomglm` object can be in various states of fit depending on the number
 #'   of seen observations and rounds of IRLS that have been performed.
@@ -281,48 +269,23 @@ iter_weight <- function(object,
 #' @export
 #' @name oomglm
 #' @examples \donttest{
-#' # The `oomglm()` function fits generalized linear models via 
-#' # Iteratively Weighted Least Squares (IWLS).  
-#'
-#' # When fitting in-memory data the process is similar to `oomlm()` but we use the 
-#' # function `iter_weight()` instead of `update()`. `iter_weight()` fits the model
-#' # via iterative passes over the data until convergence.
+#' # The `oomglm()` function employs Iteratively Weighted Least Squares (IWLS).
+#' # The IWLS iterations are performed by the function `iter_weight()` which
+#' # makes passes over the data until estimate convergence.
 #' 
-#' # initialize the model
+#' # re-weight 4 times or until convergence
 #' x <- oomglm(mpg ~ cyl + disp)
+#' x <- iter_weight(x, mtcars, max_iter = 4)
 #' 
-#' # re-weight 8 times or until convergence
-#' x <- iter_weight(x, mtcars, max_iter = 8)
+#' tidy(x)
 #' 
 #' # To fit data in chunks, use `oom_data()`:
 #' 
-#' # initialize the model
-#' x    <- oomglm(mpg ~ cyl + disp)
-#' feed <- oom_data(mtcars, chunk_size = 10)
+#' y      <- oomglm(mpg ~ cyl + disp)
+#' chunks <- oom_data(mtcars, chunk_size = 10)
+#' y      <- iter_weight(x, chunks, max_iter = 4)
 #' 
-#' # iteratively reweight model
-#' x <- iter_weight(x, feed, max_iter = 8)
-#' 
-#' # The `iter_weight()` process can also be implemented directly with
-#' # component `ploom` functions:
-#' 
-#' x    <- oomglm(mpg ~ cyl + disp)
-#' feed <- oom_data(mtcars, chunk_size = 10)
-#' 
-#' # a first pass over the data
-#' x <- init_weight(x)
-#' x <- weight(x, feed)
-#' x <- end_weight(x)
-#' x
-#' 
-#' # a second pass over the data
-#' x <- init_weight(x)
-#' x <- weight(x, feed)
-#' x <- end_weight(x)
-#' x
-#' 
-#' # This is meant to be useful when debugging / evaluating models with long 
-#' # runtimes by exposing the individual steps of the model process for inspection. 
+#' tidy(y)
 #'
 #' }
 oomglm <- function(formula,
@@ -350,46 +313,62 @@ oomglm <- function(formula,
 #' @rdname update
 update.oomglm <- function(object, data, ...) {
   
-  chunk <- unpack_oomchunk(object, data)
-  
-  if(is.null(object$assign)) {
-    object$assign <- chunk$assign
-    object$names  <- colnames(chunk$data)
+  updater <- function(object, data, ...) {
+    
+    chunk <- unpack_oomchunk(object, data)
+    
+    if(is.null(object$assign)) {
+      object$assign <- chunk$assign
+      object$names  <- colnames(chunk$data)
+    }
+    
+    if(is.null(object$qr)) {
+      qr <- new_bounded_qr(chunk$p)
+    } else {
+      qr <- object$qr
+    }
+    
+    trans  <- glm_adjust(object, chunk)
+    
+    object$qr <- update(qr,
+                        chunk$data,
+                        trans$z - chunk$offset,
+                        trans$w)
+    
+    if(!is.null(object$sandwich)) {
+      object$sandwich$xy <-
+        update_sandwich(object$sandwich$xy,
+                        chunk$data,
+                        chunk$n,
+                        chunk$p,
+                        trans$z,
+                        chunk$offset,
+                        trans$w)
+    }
+    
+    intercept <- attr(object$terms, "intercept") > 0L
+    
+    object$n             <- object$qr$num_obs
+    object$df.residual   <- object$n - chunk$p
+    object$df.null       <- object$n - as.integer(intercept)
+    object$iwls$rss      <- trans$rss
+    object$iwls$deviance <- trans$deviance
+    
+    object
+    
   }
   
-  if(is.null(object$qr)) {
-    qr <- new_bounded_qr(chunk$p)
+  if(inherits(data, what = "oom_data")) {
+    
+    while(!is.null(chunk <- data())) {
+      object <- updater(object, chunk, ...)
+    }
+    
+    object
+    
   } else {
-    qr <- object$qr
+    updater(object, data, ...)
   }
-  
-  trans  <- glm_adjust(object, chunk)
-  
-  object$qr <- update(qr,
-                      chunk$data,
-                      trans$z - chunk$offset,
-                      trans$w)
-  
-  if(!is.null(object$sandwich)) {
-    object$sandwich$xy <-
-      update_sandwich(object$sandwich$xy,
-                      chunk$data,
-                      chunk$n,
-                      chunk$p,
-                      trans$z,
-                      chunk$offset,
-                      trans$w)
-  }
-  
-  intercept <- attr(object$terms, "intercept") > 0L
-  
-  object$n             <- object$qr$num_obs
-  object$df.residual   <- object$n - chunk$p
-  object$df.null       <- object$n - as.integer(intercept)
-  object$iwls$rss      <- trans$rss
-  object$iwls$deviance <- trans$deviance
-  
-  object
   
 }
 

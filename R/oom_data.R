@@ -1,4 +1,4 @@
-#' Repeatedly iterate over `data.frame` or `connection` in chunks.
+#' Iterate over data or connection in chunks.
 #' 
 #' @md
 #' @description
@@ -6,11 +6,10 @@
 #' iteratively return `chunk_size` number of rows from `data` until data is exhausted;
 #' then return `NULL` once.
 #' 
-#' @param data `data.frame`, `file`, `gzfile`, or `url`connection`
-#' @param chunk_size number of chunks to return with each iteration. overrides
-#'   `nrow` parameter of `read.table` when `data` is a connection.
+#' @param data data or connection
+#' @param chunk_size number of chunks to return with each iteration
 #' @param header logical, when TRUE colnames are determined from first row
-#'   of connection. if FALSE `col_names` must be provided.
+#'   of file connection. if FALSE `col_names` must be provided.
 #' @param col_names, character vector. override `col_names` in first
 #'   row of connection when `header`is TRUE, or provide colnames
 #'   if `header` is FALSE.
@@ -38,7 +37,7 @@ oom_data.data.frame <- function(data, chunk_size, ...) {
   n      <- nrow(data)
   cursor <- 0
 
-  function() {
+  foo <- function() {
 
     if (reset) {
       cursor <<- 0
@@ -60,6 +59,10 @@ oom_data.data.frame <- function(data, chunk_size, ...) {
     data[start:cursor, ]
 
   }
+  
+  class(foo) <- c("oom_data", class(foo))
+  foo
+  
 }
 
 
@@ -97,7 +100,7 @@ oom_data.connection <- function(data,
   data <- fxn(data_summary$description)
   open(data)
   
-  function() {
+  foo <- function() {
     
     if(reset) {
       data  <<- fxn(data_summary$description)
@@ -124,6 +127,10 @@ oom_data.connection <- function(data,
     
     rval
   }
+  
+  class(foo) <- c("oom_data", class(foo))
+  foo
+  
 }
 
 
@@ -140,7 +147,7 @@ oom_data.DBIResult <- function(data,
   DBI::dbClearResult(data)
   data <- DBI::dbSendQuery(con, query)
   
-  function() {
+  foo <- function() {
     
     if(reset) {
       if(DBI::dbIsValid(data)) {
@@ -165,6 +172,9 @@ oom_data.DBIResult <- function(data,
     
     rval
   }
+  
+  class(foo) <- c("oom_data", class(foo))
+  foo
   
 }
 

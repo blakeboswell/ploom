@@ -71,22 +71,32 @@ init_oomlm <- function(formula, weights = NULL) {
 #' @export
 #' @name oomlm
 #' @examples \donttest{
-#' # Models are initalized with a call to `oomlm()` and updated with `update()`.
-#' # The intended pattern is to initialize models without referencing data,
-#' # then call `update()` on each data chunk.
+#' # `oomglm` is similar to `lm` for fitting in memory data
 #' 
-#' # proxy for big data feed 
-#' chunks  <- oom_data(mtcars, chunk_size = 10)
+#' x <- oomlm(mpg ~ cyl + disp, mtcars)
+#' print(x)
 #' 
-#' # initialize the model
-#' x <- oomlm(mpg ~ cyl + disp)
 #' 
-#' # iteratively update model with data chunks
-#' while(!is.null(chunk <- chunks())) {
-#'   x <- update(x, chunk)
+#' # For iteratively updating models, initalize with a call to `oomlm()` and
+#' # update with the `update()` function
+#' 
+#' chunks <- purrr::pmap(mtcars, list)
+#' 
+#' y <- oomlm(mpg ~ cyl + disp)
+#' 
+#' for(chunk in chunks) {
+#'   y <- update(x, chunk)
 #' }
 #' 
 #' tidy(x)
+#' 
+#' # [oom_data()] facilitates iterating through data rows in chunks
+#' chunks  <- oom_data(mtcars, chunk_size = 1)
+#' 
+#' # [oomlm] will automatically fit to all chunks in an [oom_data()] function
+#' z <- oomlm(mpg ~ cyl + disp, data = chunks)
+#' 
+#' summary(z)
 #'
 #' }
 oomlm <- function(formula, data = NULL, weights  = NULL, ...) {
@@ -106,39 +116,55 @@ oomlm <- function(formula, data = NULL, weights  = NULL, ...) {
 #' @rdname update
 update.oomlm <- function(object, data, ...) {
   
-  chunk <- unpack_oomchunk(object, data)
-  
-  if(is.null(object$assign)) {
-    object$assign <- chunk$assign
-    object$names  <- colnames(chunk$data)
+  updater <- function(object, data, ...) {
+    
+    chunk <- unpack_oomchunk(object, data)
+    
+    if(is.null(object$assign)) {
+      object$assign <- chunk$assign
+      object$names  <- colnames(chunk$data)
+    }
+    
+    if(is.null(object$qr)) {
+      qr <- new_bounded_qr(chunk$p)
+    } else {
+      qr <- object$qr
+    }
+    
+    object$qr <- update(qr,
+                        chunk$data,
+                        chunk$response - chunk$offset,
+                        chunk$weights)
+    
+    if(!is.null(object$sandwich)) {
+      object$sandwich$xy <-
+        update_sandwich(object$sandwich$xy,
+                        chunk$data,
+                        chunk$n,
+                        chunk$p,
+                        chunk$response,
+                        chunk$offset,
+                        chunk$weights)
+    }
+    
+    object$n            <- object$qr$num_obs
+    object$df.residual  <- object$n - chunk$p
+    
+    object
+    
   }
   
-  if(is.null(object$qr)) {
-    qr <- new_bounded_qr(chunk$p)
+  if(inherits(data, what = "oom_data")) {
+    
+    while(!is.null(chunk <- data())) {
+      object <- updater(object, chunk, ...)
+    }
+    
+    object
+  
   } else {
-    qr <- object$qr
+    updater(object, data, ...)
   }
-  
-  object$qr <- update(qr,
-                      chunk$data,
-                      chunk$response - chunk$offset,
-                      chunk$weights)
-  
-  if(!is.null(object$sandwich)) {
-    object$sandwich$xy <-
-      update_sandwich(object$sandwich$xy,
-                      chunk$data,
-                      chunk$n,
-                      chunk$p,
-                      chunk$response,
-                      chunk$offset,
-                      chunk$weights)
-  }
-  
-  object$n            <- object$qr$num_obs
-  object$df.residual  <- object$n - chunk$p
-  
-  object
   
 }
 
