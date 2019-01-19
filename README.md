@@ -3,11 +3,9 @@
 
 <!-- [CRAN_Status_Badge]() -->
 
-<!-- [Build Status]() -->
-
-<!-- [AppVeyor Build Status]() -->
-
-<!-- [Coverage Status]() -->
+[![Build
+Status](https://api.travis-ci.com/blakeboswell/ploom.svg?branch=develop)](https://api.travis-ci.com/blakeboswell/ploom)
+<!-- [AppVeyor Build Status]() --> <!-- [Coverage Status]() -->
 
 # Overview
 
