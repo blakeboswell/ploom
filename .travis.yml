@@ -3,16 +3,12 @@ language: r
 sudo: false
 cache: packages
 warnings_are_errors: false
-dist: trusty
+os:
+  - osx
 
 branches:
   only:
   - develop
-  
-matrix:
-  include:
-    - os: osx
-    - r: release
 
 env:
   global:
