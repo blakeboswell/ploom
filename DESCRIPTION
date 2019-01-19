@@ -24,14 +24,15 @@ LinkingTo:
   Rcpp (>= 0.12.15),
   RcppArmadillo
 Suggests:
+    dbplyr (>= 1.3.0),
     DBI (>= 1.0.0),
     RMySQL (>= 0.10.13),
     RPostgreSQL (>= 0.6.2),
     RSQLite (>= 2.0),
     testthat (>= 2.0.0),
-    purrr,
     knitr,
-    rmarkdown
+    rmarkdown,
+    purrr (>= 0.2.5)
 BugReports: https://github.com/bboswell/ploom/issues
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
