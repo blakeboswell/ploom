@@ -3,9 +3,10 @@ context("test-glm-model.R")
 
 iter_model <- function(df, eqn, weights = NULL) {
 
-  print(class(x))
+
   
   x <- oomglm(formula = eqn, weights = weights)
+  print(class(x))
   iter_weight(x, df, max_iter = 8)
 
 }
