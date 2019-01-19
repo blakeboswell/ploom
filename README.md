@@ -1,8 +1,7 @@
 
 # ploom
 
-<!-- [CRAN_Status_Badge]() -->
-
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/ploom)](https://cran.r-project.org/package=ploom)
 [![Build
 Status](https://api.travis-ci.com/blakeboswell/ploom.svg?branch=develop)](https://api.travis-ci.com/blakeboswell/ploom)
 <!-- [AppVeyor Build Status]() --> <!-- [Coverage Status]() -->
