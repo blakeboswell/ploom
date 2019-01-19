@@ -44,6 +44,7 @@ test_that("data.frame", {
 
 
 test_that("file", {
+  skip_on_travis()
   df  <- mtcars
   rownames(df) <- NULL
   test_connection(file("../testdata/mtcars.txt"), df)
@@ -51,6 +52,7 @@ test_that("file", {
 
 
 test_that("gzfile", {
+  skip_on_travis()
   df <- mtcars
   rownames(df) <- NULL
   test_connection(gzfile("../testdata/mtcars.txt.gz"), df)
@@ -58,7 +60,7 @@ test_that("gzfile", {
 
 
 test_that("dbi_connection", {
-  
+  skip_on_travis()
   con <- DBI::dbConnect(RSQLite::SQLite(), path = ":dbname:")
   
   dplyr::copy_to(con, mtcars, "mtcars", temporary = FALSE)
