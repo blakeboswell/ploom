@@ -3,7 +3,9 @@ context("test-glm-model.R")
 
 iter_model <- function(df, eqn, weights = NULL) {
 
-  x <- ploom::oomglm(formula = eqn, weights = weights)
+  print(class(x))
+  
+  x <- oomglm(formula = eqn, weights = weights)
   iter_weight(x, df, max_iter = 8)
 
 }
@@ -102,7 +104,7 @@ test_that("weighted updating oomglm without intercept", {
   df      <- mtcars
   w       <- runif(nrow(mtcars))
   df['w'] <- w / sum(w)
-
+  
   f <- mpg ~ 0 + cyl + disp + hp + wt
 
   y <- glm(f, data = df, weights = w)
