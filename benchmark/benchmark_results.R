@@ -99,7 +99,7 @@ plot_benchmark <- function(df, title_type, yval, ylab) {
     ) +
     scale_y_continuous(
       breaks = scales::pretty_breaks(n = 5),
-      labels = function(x) str_c(x, ifelse(yval == "mean", "", " gb"))
+      labels = scales::percent
     ) +
     scale_colour_manual(
       name   = "expression",
@@ -147,30 +147,49 @@ save_plot <- function(file_name, gt) {
 }
 
 
+normalize_metrics <- function(df) {
+  df %>%
+    mutate(ploom = expression %in% c("oomlm", "oomglm")) %>%
+    group_by(num_obs) %>%
+    mutate(
+      mem_alloc = mem_alloc / sum(mem_alloc * ploom),
+      mean      = mean / sum(mean * ploom)
+    ) %>%
+    ungroup()
+}
+
+
+
 # build and save plots --------------------------------------------------
 #
 
-files   <- list.files("../benchmark/results", full.names = TRUE, pattern = "*.Rds")
+files   <- list.files("benchmark/results", full.names = TRUE, pattern = "*.Rds")
 results <- files %>%
   map(readRDS)   %>%
-  map(~mutate(.x, mem_alloc = mem_alloc / 10^9)) %>%
-  set_names(str_remove(basename(files), ".Rds"))
+  set_names(str_remove(basename(files), ".Rds")) %>%
+  map(normalize_metrics)
 
-  
-# time_plots <- map2(
-#   .x = results,
-#   .y = names(results),
-#   .f = plot_benchmark, yval = "mean", ylab = "Mean Seconds"
-# )
-# 
-# walk2(.x = names(time_plots), .y = time_plots, .f = save_plot)
-# 
-# 
-# memr_plots <- map2(
-#   .x = results,
-#   .y = names(results),
-#   .f = plot_benchmark, yval = "mem_alloc", ylab = "Memory Allocated"
-# )
-# 
-# walk2(.x = names(memr_plots), .y = memr_plots, .f = save_plot)
+time_plots <- map2(
+  .x = results,
+  .y = names(results),
+  .f = plot_benchmark, yval = "mean", ylab = "Relative Seconds"
+)
+
+walk2(
+  .x = str_c(names(time_plots), "_time"),
+  .y = time_plots,
+  .f = save_plot
+)
+
+memr_plots <- map2(
+  .x = results,
+  .y = names(results),
+  .f = plot_benchmark, yval = "mem_alloc", ylab = "Relative Memory Allocated"
+)
+
+walk2(
+  .x = str_c(names(memr_plots), "_memory"),
+  .y = memr_plots,
+  .f = save_plot
+)
 

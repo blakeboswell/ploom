@@ -2,16 +2,16 @@
 % Please edit documentation in R/stats_model.R
 \name{model_frame}
 \alias{model_frame}
-\title{lifted from \code{stats}. modified to be faster and less robust}
+\title{Lifted from \code{stats}. modified to be faster and less robust}
 \usage{
 model_frame(formula, data = NULL)
 }
 \arguments{
-\item{formula}{\code{stats::terms} object}
+\item{formula}{\code{\link[=terms]{terms()}} object}
 
 \item{data}{data.frame or list}
 }
 \description{
-lifted from \code{stats}. modified to be faster and less robust
+Lifted from \code{stats}. modified to be faster and less robust
 }
 \keyword{internal}

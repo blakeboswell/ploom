@@ -1,5 +1,6 @@
 
-#' update HC sandwich estimator
+
+#' Update HC sandwich estimator
 #' 
 #' @param qr BoundedQr object
 #' @param mm 
@@ -8,6 +9,7 @@
 #' @param y response
 #' @param offset response offset
 #' @param w weights
+#' 
 #' @keywords internal
 update_sandwich <- function(qr, mm, n, p, y, offset, w) {
   
@@ -54,12 +56,14 @@ update_sandwich <- function(qr, mm, n, p, y, offset, w) {
 #' Hubert/White sandwich vcov implementation for updating linear
 #' model (Miller AS274 QR factorization) as implemented 
 #' in package `biglm`
+#' 
 #' @param np number of parameters in model
 #' @param D diagonals of cross products matrix for sandwich estimator
 #' @param rbar the off diagonal portion of the R matrix for sandwich estimator
 #' @param R cov matrix for model
 #' @param betas model coefficients
 #' @param ok boolean indicator of linear independence among coefficients
+#' 
 #' @keywords internal
 sandwich_rcov_biglm <- function(np, D, rbar, R, betas, ok) {
   

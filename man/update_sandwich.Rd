@@ -2,7 +2,7 @@
 % Please edit documentation in R/biglm_vcov.R
 \name{update_sandwich}
 \alias{update_sandwich}
-\title{update HC sandwich estimator}
+\title{Update HC sandwich estimator}
 \usage{
 update_sandwich(qr, mm, n, p, y, offset, w)
 }
@@ -22,6 +22,6 @@ update_sandwich(qr, mm, n, p, y, offset, w)
 \item{w}{weights}
 }
 \description{
-update HC sandwich estimator
+Update HC sandwich estimator
 }
 \keyword{internal}

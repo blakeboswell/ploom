@@ -2,7 +2,7 @@
 % Please edit documentation in R/oomglm_robust.R
 \name{init_oomglm_robust}
 \alias{init_oomglm_robust}
-\title{Initialize Updating Generalized Linear Regression Model
+\title{Initialize Generalized Linear Regression Model
 with robust standard errors}
 \usage{
 init_oomglm_robust(formula, family, weights, start, se_type)
@@ -11,7 +11,7 @@ init_oomglm_robust(formula, family, weights, start, se_type)
 \item{formula}{a symbolic description of the model to be fitted of class
 \code{formula}.}
 
-\item{family}{a \code{glm} family object.}
+\item{family}{a \code{\link[=family]{family()}} object.}
 
 \item{weights}{a one-sided, single term \code{formula} specifying weights.}
 
@@ -20,7 +20,7 @@ init_oomglm_robust(formula, family, weights, start, se_type)
 \item{se_type}{type of robust standard errors}
 }
 \description{
-Initialize Updating Generalized Linear Regression Model
+Initialize Generalized Linear Regression Model
 with robust standard errors
 }
 \keyword{internal}

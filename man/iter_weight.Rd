@@ -2,27 +2,28 @@
 % Please edit documentation in R/oomglm.R
 \name{iter_weight}
 \alias{iter_weight}
-\title{Fit \code{oomglm} model via Iteratively Reweighted Least Squares (IRLS).}
+\title{Fit \code{\link[=oomglm]{oomglm()}} model via Iteratively Reweighted Least Squares (IRLS).}
 \usage{
 iter_weight(object, data, max_iter = 4L, tolerance = 1e-08)
 }
 \arguments{
-\item{object}{\code{oomglm} model.}
+\item{object}{\code{\link[=oomglm]{oomglm()}} model.}
 
-\item{data}{An \code{oom_data}, \code{tibble}, \code{data.frame}, \code{list} or \code{environment}.}
+\item{data}{\code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
+\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 
 \item{max_iter}{Maximum number of IRLS iterations to perform. Will
 stop iterating if model converges before \code{max_iter} iterations.}
 
-\item{tolerance}{Tolerance for change in coefficient as a multiple
-of standard error.}
+\item{tolerance}{Tolerance used to determine convergence. Represents
+change in coefficient as a multiple of standard error.}
 }
 \value{
-\code{oomglm} object after performing \code{max_iter} IRLS iterations on
+\code{\link[=oomglm]{oomglm()}} object after performing \code{max_iter} IRLS iterations on
 \code{data}.
 }
 \description{
-Fit \code{oomglm} model via Iteratively Reweighted Least Squares (IRLS).
+Fit \code{\link[=oomglm]{oomglm()}} model via Iteratively Reweighted Least Squares (IRLS).
 }
 \seealso{
 \code{\link[=oomglm]{oomglm()}}

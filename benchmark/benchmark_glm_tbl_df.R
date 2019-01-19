@@ -54,12 +54,12 @@ benchmark_lm <- function(num_obs, df) {
       coef(z)
     },
     min_time   = Inf,
-    iterations = 1,
+    iterations = 5,
     check      = FALSE
   ) %>%
     summary()   %>%
     mutate(num_obs = num_obs) %>%
-    select(-memory, -gc)
+    select(-gc)
   
   bm
   

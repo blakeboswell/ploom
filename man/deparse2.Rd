@@ -7,7 +7,7 @@
 deparse2(x)
 }
 \arguments{
-\item{x}{variables extracted form \code{terms} object}
+\item{x}{variables extracted from \code{\link[=terms]{terms()}} object}
 }
 \description{
 lifted as-is from \code{stats}

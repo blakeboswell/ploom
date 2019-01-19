@@ -1,3 +1,5 @@
+
+
 #' @importFrom generics tidy
 #' @export
 generics::tidy
@@ -9,9 +11,8 @@ generics::tidy
 #' errors, confidence intervals, p-values, degrees of freedom, and the
 #' name of the outcome variable
 #'
-#' @param x oomlm object
+#' @param x [oomlm()] model
 #' @param ... ignored
-#' @name oom_tidiers
 #' @export
 #' @md
 tidy.oomlm <- function(x, ...) {

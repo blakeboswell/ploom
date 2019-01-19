@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats_model.R
 \name{model_response}
 \alias{model_response}
-\title{lifted from \code{stats}. modified to be faster and less robust}
+\title{Lifted from \code{stats}. modified to be faster and less robust}
 \usage{
 model_response(data, type = "any")
 }
@@ -12,6 +12,6 @@ model_response(data, type = "any")
 \item{type}{response type}
 }
 \description{
-lifted from \code{stats}. modified to be faster and less robust
+Lifted from \code{stats}. modified to be faster and less robust
 }
 \keyword{internal}

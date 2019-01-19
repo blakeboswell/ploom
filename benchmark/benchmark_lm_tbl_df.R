@@ -55,7 +55,7 @@ benchmark_lm <- function(num_obs, df) {
   ) %>%
     summary()   %>%
     mutate(num_obs = num_obs) %>%
-    select(-memory, -gc)
+    select(-gc)
   
   bm
   

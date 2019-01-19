@@ -2,7 +2,7 @@
 % Please edit documentation in R/bounded_qr.R
 \name{coef.Rcpp_BoundedQr}
 \alias{coef.Rcpp_BoundedQr}
-\title{wrapper for \code{BoundedQr} method \code{betas}}
+\title{Wrapper for \code{BoundedQr} method \code{betas}}
 \usage{
 \method{coef}{Rcpp_BoundedQr}(object, nvar = NULL, ...)
 }
@@ -14,6 +14,6 @@
 \item{...}{ignored}
 }
 \description{
-wrapper for \code{BoundedQr} method \code{betas}
+Wrapper for \code{BoundedQr} method \code{betas}
 }
 \keyword{internal}

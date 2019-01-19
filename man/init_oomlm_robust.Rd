@@ -2,7 +2,7 @@
 % Please edit documentation in R/oomlm_robust.R
 \name{init_oomlm_robust}
 \alias{init_oomlm_robust}
-\title{initialize generalized linear model with robust standard errors}
+\title{Initialize generalized linear model with robust standard errors}
 \usage{
 init_oomlm_robust(formula, weights = NULL, se_type)
 }
@@ -15,6 +15,6 @@ of class \code{formula}.}
 \item{se_type}{method for robust standard error estimation}
 }
 \description{
-initialize generalized linear model with robust standard errors
+Initialize generalized linear model with robust standard errors
 }
 \keyword{internal}

@@ -1,11 +1,13 @@
-# This is lifted directly from base `stats`.  Much of the flexibility and robustness
+
+
+# Mostly lifted directly from base `stats`.  Much of the flexibility and robustness
 # of the original code is been removed to decrease processing time
 
 
 #' lifted as-is from `stats`
 #' 
 #' @md
-#' @param x variables extracted form `terms` object
+#' @param x variables extracted from [terms()] object
 #' @keywords internal
 deparse2 <- function(x) {
   paste(deparse(x, width.cutoff = 500L, backtick = !is.symbol(x) && is.language(x)),
@@ -13,10 +15,10 @@ deparse2 <- function(x) {
 }
 
 
-#' lifted from `stats`. modified to be faster and less robust
+#' Lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @param formula `stats::terms` object
+#' @param formula [terms()] object
 #' @param data data.frame or list
 #' @keywords internal
 model_frame <- function(formula, data = NULL) {
@@ -65,11 +67,11 @@ model_frame <- function(formula, data = NULL) {
 }
 
 
-#' lifted from `stats`. modified to be faster and less robust
+#' Lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @param formula `stats::terms` object
-#' @param data data.frame or list
+#' @param formula [terms()] object
+#' @param data [data.frame()] or [list()]
 #' @keywords internal
 model_matrix <- function(terms, data) {
   
@@ -125,10 +127,10 @@ model_matrix <- function(terms, data) {
 }
 
 
-#' lifted from `stats`. modified to be faster and less robust
+#' Lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
-#' @param x `stats::formula` object
+#' @param x [formula()] object
 #' @keywords internal
 model_offset <- function(x) {
   
@@ -161,7 +163,7 @@ model_offset <- function(x) {
 }
 
 
-#' lifted from `stats`. modified to be faster and less robust
+#' Lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md
 #' @param data data.frame or list
@@ -212,9 +214,9 @@ model_response <- function(data, type = "any") {
 }
 
 
-#' extract elements from data for updating
+#' Extract elements from data for updating
 #' 
-#' @param obj ploom model object
+#' @param obj ploom model
 #' @param data `data.frame`
 #' @keywords internal
 unpack_oomchunk <- function(obj, data) {

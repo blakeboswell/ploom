@@ -1,4 +1,4 @@
-context("test-oom_data-con.R")
+context("test-oomdata.R")
 
 test_connection <- function(con, data_frame) {
 
@@ -6,7 +6,11 @@ test_connection <- function(con, data_frame) {
   chunk_size <- 5
   n <- nrow(data_frame)
   
-  tmp <- oom_data(con, chunk_size = chunk_size, header = TRUE)
+  if(inherits(con, "DBIResult")) {
+    tmp <- oomdata_dbi(con, chunk_size = chunk_size)  
+  } else {
+    tmp <- oomdata_con(con, chunk_size = chunk_size, header = TRUE)  
+  }
   
   for (i in 1:3) {
     cursor <- 0
@@ -26,7 +30,7 @@ test_that("data.frame", {
   chunk_size <- 5
   df     <- mtcars
   n      <- nrow(df)
-  tmp    <- oom_data(df, chunk_size = chunk_size)
+  tmp    <- oomdata_tbl(df, chunk_size = chunk_size)
 
   for (i in 1:3) {
     cursor <- 0
@@ -66,5 +70,4 @@ test_that("dbi_connection", {
   test_connection(rs, df)
   
 })
-
 

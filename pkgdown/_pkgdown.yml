@@ -8,14 +8,15 @@ authors:
     href: https://github.com/blakeboswell
 
 reference:
-  - title: Data Feeds
+  - title: Iterators
     contents:
-    - oom_data
+    - oomdata_tbl
   - title: Models
     contents:
     - oomlm
     - oomlm_robust
     - oomglm
+    - oomglm_robust
   - title: Fit
     contents:
     - update
@@ -23,6 +24,7 @@ reference:
     - init_weight
     - weight
     - end_weight
+  - title: Predict
   
 navbar:
   type: default

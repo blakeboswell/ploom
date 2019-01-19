@@ -1,15 +1,13 @@
 
-#' Initialize Updating Generalized Linear Regression Model
-#' 
-#' Performs the details of intializing `oomglm` object called by `oomglm()`
-#'  function.
+
+#' Initialize Out of memory Generalized Linear Regression Model
 #' 
 #' @md
-#' @param formula a symbolic description of the model to be fitted of class
-#'  `formula`.
-#' @param family a `glm` family object.
-#' @param weights a one-sided, single term `formula` specifying weights. 
+#' @param formula a symbolic description of the model to be fitted of class [formula()].
+#' @param family a [family()] object.
+#' @param weights a one-sided, single term [formula()] specifying weights. 
 #' @param start starting values for the parameters in the linear predictor.
+#' 
 #' @keywords internal
 init_oomglm <- function(formula,
                         family,
@@ -61,11 +59,11 @@ init_oomglm <- function(formula,
 }
 
 
-#' Apply `glm` transformations to `chunk`
+#' Apply [glm()] transformations to `chunk`
 #' 
 #' @md
-#' @param object `oomglm` model.
-#' @param chunk list created by `unpack_oomchunk`.
+#' @param object [oomglm()] model.
+#' @param chunk list created by `unpack_oomchunk()`.
 #' @keywords internal
 glm_adjust <- function(object, chunk) {
 
@@ -110,14 +108,9 @@ glm_adjust <- function(object, chunk) {
 }
 
 
-#' Prepare model for IRLS iteration
-#' 
-#' Reset variables used for IRLS calculation
-#' 
-#' @md
-#' @param object `oomglm` model.
-#' 
+
 #' @export
+#' @rdname init_weight
 init_weight <- function(object) {
   
   if(object$iter > 0) {
@@ -138,35 +131,22 @@ init_weight <- function(object) {
 }
 
 
-#' Fit weighted least squares as part of IRLS iteration
-#' 
-#' @md
-#' @param object `oomglm` model.
-#' @param data `data.frame` of observations to be fit.
 #' @export
+#' @rdname init_weight
 weight <- function(object, data) {
   
-  if(!inherits(data, c("oom_data", "function", "data.frame"))) {
+  if(!inherits(data, c("oomdata", "function", "data.frame"))) {
     stop("class of `data` not recognized")
   }
   
-  update(object, data)
+  update_oomglm(object, data)
   
 }
 
 
-#' Complete model for IRLS iteration
-#' 
-#' Update variables used for IRLS calculation, increment `iter`, and
-#' determine if model has converged
-#' 
-#' @md
-#' @param object `oomglm` model.
-#' @param tolerance Tolerance for change in coefficient as a multiple
-#'  of standard error.
-#'
 #' @export
-end_weight <- function(object, tolerance = 1e-7) {
+#' @rdname init_weight
+end_weight <- function(object, tolerance = 1e-8) {
 
   object$iter <- object$iter + 1L 
   beta_old    <- object$irls$beta
@@ -184,20 +164,21 @@ end_weight <- function(object, tolerance = 1e-7) {
 } 
 
 
-#' Fit `oomglm` model via Iteratively Reweighted Least Squares (IRLS).
+#' Fit [oomglm()] model via Iteratively Reweighted Least Squares (IRLS).
 #' 
 #' @md
-#' @param object `oomglm` model.
-#' @param data An `oom_data`, `tibble`, `data.frame`, `list` or `environment`.
+#' @param object [oomglm()] model.
+#' @param data [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
+#'   [tibble()], [data.frame()], or [list()] of observations to fit
 #' @param max_iter Maximum number of IRLS iterations to perform. Will 
 #'   stop iterating if model converges before `max_iter` iterations.
-#' @param tolerance Tolerance for change in coefficient as a multiple
-#'  of standard error.
+#' @param tolerance Tolerance used to determine convergence. Represents
+#'  change in coefficient as a multiple of standard error.
 #'
-#' @return `oomglm` object after performing `max_iter` IRLS iterations on
+#' @return [oomglm()] object after performing `max_iter` IRLS iterations on
 #'  `data`.
 #' 
-#' @seealso [`oomglm()`]
+#' @seealso [oomglm()]
 #' @export
 iter_weight <- function(object,
                         data,
@@ -222,36 +203,32 @@ iter_weight <- function(object,
 }
 
 
-#' Initialize Updating Generalized Linear model
+#' Out of memory Generalized Linear model
 #' 
 #' Perform  generalized linear regression using Alan Miller's bounded memory QR
-#'   factorization algorithm which enables models with `p` variables
-#'   to be fit in `p^2` memory.
+#' factorization algorithm which enables models with `p` variables
+#' to be fit in `p^2` memory.
 #'   
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
-#'   [formula].
-#' @param data an optional [oom_data], [tibble], [dataframe], or [list]
-#' @param family a [family] object.
-#' @param weights a one-sided, single term [formula] specifying weights.
+#'  [formula()].
+#' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
+#'  [tibble()], [data.frame()], or [list()] of observations to fit
+#' @param family a [family()] object.
+#' @param weights a one-sided, single term [formula()] specifying weights.
 #' @param start starting values for the parameters in the linear predictor.
 #' @param ... ignored.
 #' @details
-#' `oomglm()` initializes an object of class `oomglm` inheriting from the
-#'   class `oomlm`. `oomglm` objects are fit via iteratively IRLS
-#'   Iterative fitting is performed with the function [iter_weight()].
-#' 
-#'   A `oomglm` object can be in various states of fit depending on the number
-#'   of seen observations and rounds of IRLS that have been performed.
-#'   It is important to view the model within the context of:
-#'   the number of observations processed per round of IRLS (`n`);
-#'   the number of IRLS iterations that have been performed (`iter`);
-#'   and if the IRLS algorithm has converged (`converged`).
+#'  An [oomglm()] model can be in various states of fit depending on the number
+#'  of seen observations and rounds of IRLS that have been performed.
+#'  It is important to view the model within the context of:
+#'  the number of observations processed per round of IRLS (`n`);
+#'  the number of IRLS iterations that have been performed (`iter`);
+#'  and if the IRLS algorithm has converged (`converged`).
 #'
 #' @return It is up to the user to know when fitting is complete.
-#'   Therefore, only basic model characteristics are provided as values with 
-#'   the `oomglm` object. Statistics are available on demand via `summary` and 
-#'   extractor functions.
+#'  Therefore, only basic model characteristics are provided as values. 
+#'  Statistics are available on demand via summary and extractor functions.
 #'
 #' \item{converged}{Indicates if the IRLS algorithm has converged.}
 #' \item{iter}{The number of iterations of IRLS performed.}
@@ -260,11 +237,11 @@ iter_weight <- function(object,
 #' \item{df.null}{The residual degrees of freedom.}
 #' \item{formula}{the [`formula()`] object specifying the linear model.}
 #' \item{family}{a [`family()`] object describing the error distribution
-#'   and link function used in the model.}
+#'  and link function used in the model.}
 #' \item{terms}{The [`terms()`] object used.}
 #' \item{weights}{The weights [`formula()`] provided to the model.}
 #' \item{call}{The matched call.}
-#' @seealso [oomlm()]
+#' @seealso [iter_weight()], [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()]
 #' @aliases predict.oomglm print.oomglm print.summary.oomglm summary.oomglm
 #' @export
 #' @name oomglm
@@ -273,17 +250,17 @@ iter_weight <- function(object,
 #' # The IWLS iterations are performed by the function `iter_weight()` which
 #' # makes passes over the data until estimate convergence.
 #' 
-#' # re-weight 4 times or until convergence
+#' # reweight 4 times or until convergence
 #' x <- oomglm(mpg ~ cyl + disp)
 #' x <- iter_weight(x, mtcars, max_iter = 4)
 #' 
 #' tidy(x)
 #' 
-#' # To fit data in chunks, use `oom_data()`:
+#' # To fit data in chunks, use `oomdata_tbl()`:
 #' 
 #' y      <- oomglm(mpg ~ cyl + disp)
-#' chunks <- oom_data(mtcars, chunk_size = 10)
-#' y      <- iter_weight(x, chunks, max_iter = 4)
+#' chunks <- oomdata_tbl(mtcars, chunk_size = 10)
+#' y      <- iter_weight(y, chunks, max_iter = 4)
 #' 
 #' tidy(y)
 #'
@@ -309,9 +286,17 @@ oomglm <- function(formula,
 }
 
 
+#' Update [oomglm()] object with additional observations
+#' 
+#' This function is typically called via [iter_weight()] or [weight()].
+#' It is exposed for potential non-typical situations.
+#' 
+#' @param object [oomglm()] model
+#' @param data observations to fit
+#' @param ... ignored
 #' @export
-#' @rdname update
-update.oomglm <- function(object, data, ...) {
+#' @keywords internal
+update_oomglm <- function(object, data, ...) {
   
   updater <- function(object, data, ...) {
     
@@ -358,7 +343,7 @@ update.oomglm <- function(object, data, ...) {
     
   }
   
-  if(inherits(data, what = "oom_data")) {
+  if(inherits(data, what = "oomdata")) {
     
     while(!is.null(chunk <- data())) {
       object <- updater(object, chunk, ...)

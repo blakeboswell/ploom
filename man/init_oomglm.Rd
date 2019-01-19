@@ -2,22 +2,20 @@
 % Please edit documentation in R/oomglm.R
 \name{init_oomglm}
 \alias{init_oomglm}
-\title{Initialize Updating Generalized Linear Regression Model}
+\title{Initialize Out of memory Generalized Linear Regression Model}
 \usage{
 init_oomglm(formula, family, weights, start)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted of class
-\code{formula}.}
+\item{formula}{a symbolic description of the model to be fitted of class \code{\link[=formula]{formula()}}.}
 
-\item{family}{a \code{glm} family object.}
+\item{family}{a \code{\link[=family]{family()}} object.}
 
-\item{weights}{a one-sided, single term \code{formula} specifying weights.}
+\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
 
 \item{start}{starting values for the parameters in the linear predictor.}
 }
 \description{
-Performs the details of intializing \code{oomglm} object called by \code{oomglm()}
-function.
+Initialize Out of memory Generalized Linear Regression Model
 }
 \keyword{internal}

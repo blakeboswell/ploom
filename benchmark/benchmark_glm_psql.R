@@ -64,17 +64,15 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
 
       con   <- psql_con()
       rs    <- RPostgres::dbSendQuery(con, query)
-      feed  <- oom_data(rs, chunk_size = chunk_size)
+      feed  <- oomdata_dbi(rs, chunk_size = chunk_size)
 
       x     <- iter_weight(
         oomglm(formula = lm_formula),
         data = feed,
         max_iter = 8L
       )
-      print(x$converged)
-      print(x$iter)
 
-      RPostgres::dbDisconnect(con)
+      # RPostgres::dbDisconnect(con)
       
       coef(x)
 
@@ -85,7 +83,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       feed  <- feed_w_reset(con, query, chunksize = chunk_size)
       y     <- bigglm(formula = lm_formula, data = feed)
 
-      RPostgres::dbDisconnect(con)
+      # RPostgres::dbDisconnect(con)
       
       coef(y)
 
@@ -96,7 +94,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       feed  <- feed_w_reset(con, query, chunksize = chunk_size)
       z     <- shglm(formula = lm_formula, datafun = feed)
 
-      RPostgres::dbDisconnect(con)
+      # RPostgres::dbDisconnect(con)
       
       coef(z)
 
@@ -109,7 +107,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       num_obs    = num_obs,
       chunk_size = chunk_size
     ) %>%
-    select(-memory, -gc)
+    select(-gc)
 
   bm
   
@@ -118,8 +116,9 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
 
 main <- function(table_prefix, num_obs) {
   
-  num_obs_vec <- 1:5*(1/2)*(num_obs/5)
-  chunk_sizes <- num_obs_vec / 5
+  num_div <- 5
+  divs    <- 1:num_div*(num_obs/num_div)
+  chunk_sizes <- divs[[1]] / 2
   
   vars       <- model_vars(psql_con(), table_prefix)
   lm_formula <- vars %>% make_formula()
@@ -128,7 +127,7 @@ main <- function(table_prefix, num_obs) {
   assign("lm_formula", lm_formula, envir = globalenv())
   
   res <- map2_df(
-    .x = num_obs_vec,
+    .x = divs,
     .y = chunk_sizes,
     benchmark_lm,
     table_prefix = table_prefix,

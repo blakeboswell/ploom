@@ -2,16 +2,16 @@
 % Please edit documentation in R/stats_model.R
 \name{unpack_oomchunk}
 \alias{unpack_oomchunk}
-\title{extract elements from data for updating}
+\title{Extract elements from data for updating}
 \usage{
 unpack_oomchunk(obj, data)
 }
 \arguments{
-\item{obj}{ploom model object}
+\item{obj}{ploom model}
 
 \item{data}{\code{data.frame}}
 }
 \description{
-extract elements from data for updating
+Extract elements from data for updating
 }
 \keyword{internal}

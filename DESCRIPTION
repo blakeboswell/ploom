@@ -29,6 +29,7 @@ Suggests:
     RPostgreSQL (>= 0.6.2),
     RSQLite (>= 2.0),
     testthat (>= 2.0.0),
+    purrr,
     knitr,
     rmarkdown
 BugReports: https://github.com/bboswell/ploom/issues
@@ -38,18 +39,19 @@ Collate:
     'RcppExports.R'
     'biglm_vcov.R'
     'bounded_qr.R'
-    'oom_data.R'
+    'oom_extractors.R'
+    'oom_irls.R'
+    'oom_predict.R'
+    'oom_tidy.R'
     'oom_update.R'
+    'oomdata.R'
     'oomglm.R'
     'oomglm_robust.R'
     'oomglm_summary.R'
     'oomlm.R'
     'oomlm_robust.R'
     'oomlm_summary.R'
-    'oom_tidy.R'
     'ploom.R'
-    'oom_extractors.R'
-    'oom_predict.R'
     'stats_model.R'
     'zzz.R'
 VignetteBuilder: knitr

@@ -1,5 +1,6 @@
 
-# mimic base `lm` as closely as possible
+
+# Mimic base `lm` as closely as possible
 #
 #' @method summary oomlm
 #' @export

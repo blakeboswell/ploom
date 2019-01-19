@@ -19,26 +19,26 @@ oomlm(formula, data = NULL, weights = NULL, ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted of class
-\code{formula}.}
+\code{\link[=formula]{formula()}}.}
 
-\item{data}{an optional \code{oom_data}, \code{tibble}, \code{data.frame}, \code{list} or
-\code{environment}.}
+\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
+\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 
-\item{weights}{a one-sided, single term \link{formula} specifying weights.}
+\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
 
 \item{...}{ignored.}
 }
 \value{
-A \code{oomlm} object is perpetually in an \emph{in-progress} state. It is up
-to the user to know when fitting is complete.  Therefore, only basic model
-characteristics are provided as values with the \code{oolm} object. Statistics
-are available on demand via \code{summary} and extractor functions.
+A \code{\link[=oomlm]{oomlm()}} model is perpetually in an \emph{in-progress} state. It is up
+to the user to know when fitting is complete. Therefore, only basic
+model characteristics are provided as values. Statistics are available on
+demand via \code{summary} and \code{extractor} functions.
 
 \item{n}{the number of observations processed.}
 \item{df.residual}{the residual degrees of freedom.}
-\item{formula}{the \link{formula} object specifying the linear model.}
-\item{terms}{the \link{terms} object specifying the terms of the linear model.}
-\item{weights}{a one-sided, single term \link{formula} specifying weights.}
+\item{formula}{the \code{\link[=formula]{formula()}} object specifying the linear model.}
+\item{terms}{the \code{\link[=terms]{terms()}} object specifying the terms of the linear model.}
+\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
 \item{call}{the matched call.}
 }
 \description{
@@ -47,19 +47,14 @@ factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
 }
 \details{
-\code{oomlm} initializes an object of class \code{oomlm}. \code{oomlm} objects
-are intended to be iteratively updated with new data via the function
-\code{\link[=update]{update()}}. If \code{data} is provided to the \code{oolm} function call, an
-\code{\link[=update]{update()}} round will be performed on initialization.
-
-The provided \code{formula} must not contain any data-dependent terms to ensure
+The provided \code{\link[=formula]{formula()}} must not contain any data-dependent terms to ensure
 consistency across calls to \code{\link[=update]{update()}}. Factors are permitted, but the
 levels of the factor must be the same across all data chunks. Empty factor
 levels are accepted.
 }
 \examples{
 \donttest{
-# `oomglm` is similar to `lm` for fitting in memory data
+# `oomglm()` is similar to `lm()` for fitting in memory data
 
 x <- oomlm(mpg ~ cyl + disp, mtcars)
 print(x)
@@ -73,15 +68,15 @@ chunks <- purrr::pmap(mtcars, list)
 y <- oomlm(mpg ~ cyl + disp)
 
 for(chunk in chunks) {
-  y <- update(x, chunk)
+  y <- update(y, chunk)
 }
 
 tidy(x)
 
-# [oom_data()] facilitates iterating through data rows in chunks
-chunks  <- oom_data(mtcars, chunk_size = 1)
+# `oomdata_tbl()` facilitates iterating through data rows in chunks
+chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 
-# [oomlm] will automatically fit to all chunks in an [oom_data()] function
+# `oomlm()` will automatically fit to all chunks in an `oomdata()` functions
 z <- oomlm(mpg ~ cyl + disp, data = chunks)
 
 summary(z)
@@ -89,5 +84,5 @@ summary(z)
 }
 }
 \seealso{
-\code{\link[=oomglm]{oomglm()}}, \code{\link[=oom_data]{oom_data()}}
+\code{\link[=oomglm]{oomglm()}}, \code{\link[=oomdata_tbl]{oomdata_tbl()}}
 }

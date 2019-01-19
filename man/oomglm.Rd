@@ -6,20 +6,21 @@
 \alias{print.oomglm}
 \alias{print.summary.oomglm}
 \alias{summary.oomglm}
-\title{Initialize Updating Generalized Linear model}
+\title{Out of memory Generalized Linear model}
 \usage{
 oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
   start = NULL, ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted of class
-\link{formula}.}
+\code{\link[=formula]{formula()}}.}
 
-\item{data}{an optional \link{oom_data}, \link{tibble}, \link{dataframe}, or \link{list}}
+\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
+\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 
-\item{family}{a \link{family} object.}
+\item{family}{a \code{\link[=family]{family()}} object.}
 
-\item{weights}{a one-sided, single term \link{formula} specifying weights.}
+\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
 
 \item{start}{starting values for the parameters in the linear predictor.}
 
@@ -27,9 +28,8 @@ oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
 }
 \value{
 It is up to the user to know when fitting is complete.
-Therefore, only basic model characteristics are provided as values with
-the \code{oomglm} object. Statistics are available on demand via \code{summary} and
-extractor functions.
+Therefore, only basic model characteristics are provided as values.
+Statistics are available on demand via summary and extractor functions.
 
 \item{converged}{Indicates if the IRLS algorithm has converged.}
 \item{iter}{The number of iterations of IRLS performed.}
@@ -49,11 +49,7 @@ factorization algorithm which enables models with \code{p} variables
 to be fit in \code{p^2} memory.
 }
 \details{
-\code{oomglm()} initializes an object of class \code{oomglm} inheriting from the
-class \code{oomlm}. \code{oomglm} objects are fit via iteratively IRLS
-Iterative fitting is performed with the function \code{\link[=iter_weight]{iter_weight()}}.
-
-A \code{oomglm} object can be in various states of fit depending on the number
+An \code{\link[=oomglm]{oomglm()}} model can be in various states of fit depending on the number
 of seen observations and rounds of IRLS that have been performed.
 It is important to view the model within the context of:
 the number of observations processed per round of IRLS (\code{n});
@@ -66,22 +62,22 @@ and if the IRLS algorithm has converged (\code{converged}).
 # The IWLS iterations are performed by the function `iter_weight()` which
 # makes passes over the data until estimate convergence.
 
-# re-weight 4 times or until convergence
+# reweight 4 times or until convergence
 x <- oomglm(mpg ~ cyl + disp)
 x <- iter_weight(x, mtcars, max_iter = 4)
 
 tidy(x)
 
-# To fit data in chunks, use `oom_data()`:
+# To fit data in chunks, use `oomdata_tbl()`:
 
 y      <- oomglm(mpg ~ cyl + disp)
-chunks <- oom_data(mtcars, chunk_size = 10)
-y      <- iter_weight(x, chunks, max_iter = 4)
+chunks <- oomdata_tbl(mtcars, chunk_size = 10)
+y      <- iter_weight(y, chunks, max_iter = 4)
 
 tidy(y)
 
 }
 }
 \seealso{
-\code{\link[=oomlm]{oomlm()}}
+\code{\link[=iter_weight]{iter_weight()}}, \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}}
 }

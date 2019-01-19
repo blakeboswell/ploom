@@ -32,7 +32,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
 
       con   <- psql_con()
       rs    <- RPostgres::dbSendQuery(con, query)
-      feed  <- oom_data(rs, chunk_size = chunk_size)
+      feed  <- oomdata_dbi(rs, chunk_size = chunk_size)
       x     <- oomlm(formula = lm_formula)
 
       while(!is.null(chunk <- feed())) {
@@ -48,7 +48,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
 
       con   <- psql_con()
       rs    <- RPostgres::dbSendQuery(con, query)
-      feed  <- oom_data(rs, chunk_size = chunk_size)
+      feed  <- oomdata_dbi(rs, chunk_size = chunk_size)
 
       count <- 0
 
@@ -70,7 +70,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
 
       con   <- psql_con()
       rs    <- RPostgres::dbSendQuery(con, query)
-      feed  <- oom_data(rs, chunk_size = chunk_size)
+      feed  <- oomdata_dbi(rs, chunk_size = chunk_size)
 
       count <- 0
 
@@ -96,7 +96,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       num_obs    = num_obs,
       chunk_size = chunk_size
     ) %>%
-    select(-memory, -gc)
+    select(-gc)
   
   bm
   
@@ -107,7 +107,7 @@ main <- function(table_prefix, num_obs) {
   
   num_div <- 5
   divs    <- 1:num_div*(num_obs/num_div)
-  chunk_sizes <- divs / 20
+  chunk_sizes <- divs[[1]] / 5
   
   vars       <- model_vars(psql_con(), table_prefix)
   lm_formula <- vars %>% make_formula()

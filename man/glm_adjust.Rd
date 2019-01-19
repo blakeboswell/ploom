@@ -2,16 +2,16 @@
 % Please edit documentation in R/oomglm.R
 \name{glm_adjust}
 \alias{glm_adjust}
-\title{Apply \code{glm} transformations to \code{chunk}}
+\title{Apply \code{\link[=glm]{glm()}} transformations to \code{chunk}}
 \usage{
 glm_adjust(object, chunk)
 }
 \arguments{
-\item{object}{\code{oomglm} model.}
+\item{object}{\code{\link[=oomglm]{oomglm()}} model.}
 
-\item{chunk}{list created by \code{unpack_oomchunk}.}
+\item{chunk}{list created by \code{unpack_oomchunk()}.}
 }
 \description{
-Apply \code{glm} transformations to \code{chunk}
+Apply \code{\link[=glm]{glm()}} transformations to \code{chunk}
 }
 \keyword{internal}

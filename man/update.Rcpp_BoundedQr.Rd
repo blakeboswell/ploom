@@ -2,7 +2,7 @@
 % Please edit documentation in R/bounded_qr.R
 \name{update.Rcpp_BoundedQr}
 \alias{update.Rcpp_BoundedQr}
-\title{wrapper for \code{BoundedQr} method \code{update}}
+\title{Wrapper for \code{BoundedQr} method \code{update}}
 \usage{
 \method{update}{Rcpp_BoundedQr}(object, X, y, weights, ...)
 }
@@ -18,6 +18,6 @@
 \item{...}{ignored}
 }
 \description{
-wrapper for \code{BoundedQr} method \code{update}
+Wrapper for \code{BoundedQr} method \code{update}
 }
 \keyword{internal}

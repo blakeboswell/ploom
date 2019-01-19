@@ -2,7 +2,7 @@
 % Please edit documentation in R/bounded_qr.R
 \name{vcov.Rcpp_BoundedQr}
 \alias{vcov.Rcpp_BoundedQr}
-\title{wrapper for \code{BoundedQr} method \code{vcov}}
+\title{Wrapper for \code{BoundedQr} method \code{vcov}}
 \usage{
 \method{vcov}{Rcpp_BoundedQr}(object, ...)
 }
@@ -12,6 +12,6 @@
 \item{...}{ignored}
 }
 \description{
-wrapper for \code{BoundedQr} method \code{vcov}
+Wrapper for \code{BoundedQr} method \code{vcov}
 }
 \keyword{internal}

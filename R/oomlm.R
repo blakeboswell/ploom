@@ -1,9 +1,10 @@
 
+
 #' Initialize Updating Linear Model
 #' 
 #' @md
 #' @param formula a symbolic description of the model to be fitted
-#'   of class `formula`.
+#'  of class `formula`.
 #' @param weights A one-sided, single term `formula` specifying weights.
 #' @keywords internal
 init_oomlm <- function(formula, weights = NULL) {
@@ -33,45 +34,41 @@ init_oomlm <- function(formula, weights = NULL) {
 #' Out of memory Linear model
 #' 
 #' Perform linear regression via Alan Miller's bounded memory QR
-#'   factorization algorithm which enables models with `p` variables
-#'   to be fit in `p^2` memory.
+#' factorization algorithm which enables models with `p` variables
+#' to be fit in `p^2` memory.
 #' 
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
-#'   `formula`.
-#' @param data an optional `oom_data`, `tibble`, `data.frame`, `list` or 
-#'   `environment`.
-#' @param weights a one-sided, single term [formula] specifying weights.
+#'  [formula()].
+#' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
+#'  [tibble()], [data.frame()], or [list()] of observations to fit
+#' @param weights a one-sided, single term [formula()] specifying weights.
 #' @param ... ignored.
-#' @details `oomlm` initializes an object of class `oomlm`. `oomlm` objects
-#'   are intended to be iteratively updated with new data via the function 
-#'   [update()]. If `data` is provided to the `oolm` function call, an 
-#'   [update()] round will be performed on initialization.
+#' @details
+#'  The provided [formula()] must not contain any data-dependent terms to ensure
+#'  consistency across calls to [update()]. Factors are permitted, but the
+#'  levels of the factor must be the same across all data chunks. Empty factor
+#'  levels are accepted.
 #'
-#'   The provided `formula` must not contain any data-dependent terms to ensure
-#'   consistency across calls to [update()]. Factors are permitted, but the
-#'   levels of the factor must be the same across all data chunks. Empty factor
-#'   levels are accepted.
-#'
-#' @return A `oomlm` object is perpetually in an _in-progress_ state. It is up
-#'   to the user to know when fitting is complete.  Therefore, only basic model
-#'   characteristics are provided as values with the `oolm` object. Statistics
-#'   are available on demand via `summary` and extractor functions.
+#' @return A [oomlm()] model is perpetually in an _in-progress_ state. It is up
+#'  to the user to know when fitting is complete. Therefore, only basic
+#'  model characteristics are provided as values. Statistics are available on 
+#'  demand via `summary` and `extractor` functions.
 #'
 #' \item{n}{the number of observations processed.}
 #' \item{df.residual}{the residual degrees of freedom.}
-#' \item{formula}{the [formula] object specifying the linear model.}
-#' \item{terms}{the [terms] object specifying the terms of the linear model.}
-#' \item{weights}{a one-sided, single term [formula] specifying weights.}
+#' \item{formula}{the [formula()] object specifying the linear model.}
+#' \item{terms}{the [terms()] object specifying the terms of the linear model.}
+#' \item{weights}{a one-sided, single term [formula()] specifying weights.}
 #' \item{call}{the matched call.}
-#' @seealso [oomglm()], [oom_data()]
+#' @seealso [oomglm()], [oomdata_tbl()]
 #' @aliases AIC.oomlm coef.oomlm confint.oomlm deviance.oomlm family.oomlm 
-#'   formula.oomlm predict.oomlm print.oomlm print.summary.oomlm summary.oomlm 
-#'   vcov.oomlm
+#'  formula.oomlm predict.oomlm print.oomlm print.summary.oomlm summary.oomlm 
+#'  vcov.oomlm
 #' @export
 #' @name oomlm
 #' @examples \donttest{
-#' # `oomglm` is similar to `lm` for fitting in memory data
+#' # `oomglm()` is similar to `lm()` for fitting in memory data
 #' 
 #' x <- oomlm(mpg ~ cyl + disp, mtcars)
 #' print(x)
@@ -85,15 +82,15 @@ init_oomlm <- function(formula, weights = NULL) {
 #' y <- oomlm(mpg ~ cyl + disp)
 #' 
 #' for(chunk in chunks) {
-#'   y <- update(x, chunk)
+#'   y <- update(y, chunk)
 #' }
 #' 
 #' tidy(x)
 #' 
-#' # [oom_data()] facilitates iterating through data rows in chunks
-#' chunks  <- oom_data(mtcars, chunk_size = 1)
+#' # `oomdata_tbl()` facilitates iterating through data rows in chunks
+#' chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 #' 
-#' # [oomlm] will automatically fit to all chunks in an [oom_data()] function
+#' # `oomlm()` will automatically fit to all chunks in an `oomdata()` functions
 #' z <- oomlm(mpg ~ cyl + disp, data = chunks)
 #' 
 #' summary(z)
@@ -154,7 +151,7 @@ update.oomlm <- function(object, data, ...) {
     
   }
   
-  if(inherits(data, what = "oom_data")) {
+  if(inherits(data, what = c("oomdata_tbl", "oomdata_dbi", "oomdata_con"))) {
     
     while(!is.null(chunk <- data())) {
       object <- updater(object, chunk, ...)

@@ -16,7 +16,7 @@
 NULL
 
 
-#' initialize new `BoundedQr` object
+#' Initialize new `BoundedQr` object
 #'
 #' @param np int number of independent parameters in model
 #'   including the intercept when model has intercept
@@ -32,7 +32,7 @@ new_bounded_qr <- function(np) {
 }
 
 
-#' wrapper for `BoundedQr` method `update`
+#' Wrapper for `BoundedQr` method `update`
 #'
 #' @param object BoundedQr object to update
 #' @param X numeric matrix of covariate observations
@@ -62,7 +62,7 @@ update.Rcpp_BoundedQr <- function(object, X, y, weights, ...) {
 }
 
 
-#' wrapper for `BoundedQr` method `betas`
+#' Wrapper for `BoundedQr` method `betas`
 #' 
 #' @param object BoundedQr object
 #' @param nvar int number of coefficients to return
@@ -90,7 +90,7 @@ coef.Rcpp_BoundedQr <- function(object, nvar = NULL, ...){
 }
 
 
-#' wrapper for `BoundedQr` method `vcov` 
+#' Wrapper for `BoundedQr` method `vcov` 
 #'
 #' @param object BoundedQr object
 #' @param ... ignored

@@ -2,14 +2,14 @@
 % Please edit documentation in R/stats_model.R
 \name{model_offset}
 \alias{model_offset}
-\title{lifted from \code{stats}. modified to be faster and less robust}
+\title{Lifted from \code{stats}. modified to be faster and less robust}
 \usage{
 model_offset(x)
 }
 \arguments{
-\item{x}{\code{stats::formula} object}
+\item{x}{\code{\link[=formula]{formula()}} object}
 }
 \description{
-lifted from \code{stats}. modified to be faster and less robust
+Lifted from \code{stats}. modified to be faster and less robust
 }
 \keyword{internal}

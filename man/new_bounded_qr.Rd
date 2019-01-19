@@ -2,7 +2,7 @@
 % Please edit documentation in R/bounded_qr.R
 \name{new_bounded_qr}
 \alias{new_bounded_qr}
-\title{initialize new \code{BoundedQr} object}
+\title{Initialize new \code{BoundedQr} object}
 \usage{
 new_bounded_qr(np)
 }
@@ -11,6 +11,6 @@ new_bounded_qr(np)
 including the intercept when model has intercept}
 }
 \description{
-initialize new \code{BoundedQr} object
+Initialize new \code{BoundedQr} object
 }
 \keyword{internal}
