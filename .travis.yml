@@ -17,4 +17,4 @@ matrix:
 env:
   global:
   - MAKEFLAGS="-j 2"
-  - PKG_LIBS "-llapack"
+  - PKG_LIBS="-llapack"
