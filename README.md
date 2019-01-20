@@ -5,7 +5,7 @@
 [![Build
 Status](https://api.travis-ci.com/blakeboswell/ploom.svg?branch=develop)](https://api.travis-ci.com/blakeboswell/ploom)
 [![Coverage
-status](https://codecov.io/gh/blakeboswell/ploom/branch/master/graph/badge.svg)](https://codecov.io/github/blakeboswell/ploom?branch=master)
+status](https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg)](https://codecov.io/github/blakeboswell/ploom?branch=develop)
 
 <!-- [AppVeyor Build Status]() -->
 
