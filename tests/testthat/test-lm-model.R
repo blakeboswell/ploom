@@ -3,7 +3,6 @@ context("test-lm-model.R")
 
 iter_model <- function(df, eqn, weights = NULL) {
 
-
   if(is.null(weights)){
     x <- ploom::oomlm(formula = eqn, data = df[1, ])
   }
@@ -12,7 +11,7 @@ iter_model <- function(df, eqn, weights = NULL) {
   }
 
   for(i in 2:nrow(df)) {
-      x <- update(x, df[i, ])
+    x <- update(x, df[i, ])
   }
 
   x
@@ -34,36 +33,52 @@ expect_summary_equal <- function(sy, sx) {
 
 }
 
+expect_attr_equal <- function(x, y) {
+  
+  expect_equal(coef(x), coef(y))
+  expect_equal(vcov(x), vcov(y))
+  
+  yy        <- predict(y, mtcars)
+  names(yy) <- NULL
+  xy        <- drop(predict(x, mtcars))
+  names(xy) <- NULL
+  expect_equal(yy, xy)
+  
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
+  
+  quiet <- function(x) { 
+    sink(tempfile()) 
+    on.exit(sink()) 
+    invisible(force(x)) 
+  } 
+  
+  expect_equal(quiet(print(x)), x)
+  expect_equal(quiet(print(summary(x))), summary(x))
+  expect_equal(
+    quiet(summary(x, correlation = TRUE)),
+    summary(x, correlation = TRUE)
+  )
+  
+  
+}
+
+
 
 test_that("updating oomlm", {
 
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = mtcars)
   x <- iter_model(mtcars, f)
-
-  expect_equal(coef(x), coef(y))
-  expect_equal(vcov(x), vcov(y))
+  
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
-
-  expect_equal(
-    predict(y, mtcars),
-    drop(predict(x, mtcars))
-  )
   
-  expect_equal(
-    as.matrix(tidy(y)[2:5]),
-    as.matrix(tidy(x)[2:5])
-  )
-  
-  expect_equal(print(x), x)
-  expect_equal(print(summary(x)), summary(x))
-  expect_equal(
-    print(summary(x, correlation = TRUE)),
-    summary(x, correlation = TRUE)
-  )
+  expect_attr_equal(x, y)
   
 })
 
@@ -78,29 +93,12 @@ test_that("weighted updating oomlm", {
   y <- lm(f, data = df, weights = w)
   x <- iter_model(df, f, weights = ~w)
 
-  expect_equal(coef(x), coef(y))
-  expect_equal(vcov(x), vcov(y))
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
-
-  expect_equal(
-    predict(y, df),
-    drop(predict(x, df))
-  )
-
-  expect_equal(
-    as.matrix(tidy(y)[2:5]),
-    as.matrix(tidy(x)[2:5])
-  )
   
-  expect_equal(print(x), x)
-  expect_equal(print(summary(x)), summary(x))
-  expect_equal(
-    print(summary(x, correlation = TRUE)),
-    summary(x, correlation = TRUE)
-  )
+  expect_attr_equal(x, y)
   
 })
 
@@ -113,29 +111,12 @@ test_that("updating oomlm without intercept", {
   y <- lm(f, data = df)
   x <- iter_model(df, f)
 
-  expect_equal(coef(x), coef(y))
-  expect_equal(vcov(x), vcov(y))
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
-
-  expect_equal(
-    predict(y, df),
-    drop(predict(x, df))
-  )
   
-  expect_equal(
-    as.matrix(tidy(y)[2:5]),
-    as.matrix(tidy(x)[2:5])
-  )
-  
-  expect_equal(print(x), x)
-  expect_equal(print(summary(x)), summary(x))
-  expect_equal(
-    print(summary(x, correlation = TRUE)),
-    summary(x, correlation = TRUE)
-  )
+  expect_attr_equal(x, y)
   
 })
 
@@ -151,27 +132,10 @@ test_that("weighted updating oomlm without intercept", {
   y <- lm(f, data = df, weights = w)
   x <- iter_model(df, f, weights = ~w)
 
-  expect_equal(vcov(x), vcov(y))
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
-
-  expect_equal(
-    predict(y, df),
-    drop(predict(x, df))
-  )
   
-  expect_equal(
-    as.matrix(tidy(y)[2:5]),
-    as.matrix(tidy(x)[2:5])
-  )
-  
-  expect_equal(print(x), x)
-  expect_equal(print(summary(x)), summary(x))
-  expect_equal(
-    print(summary(x, correlation = TRUE)),
-    summary(x, correlation = TRUE)
-  )
-  
+  expect_attr_equal(x, y)
 })
