@@ -33,7 +33,8 @@ Suggests:
     knitr,
     rmarkdown,
     purrr (>= 0.2.5),
-    covr
+    covr,
+    broom
 BugReports: https://github.com/bboswell/ploom/issues
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)

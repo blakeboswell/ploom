@@ -70,7 +70,6 @@ init_oomglm_robust <- function(formula,
 #' @name oomglm_robust
 #' @export
 oomglm_robust <- function(formula,
-                          data     = NULL,
                           family   = gaussian(),
                           weights  = NULL,
                           start    = NULL,
@@ -83,16 +82,6 @@ oomglm_robust <- function(formula,
     stop(paste(msg, collapse = "\n"))
   }
   
-  object <- init_oomglm_robust(formula,
-                               family,
-                               weights,
-                               start,
-                               se_type)
-  
-  if(!is.null(data)) {
-    object <- weight(object, data)
-  }
-  
-  object
-  
+  init_oomglm_robust(formula, family, weights, start, se_type)
+
 }

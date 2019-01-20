@@ -1,5 +1,6 @@
 library(estimatr)
 
+
 gen_models <- function(fxn, data) {
   
   se_types <- c("classical", "HC0", "HC1", "stata")
@@ -36,3 +37,7 @@ saveRDS(list(
   weights_noint = mdls_noint_wt
 ), file = "tests/testdata/robust-models.Rds")
 
+
+
+write.table(x = mtcars, row.names = FALSE, file = "./tests/testdata/mtcars.txt")
+system("gzip ./tests/testdata/mtcars.txt")

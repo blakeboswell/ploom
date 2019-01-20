@@ -3,10 +3,7 @@ context("test-glm-model.R")
 
 iter_model <- function(df, eqn, weights = NULL) {
 
-
-  
   x <- oomglm(formula = eqn, weights = weights)
-  print(class(x))
   iter_weight(x, df, max_iter = 8)
 
 }
@@ -48,6 +45,14 @@ test_that("updating oomglm", {
     predict(y, mtcars),
     drop(predict(x, mtcars))
   )
+  
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
+  
+  expect_equal(print(x), x)
+  expect_equal(print(summary(x)), summary(x))
 
 })
 
@@ -73,6 +78,14 @@ test_that("weighted updating oomglm", {
     predict(y, mtcars),
     drop(predict(x, mtcars))
   )
+  
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
+  
+  expect_equal(print(x), x)
+  expect_equal(print(summary(x)), summary(x))
 
 })
 
@@ -96,6 +109,13 @@ test_that("updating oomglm without intercept", {
     predict(y, mtcars),
     drop(predict(x, mtcars))
   )
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
+  
+  expect_equal(print(x), x)
+  expect_equal(print(summary(x)), summary(x))
 
 })
 
@@ -121,5 +141,12 @@ test_that("weighted updating oomglm without intercept", {
     predict(y, mtcars),
     drop(predict(x, mtcars))
   )
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
+  
+  expect_equal(print(x), x)
+  expect_equal(print(summary(x)), summary(x))
 
 })

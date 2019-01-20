@@ -29,6 +29,10 @@ test_that("oomlm", {
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
+  expect_equal(
+    as.matrix(tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
 
 })
 
@@ -48,6 +52,10 @@ test_that("weighted oomlm", {
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
+  )
+  expect_equal(
+    as.matrix(tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
   )
 
 })
@@ -70,6 +78,10 @@ test_that("weighted oomlm with zero weight", {
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
+  expect_equal(
+    as.matrix(tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
 
 })
 
@@ -88,6 +100,10 @@ test_that("oomlm without intercept", {
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
+  )
+  expect_equal(
+    as.matrix(tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
   )
 
 })
@@ -108,6 +124,10 @@ test_that("weighted oomlm without intercept", {
   expect_summary_equal(
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
+  )
+  expect_equal(
+    as.matrix(tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
   )
 
 })

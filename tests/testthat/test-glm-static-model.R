@@ -45,6 +45,10 @@ test_that("updating oomglm", {
     predict(y, mtcars),
     drop(predict(x, mtcars))
   )
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
   
 })
 
@@ -70,6 +74,10 @@ test_that("updating robust oomglm", {
     predict(y, mtcars),
     drop(predict(x, mtcars))
   )
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
   
 })
 
@@ -92,6 +100,10 @@ test_that("updating oomglm without intercept", {
   expect_equal(
     predict(y, mtcars),
     drop(predict(x, mtcars))
+  )
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
   )
   
 })
@@ -117,6 +129,10 @@ test_that("weighted robust oomglm without intercept", {
   expect_equal(
     predict(y, mtcars),
     drop(predict(x, mtcars))
+  )
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
   )
   
 })

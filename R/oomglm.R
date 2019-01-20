@@ -265,22 +265,12 @@ iter_weight <- function(object,
 #'
 #' }
 oomglm <- function(formula,
-                   data     = NULL,
                    family   = gaussian(),
                    weights  = NULL,
                    start    = NULL,
                    ...) {
 
-  object <- init_oomglm(formula,
-                        family,
-                        weights,
-                        start)
-
-  if(!is.null(data)) {
-    object <- weight(object, data)
-  }
-
-  object
+  init_oomglm(formula, family, weights, start)
 
 }
 

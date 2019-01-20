@@ -372,58 +372,6 @@ void BoundedQr::residual_sumsquares() {
 }
 
 
-arma::mat BoundedQr::vcov_sugar(int nreq) {
-  
-  if(num_obs_ <= nreq) {
-    // TODO: handle error appropriately
-    return arma::vec(1).fill(NA_REAL);
-  }
-  
-  if(!sing_checked_) {
-    check_singularity();
-  }
-  
-  int np = num_params_;
-  
-  double rnk = 0.0;
-  for (int i = 0; i < nreq; ++i) {
-    if(!lindep_[i]) {
-      ++rnk;
-    }
-  }
-
-  arma::mat R = arma::eye(np, np);
-
-  // R * rbar_
-  int pos = 0;
-  for(int i = 0; i < np - 1; ++i) {
-    for(int j = i + 1; j < np; ++j) {
-      R(j, i) = rbar_[pos];
-      ++pos;
-    }
-  }
-  
-  R = arma::trans(R);
-  arma::vec work = arma::sqrt(D_);
-  
-  // R * sqrt(D_)
-  for(int i = 0; i < np; ++i) {
-    for(int j = 0; j < np; ++j) {
-      R(i, j) = R(i, j) * work[i];
-    }
-  }
-  
-  // chol2inv = solve(crossproduct(R, R))
-  arma::mat RCI = arma::solve(
-    arma::trans(arma::trimatu(R)) * arma::trimatu(R),
-    arma::eye(np, np)
-  );
-  
-  return RCI * (sserr_ / (num_obs_ - rnk));
-  
-}
-
-
 //' @keywords internal
 arma::vec BoundedQr::vcov(int nreq) {
   

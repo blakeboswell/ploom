@@ -52,6 +52,14 @@ test_that("updating oomlm", {
     predict(y, mtcars),
     drop(predict(x, mtcars))
   )
+  
+  expect_equal(
+    as.matrix(tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
+  
+  expect_equal(print(x), x)
+  expect_equal(print(summary(x)), summary(x))
 
 })
 
@@ -78,6 +86,14 @@ test_that("weighted updating oomlm", {
     drop(predict(x, df))
   )
 
+  expect_equal(
+    as.matrix(tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
+  
+  expect_equal(print(x), x)
+  expect_equal(print(summary(x)), summary(x))
+  
 })
 
 
@@ -100,6 +116,14 @@ test_that("updating oomlm without intercept", {
     predict(y, df),
     drop(predict(x, df))
   )
+  
+  expect_equal(
+    as.matrix(tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
+  
+  expect_equal(print(x), x)
+  expect_equal(print(summary(x)), summary(x))
 
 })
 
@@ -125,5 +149,13 @@ test_that("weighted updating oomlm without intercept", {
     predict(y, df),
     drop(predict(x, df))
   )
+  
+  expect_equal(
+    as.matrix(tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5])
+  )
+  
+  expect_equal(print(x), x)
+  expect_equal(print(summary(x)), summary(x))
 
 })
