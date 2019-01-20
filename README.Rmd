@@ -15,15 +15,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Overview
 
-A collection of tools for out-of-memory linear model fitting and inference. Implements `lm` and `glm` analogs using Alan Miller's AS274 updating QR factorization algorithm.
+A collection of tools for __out-of-memory__ and __memory efficient__ linear model fitting with support for inference. Implements `lm()` and `glm()` analogs using Alan Miller's AS274 updating QR factorization algorithm.
 
-> `ploom` is in beta. See roadmap for details.
+- out-of-memory procesing capable of fitting to billion+ observations
+- in-memory runtimes at least as good as `lm()` and `glm()`
+- efficient memory usage ideal for multi-user environments with heavy regression loads
+
+> `ploom` is in beta. See [roadmap]() for details.
 
 ## Features
 
-- Linear and Generalized Linear Models with Robust Standard Errors
-- Functions for streaming data from Database and file connections as well as
-  in memory `tibble()` and `data.frame()`
+- Linear and Generalized Linear Models
+- Robust Linear and Generalized Linear Models
+- Data streaming functions from Database and file connections as well as
+  in-memory chunking of `tibble()` and `data.frame()`
+
+> The beta version of `ploom` has essentially the same features as [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html) with a slight runtime improvement. More differentiating features are currently under development.
 
 ## Installation
 
