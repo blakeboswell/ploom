@@ -37,3 +37,50 @@ iteratively return \code{chunk_size} number of rows from \code{data} until all
 rows have been returned. They will then return \code{NULL} once. They repeat
 this cycle ad-infinitum.
 }
+\examples{
+\donttest{
+# `oomdata_tbl()` returns a function that when called will
+# return `chunk_size` rows from a `tbl_df()`
+chunks <- oomdata_tbl(mtcars, chunk_size = 16)
+
+nrow(chunks())
+nrow(chunks())
+
+# when the data is exhausted the `oomdata_tbl()` function
+# will return NULL once.
+chunks()
+
+# subsequent calls restart the cycle
+nrow(chunks())
+nrow(chunks())
+chunks()
+
+# `while` loops are useful for iterating over 
+# `oomfeed` functions
+while(!is.null(chunk <- chunks())){
+  print(nrow(chunk))
+}
+
+# `oomdata_dbi()` returns a function that when called will
+# return `chunk_size` rows from a query result set.
+con <- DBI::dbConnect(RSQLite::SQLite(), path = ":dbname:")
+dplyr::copy_to(con, mtcars, "mtcars", temporary = FALSE)
+rs  <- DBI::dbSendQuery(con, "SELECT mpg, cyl, disp FROM mtcars")
+
+chunks <- oomdata_dbi(rs, 16)
+
+while(!is.null(chunk <- chunks())){
+  print(nrow(chunk))
+}
+
+# ploom model functions automatically iterate over `oomdata` until 
+# the source is exhausted (`oomlm()`, `oomlm_robust()`) or until 
+# IRLS convergence (`oomglm()`, `oomglm_robust()`)
+x <- oomlm(mpg ~ cyl + disp, chunks)
+y <- iter_weight(oomglm(mpg ~ cyl + disp), chunks)
+
+coef(x)
+coef(y)
+
+}
+}
