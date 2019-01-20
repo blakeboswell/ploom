@@ -54,7 +54,7 @@ predict.oomglm <- function(object,
       pred <- link_pred(data)
       
       if(se_fit) {
-        y  <- pred$fit
+        y  <- linkinv(pred$fit)
         return(list(
           fit = y,
           se  = pred$se %*% mu_eta(y)^2))
