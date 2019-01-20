@@ -1,5 +1,4 @@
 
-
 # Mostly lifted directly from base `stats`.  Much of the flexibility and robustness
 # of the original code is been removed to decrease processing time
 

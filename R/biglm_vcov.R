@@ -1,5 +1,4 @@
 
-
 #' Update HC sandwich estimator
 #' 
 #' @param qr BoundedQr object

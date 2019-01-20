@@ -1,5 +1,4 @@
 
-
 #' Class for out of memory QR factorization
 #' 
 #' @details 

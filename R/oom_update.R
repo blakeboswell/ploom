@@ -1,5 +1,4 @@
 
-
 #' Fit `oomlm()` model to additonal observations
 #' 
 #' @md

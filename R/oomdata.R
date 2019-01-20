@@ -1,5 +1,4 @@
 
-
 #' Iterate over `tibble()`, `DBIResult` or `connection()` in chunks.
 #' 
 #' @md

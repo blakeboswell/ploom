@@ -1,5 +1,4 @@
 
-
 #' Initialize Out of memory Generalized Linear Regression Model
 #' 
 #' @md

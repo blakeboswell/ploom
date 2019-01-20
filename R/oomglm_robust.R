@@ -1,5 +1,4 @@
 
-
 #' Initialize Generalized Linear Regression Model
 #' with robust standard errors
 #' 

@@ -23,7 +23,6 @@ predict.oomlm <-function(object,
 }
 
 
-
 #' @method predict oomglm
 #' @export
 predict.oomglm <- function(object,

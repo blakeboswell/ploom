@@ -1,5 +1,4 @@
 
-
 #' Reweighting functions that comprise an IRLS iteration
 #' 
 #' @details

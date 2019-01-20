@@ -1,5 +1,4 @@
 
-
 #' @importFrom Rcpp evalCpp
 #' @useDynLib ploom
 #' @exportPattern "^[[:alpha:]]+"
