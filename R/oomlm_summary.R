@@ -22,7 +22,7 @@ summary.oomlm <- function(object,
     # TODO
   }
   
-  has_intercept  <- attr(object$terms, "intercept") > 0
+  has_intercept  <- attr(object$terms, "intercept") > 0L
   lindep         <- as.logical(object$qr$lindep())
   names(lindep)  <- object$names
   
