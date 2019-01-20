@@ -1,4 +1,8 @@
+title: ploom
 url: https://github.com/blakeboswell/ploom
+template:
+  params:
+    bootswatch: united
 
 home:
   strip_header: true
@@ -26,19 +30,22 @@ reference:
     - end_weight
   - title: Predict
   
+
 navbar:
-  type: default
-  left:
-  - icon: fa-github fa-lg
-    href: https://github.com/blakeboswell/ploom
+  type: broke
+  structure:  
+    right:  [reference, articles, benchmarking]
+    left: [github]
   right:
   - text: Reference
     href: reference/index.html
-  - text: Benchmarking
-    href: articles/benchmark.html
   - text: Articles
     menu:
     - text: Linear Model
       href: articles/oomlm.html
     - text: Generalized Linear Model
       href: articles/oomlm.html
+  - text: Benchmarking
+    href: articles/benchmark.html
+  - icon: fa-github fa-lg
+    href: https://github.com/blakeboswell/ploom
