@@ -13,17 +13,19 @@ knitr::opts_chunk$set(echo = TRUE)
 <!-- [AppVeyor Build Status]() -->
 <!-- [Coverage Status]() -->
 
-# Overview
+## Overview
 
-A collection of tools for out-of-memory linear model fitting and inference. Implements `lm` and `glm` analogs using Alan Miller's AS274 updating QR factorization algorithm. Collects and reports an array of pertinent fit statistics. Provides flexible and easy to use mechanisms to stream in data and stream out results during fitting.
+A collection of tools for out-of-memory linear model fitting and inference. Implements `lm` and `glm` analogs using Alan Miller's AS274 updating QR factorization algorithm.
 
-> Currently in early development stage.
+> `ploom` is in beta. See roadmap for details.
 
 ## Features
 
-> forthcoming
+- Linear and Generalized Linear Models with Robust Standard Errors
+- Functions for streaming data from Database and file connections as well as
+  in memory `tibble()` and `data.frame()`
 
-# Installation
+## Installation
 
 ```{r, eval = FALSE, message=FALSE}
 # the early development version from GitHub:
@@ -31,14 +33,45 @@ A collection of tools for out-of-memory linear model fitting and inference. Impl
 devtools::install_github("blakeboswell/ploom")
 ```
 
-# Usage
+## Usage
 
-See documentation.
+```{r, eval = TRUE, message=FALSE}
+library(ploom)
 
-# Alternatives
+# `oomdata_tbl()` facilitates iterating through data rows in chunks
+chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 
-> forthcoming
+# linear model
+x <- oomlm(mpg ~ cyl + disp, data = chunks)
+tidy(x)
 
-# Acknowledgements
+# generalized linear model fit via IRLS
+y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
+tidy(y)
 
-> forthcoming
+```
+
+```{r, eval = FALSE}
+
+con <- RPostgres::dbConnect(drv = RPostgres::Postgres(), dbname = "mtcars")
+
+query <- "
+  select mpg, cyl, disp
+  from mtcars;
+"
+
+chunks <- oomfeed(RPostgres::dbSendQuery(con, query), chunk_size = 4)
+
+x <- oomlm(mpg ~ cyl + disp, data = chunks)
+y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
+
+```
+
+## Alternatives
+
+[`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
+[`speedlm`](https://cran.r-project.org/web/packages/speedlm/index.html)
+
+## Acknowledgements
+
+[`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)

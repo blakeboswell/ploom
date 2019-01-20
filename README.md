@@ -6,21 +6,21 @@
 Status](https://api.travis-ci.com/blakeboswell/ploom.svg?branch=develop)](https://api.travis-ci.com/blakeboswell/ploom)
 <!-- [AppVeyor Build Status]() --> <!-- [Coverage Status]() -->
 
-# Overview
+## Overview
 
 A collection of tools for out-of-memory linear model fitting and
 inference. Implements `lm` and `glm` analogs using Alan Miller’s AS274
-updating QR factorization algorithm. Collects and reports an array of
-pertinent fit statistics. Provides flexible and easy to use mechanisms
-to stream in data and stream out results during fitting.
+updating QR factorization algorithm.
 
-> Currently in early development stage.
+> `ploom` is in beta. See roadmap for details.
 
 ## Features
 
-> forthcoming
+  - Linear and Generalized Linear Models with Robust Standard Errors
+  - Functions for streaming data from Database and file connections as
+    well as in memory `tibble()` and `data.frame()`
 
-# Installation
+## Installation
 
 ``` r
 # the early development version from GitHub:
@@ -28,14 +28,58 @@ to stream in data and stream out results during fitting.
 devtools::install_github("blakeboswell/ploom")
 ```
 
-# Usage
+## Usage
 
-See documentation.
+``` r
+library(ploom)
 
-# Alternatives
+# `oomdata_tbl()` facilitates iterating through data rows in chunks
+chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 
-> forthcoming
+# linear model
+x <- oomlm(mpg ~ cyl + disp, data = chunks)
+tidy(x)
+```
 
-# Acknowledgements
+    ## # A tibble: 3 x 7
+    ##   term        estimate std.error statistic  p.value conf.low  conf.high
+    ##   <chr>          <dbl>     <dbl>     <dbl>    <dbl>    <dbl>      <dbl>
+    ## 1 (Intercept)  34.7       2.55       13.6  4.02e-14  29.5     39.9     
+    ## 2 cyl          -1.59      0.712      -2.23 3.37e- 2  -3.04    -0.131   
+    ## 3 disp         -0.0206    0.0103     -2.01 5.42e- 2  -0.0416   0.000395
 
-> forthcoming
+``` r
+# generalized linear model fit via IRLS
+y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
+tidy(y)
+```
+
+    ## # A tibble: 3 x 7
+    ##   term        estimate std.error statistic  p.value conf.low  conf.high
+    ##   <chr>          <dbl>     <dbl>     <dbl>    <dbl>    <dbl>      <dbl>
+    ## 1 (Intercept)  34.7       2.55       13.6  4.02e-14  29.5     39.9     
+    ## 2 cyl          -1.59      0.712      -2.23 3.37e- 2  -3.04    -0.131   
+    ## 3 disp         -0.0206    0.0103     -2.01 5.42e- 2  -0.0416   0.000395
+
+``` r
+con <- RPostgres::dbConnect(drv = RPostgres::Postgres(), dbname = "mtcars")
+
+query <- "
+  select mpg, cyl, disp
+  from mtcars;
+"
+
+chunks <- oomfeed(RPostgres::dbSendQuery(con, query), chunk_size = 4)
+
+x <- oomlm(mpg ~ cyl + disp, data = chunks)
+y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
+```
+
+## Alternatives
+
+[`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
+[`speedlm`](https://cran.r-project.org/web/packages/speedlm/index.html)
+
+## Acknowledgements
+
+[`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
