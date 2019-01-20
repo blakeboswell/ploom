@@ -17,18 +17,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 A collection of tools for __out-of-memory__ and __memory efficient__ linear model fitting with support for inference. Implements `lm()` and `glm()` analogs using Alan Miller's AS274 updating QR factorization algorithm.
 
-- out-of-memory procesing capable of fitting billions of observations
-- in-memory runtimes at least as good as `lm()` and `glm()`
-- efficient memory usage ideal for multi-user environments with heavy regression loads
+- Out-of-memory procesing capable of fitting billions of observations
+- In-memory runtimes at least as good as `lm()` and `glm()`
+- Efficient memory usage ideal for multi-user environments with heavy regression loads
 
 > `ploom` is in beta. See [roadmap]() for details.
 
 ## Features
 
-- Linear and Generalized Linear Models
-- Robust Linear and Generalized Linear Models
+- Linear and Generalized Linear Models with robust standard errors
 - Data streaming functions from Database and file connections as well as
-  in-memory chunking of `tibble()` and `data.frame()`
+  chunking of in-memory sources
+- Inferential statistics such as standard errors, prediction intervals,
+  and confidence intervals
 
 > The beta version of `ploom` has essentially the same features as [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html) with a slight runtime improvement. More differentiating features are currently under development.
 
@@ -58,10 +59,13 @@ tidy(y)
 Out-of-memory model fitting for data stored in a Database or in files.
 
 ```{r, eval=FALSE, message=FALSE}
-con    <- RPostgres::dbConnect(drv = RPostgres::Postgres(), dbname = "mtcars")
-query  <- "select mpg, cyl, disp from mtcars;"
+library(RPostgres)
 
-chunks <- oomdata_dbi(RPostgres::dbSendQuery(con, query), chunk_size = 4)
+con    <- dbConnect(drv = Postgres(), dbname = "mtcars")
+query  <- "select mpg, cyl, disp from mtcars;"
+rs     <- dbSendQuery(con, query)
+
+chunks <- oomdata_dbi(rs, chunk_size = 4)
 y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
 ```
 

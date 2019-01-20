@@ -13,19 +13,20 @@ linear model fitting with support for inference. Implements `lm()` and
 `glm()` analogs using Alan Miller’s AS274 updating QR factorization
 algorithm.
 
-  - out-of-memory procesing capable of fitting billions of observations
-  - in-memory runtimes at least as good as `lm()` and `glm()`
-  - efficient memory usage ideal for multi-user environments with heavy
+  - Out-of-memory procesing capable of fitting billions of observations
+  - In-memory runtimes at least as good as `lm()` and `glm()`
+  - Efficient memory usage ideal for multi-user environments with heavy
     regression loads
 
 > `ploom` is in beta. See [roadmap]() for details.
 
 ## Features
 
-  - Linear and Generalized Linear Models
-  - Robust Linear and Generalized Linear Models
+  - Linear and Generalized Linear Models with robust standard errors
   - Data streaming functions from Database and file connections as well
-    as in-memory chunking of `tibble()` and `data.frame()`
+    as chunking of in-memory sources
+  - Inferential statistics such as standard errors, prediction
+    intervals, and confidence intervals
 
 > The beta version of `ploom` has essentially the same features as
 > [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
@@ -72,14 +73,16 @@ tidy(y)
     ## 2 cyl          -1.59      0.712      -2.23 3.37e- 2  -3.04    -0.131   
     ## 3 disp         -0.0206    0.0103     -2.01 5.42e- 2  -0.0416   0.000395
 
-Out-of-memory model fitting for data stored in a Database or in
-files.
+Out-of-memory model fitting for data stored in a Database or in files.
 
 ``` r
-con    <- RPostgres::dbConnect(drv = RPostgres::Postgres(), dbname = "mtcars")
-query  <- "select mpg, cyl, disp from mtcars;"
+library(RPostgres)
 
-chunks <- oomdata_dbi(RPostgres::dbSendQuery(con, query), chunk_size = 4)
+con    <- dbConnect(drv = Postgres(), dbname = "mtcars")
+query  <- "select mpg, cyl, disp from mtcars;"
+rs     <- dbSendQuery(con, query)
+
+chunks <- oomdata_dbi(rs, chunk_size = 4)
 y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
 ```
 
@@ -93,4 +96,3 @@ y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
 Thanks to:
 
   - [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
-    Authors
