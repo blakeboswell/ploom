@@ -33,6 +33,12 @@ expect_attr_equal <- function(x, y) {
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
 
+  yy        <- predict(y, mtcars, type = "response")
+  names(yy) <- NULL
+  xy        <- drop(predict(x, mtcars, type = "repsponse"))
+  names(xy) <- NULL
+  expect_equal(yy, xy)
+  
   yy        <- predict(y, mtcars)
   names(yy) <- NULL
   xy        <- drop(predict(x, mtcars))

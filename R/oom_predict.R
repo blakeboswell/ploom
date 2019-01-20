@@ -27,47 +27,48 @@ predict.oomglm <- function(object,
                            se_fit = FALSE,
                            as_function = FALSE) {
 
-  link_fit <- function(x) {
-    x %*% coef(object)
-  }
   
-  link_se <- function(x) {
-    x %*% vcov(object) %*% t(x)
-  }
-  
-  link_pred <- function(x) {
-    xf  <- model_frame(object$terms, data)
-    xm  <- model_matrix(object$terms, xf)
+  link_pred <- function(data) {
+    
+    x  <- model_frame(object$terms, data)
+    x  <- model_matrix(object$terms, x)
+    
     if(se_fit) {
       return(list(
-        fit = link_fit(xm),
-        se  = link_se(xm)))
+        fit = x %*% coef(object),
+        se  = x %*% vcov(object) %*% t(x)))
     }
-    link_fit(xm)
+    
+    x %*% coef(object)
+    
   }
   
-  fitfxn <- link_pred
-
   if(type == "response") {
     
     fam      <- family(object)
     linkinv  <- fam$linkinv
     mu_eta   <- fam$mu.eta
     
-    resp_pred <- function(x) {
-      pred <- link_pred(x)
+    resp_pred <- function(data) {
+      
+      pred <- link_pred(data)
       y    <- linkinv(pred$fit)
       se   <- pred$se
+      
       if(se_fit) {
         return(list(
           fit = y,
           se  = se %*% mu_eta(y)^2))
       }
+      
       y
+      
     }
     
     fitfxn <- resp_pred
     
+  } else {
+    fitfxn <- link_pred
   }
   
   if(as_function) {
