@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 A collection of tools for __out-of-memory__ and __memory efficient__ linear model fitting with support for inference. Implements `lm()` and `glm()` analogs using Alan Miller's AS274 updating QR factorization algorithm.
 
-- out-of-memory procesing capable of fitting to billion+ observations
+- out-of-memory procesing capable of fitting billions of observations
 - in-memory runtimes at least as good as `lm()` and `glm()`
 - efficient memory usage ideal for multi-user environments with heavy regression loads
 
@@ -42,43 +42,36 @@ devtools::install_github("blakeboswell/ploom")
 
 ## Usage
 
+Resource efficient in-memory linear and genearlized linear models. 
+
 ```{r, eval = TRUE, message=FALSE}
 library(ploom)
 
-# `oomdata_tbl()` facilitates iterating through data rows in chunks
 chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 
-# linear model
 x <- oomlm(mpg ~ cyl + disp, data = chunks)
 tidy(x)
-
-# generalized linear model fit via IRLS
 y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
 tidy(y)
-
 ```
 
-```{r, eval = FALSE}
+Out-of-memory model fitting for data stored in a Database or in files.
 
-con <- RPostgres::dbConnect(drv = RPostgres::Postgres(), dbname = "mtcars")
+```{r, eval=FALSE, message=FALSE}
+con    <- RPostgres::dbConnect(drv = RPostgres::Postgres(), dbname = "mtcars")
+query  <- "select mpg, cyl, disp from mtcars;"
 
-query <- "
-  select mpg, cyl, disp
-  from mtcars;
-"
-
-chunks <- oomfeed(RPostgres::dbSendQuery(con, query), chunk_size = 4)
-
-x <- oomlm(mpg ~ cyl + disp, data = chunks)
+chunks <- oomdata_dbi(RPostgres::dbSendQuery(con, query), chunk_size = 4)
 y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
-
 ```
 
 ## Alternatives
 
 [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
-[`speedlm`](https://cran.r-project.org/web/packages/speedlm/index.html)
+[`speedglm`](https://cran.r-project.org/web/packages/speedglm/index.html)
 
 ## Acknowledgements
 
-[`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
+Thanks to:
+
+- [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
