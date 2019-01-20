@@ -4,7 +4,12 @@
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/ploom)](https://cran.r-project.org/package=ploom)
 [![Build
 Status](https://api.travis-ci.com/blakeboswell/ploom.svg?branch=develop)](https://api.travis-ci.com/blakeboswell/ploom)
-<!-- [AppVeyor Build Status]() --> <!-- [Coverage Status]() -->
+[![Coverage
+status](https://codecov.io/gh/blakeboswell/ploom/branch/master/graph/badge.svg)](https://codecov.io/github/blakeboswell/ploom?branch=master)
+
+<!-- [AppVeyor Build Status]() -->
+
+<!-- [Coverage Status]() -->
 
 ## Overview
 

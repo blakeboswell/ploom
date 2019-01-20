@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/ploom)](https://cran.r-project.org/package=ploom)
 [![Build Status](https://api.travis-ci.com/blakeboswell/ploom.svg?branch=develop)](https://api.travis-ci.com/blakeboswell/ploom)
+[![Coverage status](https://codecov.io/gh/blakeboswell/ploom/branch/master/graph/badge.svg)](https://codecov.io/github/blakeboswell/ploom?branch=master)
+
 <!-- [AppVeyor Build Status]() -->
 <!-- [Coverage Status]() -->
 

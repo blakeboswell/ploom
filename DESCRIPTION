@@ -32,7 +32,8 @@ Suggests:
     testthat (>= 2.0.0),
     knitr,
     rmarkdown,
-    purrr (>= 0.2.5)
+    purrr (>= 0.2.5),
+    covr
 BugReports: https://github.com/bboswell/ploom/issues
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)

@@ -3,14 +3,22 @@ language: r
 sudo: false
 cache: packages
 warnings_are_errors: false
+
 os:
   - osx
-
-branches:
-  only:
-  - master
-
+  
+r_github_packages:
+  - r-lib/covr
+  
 env:
   global:
   - MAKEFLAGS="-j 2"
   - PKG_LIBS="-llapack"
+
+after_success:
+  - Rscript -e 'covr::codecov()'
+
+branches:
+  only:
+  - develop
+
