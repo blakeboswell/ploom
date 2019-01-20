@@ -1,6 +1,7 @@
 
 # ploom
 
+[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/ploom)](https://cran.r-project.org/package=ploom)
 [![Build
 Status](https://api.travis-ci.com/blakeboswell/ploom.svg?branch=develop)](https://api.travis-ci.com/blakeboswell/ploom)
@@ -14,11 +15,11 @@ status](https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg)
 ## Overview
 
 A collection of tools for **out-of-memory** and **memory efficient**
-linear model fitting with support for inference. Provides `oomlm()` and
-`oomglm()` functions for linear and genearlised linear modeling. Models
-are implemented using Alan Miller’s AS274 updating QR factorization
-algorithm which enables models with `p` variables to be fit in `p^2`
-memory.
+linear model fitting for inferential analysis. Provides `oomlm()` and
+`oomglm()` functions for linear and generalised linear modeling. Fitting
+is performed via Alan Miller’s AS274 updating QR factorization algorithm
+which enables models with `p` variables to be fit in `p^2` memory
+resulting in
 
   - Out-of-memory procesing capable of fitting billions of observations
   - In-memory runtimes at least as good as `lm()` and `glm()`
