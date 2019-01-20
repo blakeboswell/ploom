@@ -53,6 +53,10 @@ test_that("updating oomglm", {
   
   expect_equal(print(x), x)
   expect_equal(print(summary(x)), summary(x))
+  expect_equal(
+    print(summary(x, correlation = TRUE)),
+    summary(x, correlation = TRUE)
+  )
 
 })
 
@@ -86,6 +90,10 @@ test_that("weighted updating oomglm", {
   
   expect_equal(print(x), x)
   expect_equal(print(summary(x)), summary(x))
+  expect_equal(
+    print(summary(x, correlation = TRUE)),
+    summary(x, correlation = TRUE)
+  )
 
 })
 
@@ -116,6 +124,10 @@ test_that("updating oomglm without intercept", {
   
   expect_equal(print(x), x)
   expect_equal(print(summary(x)), summary(x))
+  expect_equal(
+    print(summary(x, correlation = TRUE)),
+    summary(x, correlation = TRUE)
+  )
 
 })
 
@@ -148,5 +160,9 @@ test_that("weighted updating oomglm without intercept", {
   
   expect_equal(print(x), x)
   expect_equal(print(summary(x)), summary(x))
+  expect_equal(
+    print(summary(x, correlation = TRUE)),
+    summary(x, correlation = TRUE)
+  )
 
 })

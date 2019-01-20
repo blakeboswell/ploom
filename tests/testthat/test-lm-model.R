@@ -60,7 +60,11 @@ test_that("updating oomlm", {
   
   expect_equal(print(x), x)
   expect_equal(print(summary(x)), summary(x))
-
+  expect_equal(
+    print(summary(x, correlation = TRUE)),
+    summary(x, correlation = TRUE)
+  )
+  
 })
 
 
@@ -93,6 +97,10 @@ test_that("weighted updating oomlm", {
   
   expect_equal(print(x), x)
   expect_equal(print(summary(x)), summary(x))
+  expect_equal(
+    print(summary(x, correlation = TRUE)),
+    summary(x, correlation = TRUE)
+  )
   
 })
 
@@ -124,7 +132,11 @@ test_that("updating oomlm without intercept", {
   
   expect_equal(print(x), x)
   expect_equal(print(summary(x)), summary(x))
-
+  expect_equal(
+    print(summary(x, correlation = TRUE)),
+    summary(x, correlation = TRUE)
+  )
+  
 })
 
 
@@ -157,5 +169,9 @@ test_that("weighted updating oomlm without intercept", {
   
   expect_equal(print(x), x)
   expect_equal(print(summary(x)), summary(x))
-
+  expect_equal(
+    print(summary(x, correlation = TRUE)),
+    summary(x, correlation = TRUE)
+  )
+  
 })

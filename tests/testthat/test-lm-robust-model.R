@@ -158,3 +158,13 @@ test_that("weighted robust oomlm without intercept", {
   }
 
 })
+
+
+test_that("bad se_type input", {
+  
+  df <- mtcars
+  f  <- mpg ~ cyl + disp + hp + wt
+  
+  expect_error(oomlm_robust(formula = f, se_type = "foobar"))
+  
+})
