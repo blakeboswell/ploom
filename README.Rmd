@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Overview
 
-A collection of tools for __out-of-memory__ and __memory efficient__ linear model fitting with support for inference. Implements `lm()` and `glm()` analogs using Alan Miller's AS274 updating QR factorization algorithm.
+A collection of tools for __out-of-memory__ and __memory efficient__ linear model fitting with support for inference. Provides `oomlm()` and `oomglm()` functions for linear and genearlised linear modeling.  Models are implemented using Alan Miller's AS274 updating QR factorization algorithm which enables models with `p` variables to be fit in `p^2` memory.
 
 - Out-of-memory procesing capable of fitting billions of observations
 - In-memory runtimes at least as good as `lm()` and `glm()`
@@ -31,7 +31,7 @@ A collection of tools for __out-of-memory__ and __memory efficient__ linear mode
 - Inferential statistics such as standard errors, prediction intervals,
   and confidence intervals
 
-> The beta version of `ploom` has essentially the same features as [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html) with a slight runtime improvement. More differentiating features are currently under development.
+> The beta version of `ploom` has essentially the same features as [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html) with a slight runtime improvement. More differentiating features are under development.
 
 ## Installation
 
@@ -43,7 +43,7 @@ devtools::install_github("blakeboswell/ploom")
 
 ## Usage
 
-Resource efficient in-memory linear and genearlized linear models. 
+Resource efficient in-memory linear and generalized linear models. 
 
 ```{r, eval = TRUE, message=FALSE}
 library(ploom)
@@ -56,7 +56,7 @@ y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
 tidy(y)
 ```
 
-Out-of-memory model fitting for data stored in a Database or in files.
+Out-of-memory model fitting for data in a Database or on disk.
 
 ```{r, eval=FALSE, message=FALSE}
 library(RPostgres)

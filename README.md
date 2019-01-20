@@ -9,9 +9,11 @@ Status](https://api.travis-ci.com/blakeboswell/ploom.svg?branch=develop)](https:
 ## Overview
 
 A collection of tools for **out-of-memory** and **memory efficient**
-linear model fitting with support for inference. Implements `lm()` and
-`glm()` analogs using Alan Miller’s AS274 updating QR factorization
-algorithm.
+linear model fitting with support for inference. Provides `oomlm()` and
+`oomglm()` functions for linear and genearlised linear modeling. Models
+are implemented using Alan Miller’s AS274 updating QR factorization
+algorithm which enables models with `p` variables to be fit in `p^2`
+memory.
 
   - Out-of-memory procesing capable of fitting billions of observations
   - In-memory runtimes at least as good as `lm()` and `glm()`
@@ -31,7 +33,7 @@ algorithm.
 > The beta version of `ploom` has essentially the same features as
 > [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
 > with a slight runtime improvement. More differentiating features are
-> currently under development.
+> under development.
 
 ## Installation
 
@@ -43,7 +45,7 @@ devtools::install_github("blakeboswell/ploom")
 
 ## Usage
 
-Resource efficient in-memory linear and genearlized linear models.
+Resource efficient in-memory linear and generalized linear models.
 
 ``` r
 library(ploom)
@@ -73,7 +75,7 @@ tidy(y)
     ## 2 cyl          -1.59      0.712      -2.23 3.37e- 2  -3.04    -0.131   
     ## 3 disp         -0.0206    0.0103     -2.01 5.42e- 2  -0.0416   0.000395
 
-Out-of-memory model fitting for data stored in a Database or in files.
+Out-of-memory model fitting for data in a Database or on disk.
 
 ``` r
 library(RPostgres)
