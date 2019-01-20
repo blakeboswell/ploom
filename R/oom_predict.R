@@ -6,6 +6,7 @@ predict.oomlm <-function(object,
                          se_fit  = FALSE,
                          as_function = FALSE,
                          ...) {
+  
   if(!as_function && is.null(data)){
     stop("`data` must be provided if `as_function` is FALSE")
   }
