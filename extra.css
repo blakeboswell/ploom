@@ -1,6 +1,80 @@
-/* 
-@import url('https://fonts.googleapis.com/css?family=Lato');
 
+body p {
+    color: #182125;
+    font-size: 16px;
+    font-family: 'Lato', sans-serif;
+    font-weight: lighter;
+    line-height: 1.6;
+}
+
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    border-left: 5px solid #eee;
+    font-size: 1em;
+    font-family: 'Lato', sans-serif;
+    font-weight: lighter;
+    line-height: 1.5;
+}
+
+ul {
+    display: block;
+    list-style-type: disc;
+    font-size: 16px;
+    font-family: 'Lato', sans-serif;
+    font-weight: lighter;
+    line-height: 1.5;
+}
+
+a {
+  color: #081F2B;
+}
+
+a:hover {
+  color: #1D55EA;
+}
+
+.navbar { 
+  background-color: #FFF;
+  border-color: #FFF;
+}
+
+.navbar-brand {
+  font-size: 24px;
+  line-height:26px;
+}
+
+#navbar > ul:nth-child(1) > li {
+  display: none;
+}
+
+
+.nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus {
+  background-color: #1D55EA;
+  color: #FFF;
+}
+
+#navbar > .dropdown-menu > a:focus {
+  background-color: #1D55EA;
+  color: #FFF;
+}
+
+
+.label {
+  display: none;
+}
+
+.label-default {
+  background-color: #FFF;
+}
+
+
+
+
+
+/*
+
+@import url('https://fonts.googleapis.com/css?family=Lato');
 
 body p {
     color: #182125;

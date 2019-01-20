@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Iterate over data or connection in chunks. — oom_data • ploom</title>
+<title>Iterate over <code>tibble()</code>, <code>DBIResult</code> or <code>connection()</code> in chunks. — oomdata • ploom</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -32,7 +32,7 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Iterate over data or connection in chunks. — oom_data" />
+<meta property="og:title" content="Iterate over <code>tibble()</code>, <code>DBIResult</code> or <code>connection()</code> in chunks. — oomdata" />
 
 <meta property="og:description" content="Returns a function that repeats the following cycle:
 iteratively return chunk_size number of rows from data until data is exhausted;
@@ -113,9 +113,9 @@ then return NULL once." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Iterate over data or connection in chunks.</h1>
+    <h1>Iterate over <code>tibble()</code>, <code>DBIResult</code> or <code>connection()</code> in chunks.</h1>
     
-    <div class="hidden name"><code>oom_data.Rd</code></div>
+    <div class="hidden name"><code>oomdata.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -126,14 +126,18 @@ then return <code>NULL</code> once.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>oom_data</span>(<span class='no'>data</span>, <span class='no'>chunk_size</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>oomdata_tbl</span>(<span class='no'>data</span>, <span class='no'>chunk_size</span>, <span class='no'>...</span>)
+
+<span class='fu'>oomdata_dbi</span>(<span class='no'>data</span>, <span class='no'>chunk_size</span>, <span class='no'>...</span>)
+
+<span class='fu'>oomdata_con</span>(<span class='no'>data</span>, <span class='no'>chunk_size</span>, <span class='kw'>header</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>col_names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p><code>data.frame</code> or <code>DBIResult</code> object</p></td>
+      <td><p><code>tibble()</code>, DBIResult, or <code>connection()</code> object</p></td>
     </tr>
     <tr>
       <th>chunk_size</th>

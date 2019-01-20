@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit weighted least squares as part of IRLS iteration — weight • ploom</title>
+<title>Prepare model for IRLS iteration — init_weight • ploom</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -32,9 +32,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Fit weighted least squares as part of IRLS iteration — weight" />
+<meta property="og:title" content="Prepare model for IRLS iteration — init_weight" />
 
-<meta property="og:description" content="Fit weighted least squares as part of IRLS iteration" />
+<meta property="og:description" content="Reset variables used for IRLS calculation" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,18 +111,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit weighted least squares as part of IRLS iteration</h1>
+    <h1>Prepare model for IRLS iteration</h1>
     
-    <div class="hidden name"><code>weight.Rd</code></div>
+    <div class="hidden name"><code>irls.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Fit weighted least squares as part of IRLS iteration</p>
+    <p>Reset variables used for IRLS calculation</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>weight</span>(<span class='no'>object</span>, <span class='no'>data</span>)</pre>
+    <pre class="usage"><span class='fu'>init_weight</span>(<span class='no'>object</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -131,15 +131,21 @@
       <th>object</th>
       <td><p><code><a href='oomglm.html'>oomglm()</a></code> model.</p></td>
     </tr>
-    <tr>
-      <th>data</th>
-      <td><p>data.frame of observations to be fit.</p></td>
-    </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><code>init_weight()</code> is the first of three steps in an IRLS
+iteration. It resets <code><a href='oomglm.html'>oomglm()</a></code> values to starting positions in
+preparation for a round of re-weighting.</p>
+<p>The IRLS process comprises iterative calls to <code>init_weight()</code>, <code><a href='weight.html'>weight()</a></code>
+and <code><a href='end_weight.html'>end_weight()</a></code> which can be managed via a single call to <code><a href='iter_weight.html'>iter_weight()</a></code>.
+The comprising functions are exposed for lower level control of the
+fitting process.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='iter_weight.html'>iter_weight()</a></code></p></div>
+    <div class='dont-index'><p><code><a href='iter_weight.html'>iter_weight()</a></code>, <code><a href='oomglm.html'>oomglm()</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -148,15 +154,15 @@
 <span class='no'>chunks</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oom_data.html'>oom_data</a></span>(<span class='no'>mtcars</span>, <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>10</span>)
 
 <span class='co'># manually perform one round of IRLS and check results</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='init_weight.html'>init_weight</a></span>(<span class='no'>x</span>)
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>weight</span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>init_weight</span>(<span class='no'>x</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='weight.html'>weight</a></span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='end_weight.html'>end_weight</a></span>(<span class='no'>x</span>)
 
 <span class='fu'>print</span>(<span class='no'>x</span>$<span class='no'>converged</span>)</div><div class='output co'>#&gt; [1] FALSE</div><div class='input'><span class='fu'>print</span>(<span class='fu'>coef</span>(<span class='no'>x</span>))</div><div class='output co'>#&gt; (Intercept)         cyl        disp 
 #&gt; 34.66099474 -1.58727681 -0.02058363 </div><div class='input'>
 <span class='co'># manually perform an additional round of IRLS</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='init_weight.html'>init_weight</a></span>(<span class='no'>x</span>)
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>weight</span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>init_weight</span>(<span class='no'>x</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='weight.html'>weight</a></span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='end_weight.html'>end_weight</a></span>(<span class='no'>x</span>)
 
 <span class='fu'>print</span>(<span class='no'>x</span>$<span class='no'>converged</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'><span class='fu'>print</span>(<span class='fu'>coef</span>(<span class='no'>x</span>))</div><div class='output co'>#&gt; (Intercept)         cyl        disp 
@@ -168,8 +174,8 @@
 
 <span class='kw'>while</span>(!<span class='no'>x</span>$<span class='no'>converged</span>) {
 
-  <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='init_weight.html'>init_weight</a></span>(<span class='no'>x</span>)
-  <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>weight</span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
+  <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>init_weight</span>(<span class='no'>x</span>)
+  <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='weight.html'>weight</a></span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
   <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='end_weight.html'>end_weight</a></span>(<span class='no'>x</span>)
 
 }
@@ -187,6 +193,8 @@
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#details">Details</a></li>
+
       <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>

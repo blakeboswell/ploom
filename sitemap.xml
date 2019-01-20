@@ -16,9 +16,6 @@
     <loc>https://github.com/blakeboswell/ploom/reference/deparse2.html</loc>
   </url>
   <url>
-    <loc>https://github.com/blakeboswell/ploom/reference/end_weight.html</loc>
-  </url>
-  <url>
     <loc>https://github.com/blakeboswell/ploom/reference/glm_adjust.html</loc>
   </url>
   <url>
@@ -55,10 +52,7 @@
     <loc>https://github.com/blakeboswell/ploom/reference/new_bounded_qr.html</loc>
   </url>
   <url>
-    <loc>https://github.com/blakeboswell/ploom/reference/oom_data.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/blakeboswell/ploom/reference/oom_tidiers.html</loc>
+    <loc>https://github.com/blakeboswell/ploom/reference/oomdata_dbi.html</loc>
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/oomglm.html</loc>
@@ -79,6 +73,9 @@
     <loc>https://github.com/blakeboswell/ploom/reference/sandwich_rcov_biglm.html</loc>
   </url>
   <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/tidy.oomlm.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/blakeboswell/ploom/reference/unpack_oomchunk.html</loc>
   </url>
   <url>
@@ -88,15 +85,15 @@
     <loc>https://github.com/blakeboswell/ploom/reference/update.html</loc>
   </url>
   <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/update_oomglm.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/blakeboswell/ploom/reference/update_sandwich.html</loc>
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/vcov.Rcpp_BoundedQr.html</loc>
   </url>
   <url>
-    <loc>https://github.com/blakeboswell/ploom/reference/weight.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/blakeboswell/ploom/articles/oomlm.html</loc>
+    <loc>https://github.com/blakeboswell/ploom/articles/benchmark.html</loc>
   </url>
 </urlset>
