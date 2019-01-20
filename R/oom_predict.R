@@ -1,106 +1,79 @@
 
-
-##
-## based on code by Christophe Dutang <christophe.dutang@ensimag.fr>
-##
-
 #' @method predict oomlm
 #' @export
 predict.oomlm <-function(object,
-                         newdata = NULL,
+                         data    = NULL,
                          se_fit  = FALSE,
-                         make_function = FALSE,
+                         as_function = FALSE,
                          ...) {
-  if(!make_function && is.null(newdata)){
-    stop("Must provide newdata")
+  if(!as_function && is.null(data)){
+    stop("`data` must be provided if `as_function` is FALSE")
   }
   
   predict.oomglm(object,
-                 newdata = newdata,
+                 data    = data,
                  type    = "link",
                  se_fit  = se_fit,
-                 make_function = make_function)
+                 as_function = as_function)
 }
 
 
 #' @method predict oomglm
 #' @export
-predict.oomglm <- function(object,
-                           newdata,
-                           type   = c("link", "response"),
+predict.oomglm <- function(object, 
+                           data,
+                           type   = "link",
                            se_fit = FALSE,
-                           make_function = FALSE,
-                           ...) {
-  
-  type      <- match.arg(type)
-  intercept <- attr(object$terms,"intercept") != 0
-  
-  if(intercept && make_function) {
-    
-    switch(type,
-      link =
-      {
-        fit <- function(x) {
-          cbind(1, x) %*% coef(object)
-        }
-        se  <- function(x) {
-          cbind(1, x) %*% vcov(object) %*% t(cbind(1, x))
-        }
-      },
-      response =
-      {
-        fit <- function(x) {
-          family(object)$linkinv(cbind(1,x) %*% coef(object))
-        }
-        se <- function(x) {
-          temp <- cbind(1,x) %*% vcov(object) %*% t(cbind(1,x))
-          temp %*% (family(object)$mu.eta(cbind(1, x) %*% coef(object)))^2
-        }
-      })
-    
-  } else {
-    
-    switch(type,
-      link =
-      {
-        fit <- function(x) {
-          x %*% coef(object)
-        }
-        se  <- function(x){ 
-          x %*% vcov(object) %*% t(x)
-        }
-      },
-      response =
-      {
-        fit <- function(x) {
-          family(object)$linkinv(x %*% coef(object))
-        }
-        se  <- function(x) {
-          x %*% vcov(object) %*% t(x) %*% (family(object)$mu.eta(x %*%coef(object)))^2
-        }
-      })
-    
+                           as_function = FALSE) {
+
+  link_fit <- function(x) {
+    x %*% coef(object)
   }
   
-  if (make_function) {
-    if (se_fit) {
-      return(list(fit = fit, se = se))
-    } else {
-      return(fit)
+  link_se <- function(x) {
+    x %*% vcov(object) %*% t(x)
+  }
+  
+  link_pred <- function(x) {
+    xf  <- model_frame(object$terms, data)
+    xm  <- model_matrix(object$terms, xf)
+    if(se_fit) {
+      return(list(
+        fit = link_fit(xm),
+        se  = link_se(xm)))
     }
+    link_fit(xm)
   }
   
-  newmf <- model.frame(object$terms, newdata)
-  newmm <- model.matrix(object$terms, newmf)
-  
-  if (!se_fit) {
-    pred <- fit(newmm)
-  } else {
-    fit    <- fit(newmm)
-    se_fit <- se_fit(newmm)
-    pred   <- list(fit = fit, se = se)
+  fitfxn <- link_pred
+
+  if(type == "response") {
+    
+    fam      <- family(object)
+    linkinv  <- fam$linkinv
+    mu_eta   <- fam$mu.eta
+    
+    resp_pred <- function(x) {
+      pred <- link_pred(x)
+      y    <- linkinv(pred$fit)
+      se   <- pred$se
+      if(se_fit) {
+        return(list(
+          fit = y,
+          se  = se %*% mu_eta(y)^2))
+      }
+      y
+    }
+    
+    fitfxn <- resp_pred
+    
   }
   
-  pred
+  if(as_function) {
+    return(fitfxn)
+  }
+  
+  fitfxn(data)
   
 }
+
