@@ -27,16 +27,23 @@ predict.oomglm <- function(object,
                            se_fit = FALSE,
                            as_function = FALSE) {
 
-  
   link_pred <- function(data) {
     
     x  <- model_frame(object$terms, data)
     x  <- model_matrix(object$terms, x)
     
     if(se_fit) {
+      
+      sigma   <- summary(object)$sigma
+      sdm_inv <- object$qr$sdm_inv()
+      
+      std_error <- function(obs) {
+        sigma * sqrt(t(obs) %*% sdm_inv %*% obs)
+      }
+      
       return(list(
         fit = x %*% coef(object),
-        se  = x %*% vcov(object) %*% t(x)))
+        se  = apply(x, 1, std_error)))
     }
     
     x %*% coef(object)
