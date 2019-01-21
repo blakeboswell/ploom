@@ -36,8 +36,6 @@ init_oomglm_robust <- function(formula,
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
 #'   [formula()]
-#' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
-#'   [tibble()], [data.frame()], or [list()] of observations to fit
 #' @param family A [family()] object
 #' @param weights a one-sided, single term [formula()] specifying weights
 #' @param start starting values for the parameters in the linear predictor

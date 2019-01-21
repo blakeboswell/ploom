@@ -4,13 +4,14 @@ robust_models <- readRDS("../testdata/robust-models.Rds")
 se_types      <- c("classical", "HC0", "HC1", "stata")
 
 
-iter_model <- function(df, eqn,
+iter_model <- function(df,
+                       eqn,
                        weights = NULL,
                        se_type = se_type) {
   
-  x <- ploom::oomglm_robust(formula = eqn,
-                            weights = weights,
-                            se_type = se_type)
+  x <- oomglm_robust(formula = eqn,
+                     weights = weights,
+                     se_type = se_type)
   iter_weight(x, df, max_iter = 8)
   
 }

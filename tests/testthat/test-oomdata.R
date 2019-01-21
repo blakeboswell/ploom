@@ -74,4 +74,3 @@ test_that("dbi_connection", {
 })
 
 
-

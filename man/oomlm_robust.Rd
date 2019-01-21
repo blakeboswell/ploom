@@ -5,15 +5,11 @@
 \alias{vcov.oomlm_robust}
 \title{Out of memory Linear model with robust standard errors}
 \usage{
-oomlm_robust(formula, data = NULL, weights = NULL, se_type = "HC1",
-  ...)
+oomlm_robust(formula, weights = NULL, se_type = "HC1", ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted of class
 \code{\link[=formula]{formula()}}.}
-
-\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
-\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 
 \item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
 

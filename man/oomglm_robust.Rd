@@ -22,9 +22,6 @@ oomglm_robust(formula, family = gaussian(), weights = NULL,
 "stata", or "classical"}
 
 \item{...}{ignored}
-
-\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
-\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 }
 \value{
 It is up to the user to know when fitting is complete.

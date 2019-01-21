@@ -4,6 +4,8 @@
 #' @param data observations for prediction
 #' @param se_fit indicates if the standard error of predicted means should
 #'   be returned
+#' @param interval type of interval calculation
+#' @param type the type of prediction, one of "reponse" or "link"
 #' @param as_function if TRUE a function with only a `data` argument is returned
 #'   for subsequent fitting
 #' @param ... ignored
@@ -45,7 +47,8 @@ predict.oomlm <- function(object,
                           data     = NULL,
                           se_fit   = FALSE,
                           interval = c("none", "confidence", "prediction"),
-                          as_function = FALSE) {
+                          as_function = FALSE,
+                          ...) {
   
   if(!as_function && is.null(data)){
     stop("`data` must be provided if `as_function` is FALSE")
@@ -87,10 +90,11 @@ predict.oomlm <- function(object,
 #' @export
 predict.oomglm <- function(object, 
                            data,
-                           type   = c("link", "response"),
                            se_fit = FALSE,
                            interval = c("none", "confidence", "prediction"),
-                           as_function = FALSE) {
+                           type = c("link", "response"),
+                           as_function = FALSE,
+                           ...) {
 
   if(!as_function && is.null(data)){
     stop("`data` must be provided if `as_function` is FALSE")

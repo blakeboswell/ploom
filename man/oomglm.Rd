@@ -2,7 +2,6 @@
 % Please edit documentation in R/oomglm.R
 \name{oomglm}
 \alias{oomglm}
-\alias{predict.oomglm}
 \alias{print.oomglm}
 \alias{print.summary.oomglm}
 \alias{summary.oomglm}
@@ -22,9 +21,6 @@ oomglm(formula, family = gaussian(), weights = NULL, start = NULL,
 \item{start}{starting values for the parameters in the linear predictor.}
 
 \item{...}{ignored.}
-
-\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
-\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 }
 \value{
 It is up to the user to know when fitting is complete.
@@ -68,7 +64,7 @@ x <- iter_weight(x, mtcars, max_iter = 4)
 
 tidy(x)
 
-# To fit data in chunks, use `oomdata_tbl()`:
+# To fit in-memory data in chunks, use `oomdata_tbl()`:
 
 y      <- oomglm(mpg ~ cyl + disp)
 chunks <- oomdata_tbl(mtcars, chunk_size = 10)

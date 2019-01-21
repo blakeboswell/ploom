@@ -6,21 +6,12 @@ se_types      <- c("classical", "HC0", "HC1", "stata")
 
 iter_model <- function(df, eqn, se_type, weights = NULL) {
 
-  if(is.null(weights)){
-    x <- ploom::oomlm_robust(
-      formula = eqn,
-      data    = df[1, ],
-      se_type = se_type)
-  } else {
-    x <- ploom::oomlm_robust(
-      formula = eqn,
-      data    = df[1, ],
-      se_type = se_type,
-      weights = weights)
-  }
+  print(df)
+  
+  x <- oomlm_robust(formula = eqn, se_type = se_type, weights = weights)
 
-  for(i in 2:nrow(df)) {
-      x <- update(x, df[i, ])
+  for(i in 1:nrow(df)) {
+    x <- update(x, df[i, ])
   }
 
   x
@@ -161,10 +152,10 @@ test_that("weighted robust oomlm without intercept", {
 
 
 test_that("bad se_type input", {
-  
+
   df <- mtcars
   f  <- mpg ~ cyl + disp + hp + wt
-  
+
   expect_error(oomlm_robust(formula = f, se_type = "foobar"))
-  
+
 })

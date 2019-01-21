@@ -3,14 +3,9 @@ context("test-lm-model.R")
 
 iter_model <- function(df, eqn, weights = NULL) {
 
-  if(is.null(weights)){
-    x <- ploom::oomlm(formula = eqn, data = df[1, ])
-  }
-  else {
-    x <- ploom::oomlm(formula = eqn, data = df[1, ], weights = weights)
-  }
-
-  for(i in 2:nrow(df)) {
+  x <- oomlm(formula = eqn, weights = weights)
+  
+  for(i in 1:nrow(df)) {
     x <- update(x, df[i, ])
   }
 
@@ -33,7 +28,13 @@ expect_summary_equal <- function(sy, sx) {
 
 }
 
+
 expect_attr_equal <- function(x, y) {
+  
+  expect_summary_equal(
+    summary(y, correlation = TRUE),
+    summary(x, correlation = TRUE)
+  )
   
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
@@ -83,11 +84,6 @@ test_that("updating oomlm", {
   y <- lm(f, data = mtcars)
   x <- iter_model(mtcars, f)
   
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
-  
   expect_attr_equal(x, y)
   
 })
@@ -103,11 +99,6 @@ test_that("weighted updating oomlm", {
   y <- lm(f, data = df, weights = w)
   x <- iter_model(df, f, weights = ~w)
 
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
-  
   expect_attr_equal(x, y)
   
 })
@@ -121,11 +112,6 @@ test_that("updating oomlm without intercept", {
   y <- lm(f, data = df)
   x <- iter_model(df, f)
 
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
-  
   expect_attr_equal(x, y)
   
 })
@@ -142,10 +128,84 @@ test_that("weighted updating oomlm without intercept", {
   y <- lm(f, data = df, weights = w)
   x <- iter_model(df, f, weights = ~w)
 
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
+  expect_attr_equal(x, y)
+  
+})
+
+
+
+test_that("oomlm", {
+  df <- mtcars
+  f  <- mpg ~ cyl + disp + hp + wt
+  y  <- lm(f, data = df)
+  x  <- update(oomlm(f),
+               oomdata_tbl(df, chunk_size = 2))
+
+  expect_attr_equal(x, y)
+  
+})
+
+
+test_that("weighted oomlm", {
+  
+  df      <- mtcars
+  w       <- runif(nrow(mtcars))
+  df['w'] <- w / sum(w)
+  
+  f <- mpg ~ cyl + disp + hp + wt
+  y <- lm(f, data = df, weights = w)
+  x <- update(oomlm(f, weights = ~w),
+              oomdata_tbl(df, chunk_size = 2))
   
   expect_attr_equal(x, y)
+  
 })
+
+
+test_that("weighted oomlm with zero weight", {
+  
+  df      <- mtcars
+  w       <- runif(nrow(mtcars))
+  w[4:7]  <- 0.0
+  df['w'] <- w / sum(w)
+  
+  f <- mpg ~ cyl + disp + hp + wt
+  y <- lm(f, data = df, weights = w)
+  x <- update(oomlm(f, weights = ~w), 
+              oomdata_tbl(df, chunk_size = 2))
+
+  expect_attr_equal(x, y)
+})
+
+
+
+test_that("oomlm without intercept", {
+  
+  df <- mtcars
+  f  <- mpg ~ 0 + cyl + disp + hp + wt
+  
+  y <- lm(f, data = df)
+  x <- update(oomlm(f),
+              oomdata_tbl(df, chunk_size = 2))
+  
+  expect_attr_equal(x, y)
+  
+})
+
+
+test_that("weighted oomlm without intercept", {
+  
+  df      <- mtcars
+  w       <- runif(nrow(mtcars))
+  df['w'] <- w / sum(w)
+  
+  f <- mpg ~ 0 + cyl + disp + hp + wt
+  
+  y <- lm(f, data = df, weights = w)
+  x <- update(oomlm(f, weights = ~w),
+              oomdata_tbl(df, chunk_size = 2))
+
+  expect_attr_equal(x, y)
+  
+})
+

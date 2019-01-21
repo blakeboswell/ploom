@@ -1,6 +1,6 @@
 Package: ploom
 Version: 0.0
-Title: Out-of-memory and memory efficient Linear Model fitting with support for Inference.
+Title: Out-of-memory and memory efficient Linear Model fitting with support for Inference
 Description: A collection of tools for out-of-memory linear model fitting and
     inference. Implements `lm` and `glm` analogs using Alan Miller's AS274
     updating QR factorization algorithm. Collects and reports an array of
@@ -26,15 +26,15 @@ LinkingTo:
 Suggests:
     dbplyr (>= 1.3.0),
     DBI (>= 1.0.0),
-    RMySQL (>= 0.10.13),
-    RPostgreSQL (>= 0.6.2),
+    RPostgres,
     RSQLite (>= 2.0),
     testthat (>= 2.0.0),
     knitr,
     rmarkdown,
     purrr (>= 0.2.5),
     covr,
-    broom
+    broom,
+    dplyr
 BugReports: https://github.com/bboswell/ploom/issues
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)

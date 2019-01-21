@@ -8,21 +8,17 @@
 \alias{deviance.oomlm}
 \alias{family.oomlm}
 \alias{formula.oomlm}
-\alias{predict.oomlm}
 \alias{print.oomlm}
 \alias{print.summary.oomlm}
 \alias{summary.oomlm}
 \alias{vcov.oomlm}
 \title{Out of memory Linear model}
 \usage{
-oomlm(formula, data = NULL, weights = NULL, ...)
+oomlm(formula, weights = NULL, ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted of class
 \code{\link[=formula]{formula()}}.}
-
-\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
-\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 
 \item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
 
@@ -54,15 +50,15 @@ levels are accepted.
 }
 \examples{
 \donttest{
-# `oomglm()` is similar to `lm()` for fitting in memory data
-
-x <- oomlm(mpg ~ cyl + disp, mtcars)
+# `oomglm()` are defined with a call to `oomlm()` and fit to data
+# with a call to `update()`
+x <- oomlm(mpg ~ cyl + disp)
+x <- update(x, mtcars)
 print(x)
 
 
-# For iteratively updating models, initalize with a call to `oomlm()` and
-# update with the `update()` function
-
+# `oomlm()` models can be fit with more data via subsequent calls
+# to the `update()` function
 chunks <- purrr::pmap(mtcars, list)
 
 y <- oomlm(mpg ~ cyl + disp)
@@ -76,9 +72,10 @@ tidy(x)
 # `oomdata_tbl()` facilitates iterating through data rows in chunks
 chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 
-# `oomlm()` will automatically fit to all chunks in an `oomdata()` functions
-z <- oomlm(mpg ~ cyl + disp, data = chunks)
-
+# `update()` will automatically fit over all chunks in an `oomdata()`
+# function
+z <- oomlm(mpg ~ cyl + disp)
+z <- update(z, data = chunks)
 summary(z)
 
 }

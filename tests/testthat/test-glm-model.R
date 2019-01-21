@@ -2,10 +2,8 @@ context("test-glm-model.R")
 
 
 iter_model <- function(df, eqn, weights = NULL) {
-
   x <- oomglm(formula = eqn, weights = weights)
   iter_weight(x, df, max_iter = 8)
-
 }
 
 
@@ -30,21 +28,26 @@ expect_summary_equal <- function(sy, sx) {
 
 expect_attr_equal <- function(x, y) {
 
+  expect_summary_equal(
+    summary(y, correlation = TRUE),
+    summary(x, correlation = TRUE)
+  )
+  
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
 
+  yy        <- predict(y, mtcars)
+  names(yy) <- NULL
+  xy        <- drop(predict(x, mtcars))
+  names(xy) <- NULL
+  expect_equal(yy, xy)
+  
   yy        <- predict(y, mtcars, type = "response")
   names(yy) <- NULL
   xy        <- drop(predict(x, mtcars, type = "response"))
   names(xy) <- NULL
   expect_equal(yy, xy)
   
-  yy        <- predict(y, mtcars)
-  names(yy) <- NULL
-  xy        <- drop(predict(x, mtcars))
-  names(xy) <- NULL
-  expect_equal(yy, xy)
-
   yy        <- predict(y, mtcars, se.fit = TRUE)
   names(yy$se)  <- NULL
   names(yy$fit) <- NULL
@@ -53,7 +56,7 @@ expect_attr_equal <- function(x, y) {
   xy$fit <- drop(xy$fit)
   names(xy$fit) <- NULL
   expect_equal(yy$se, xy$se)
-  expect_equal(yy$fit, drop(xy$fit))
+  expect_equal(yy$fit, xy$fit)
   
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),
@@ -76,22 +79,15 @@ expect_attr_equal <- function(x, y) {
 }
 
 
-
 test_that("updating oomglm", {
 
   f <- mpg ~ cyl + disp + hp + wt
   y <- glm(f, data = mtcars)
   x <- iter_model(mtcars, f)
 
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
-
   expect_attr_equal(x, y)
 
 })
-
 
 test_that("weighted updating oomglm", {
 
@@ -103,15 +99,9 @@ test_that("weighted updating oomglm", {
   y <- glm(f, data = df, weights = w)
   x <- iter_model(df, f, weights = ~w)
 
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
-
   expect_attr_equal(x, y)
 
 })
-
 
 test_that("updating oomglm without intercept", {
 
@@ -121,15 +111,9 @@ test_that("updating oomglm without intercept", {
   y <- glm(f, data = df)
   x <- iter_model(df, f)
 
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
-
   expect_attr_equal(x, y)
 
 })
-
 
 test_that("weighted updating oomglm without intercept", {
 
@@ -141,11 +125,6 @@ test_that("weighted updating oomglm without intercept", {
 
   y <- glm(f, data = df, weights = w)
   x <- iter_model(df, f, weights = ~w)
-
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
 
   expect_attr_equal(x, y)
 

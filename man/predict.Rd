@@ -8,11 +8,11 @@
 \usage{
 \method{predict}{oomlm}(object, data = NULL, se_fit = FALSE,
   interval = c("none", "confidence", "prediction"),
-  as_function = FALSE)
+  as_function = FALSE, ...)
 
-\method{predict}{oomglm}(object, data, type = c("link", "response"),
-  se_fit = FALSE, interval = c("none", "confidence", "prediction"),
-  as_function = FALSE)
+\method{predict}{oomglm}(object, data, se_fit = FALSE,
+  interval = c("none", "confidence", "prediction"), type = c("link",
+  "response"), as_function = FALSE, ...)
 }
 \arguments{
 \item{object}{object inheriting from class \code{oomlm}}
@@ -22,10 +22,14 @@
 \item{se_fit}{indicates if the standard error of predicted means should
 be returned}
 
+\item{interval}{type of interval calculation}
+
 \item{as_function}{if TRUE a function with only a \code{data} argument is returned
 for subsequent fitting}
 
 \item{...}{ignored}
+
+\item{type}{the type of prediction, one of "reponse" or "link"}
 }
 \description{
 Predict values using \code{oomlm()} and \code{oomglm()} models

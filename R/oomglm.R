@@ -211,8 +211,6 @@ iter_weight <- function(object,
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
 #'  [formula()].
-#' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
-#'  [tibble()], [data.frame()], or [list()] of observations to fit
 #' @param family a [family()] object.
 #' @param weights a one-sided, single term [formula()] specifying weights.
 #' @param start starting values for the parameters in the linear predictor.
@@ -241,7 +239,7 @@ iter_weight <- function(object,
 #' \item{weights}{The weights [`formula()`] provided to the model.}
 #' \item{call}{The matched call.}
 #' @seealso [iter_weight()], [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()]
-#' @aliases predict.oomglm print.oomglm print.summary.oomglm summary.oomglm
+#' @aliases print.oomglm print.summary.oomglm summary.oomglm
 #' @export
 #' @name oomglm
 #' @examples \donttest{
@@ -255,7 +253,7 @@ iter_weight <- function(object,
 #' 
 #' tidy(x)
 #' 
-#' # To fit data in chunks, use `oomdata_tbl()`:
+#' # To fit in-memory data in chunks, use `oomdata_tbl()`:
 #' 
 #' y      <- oomglm(mpg ~ cyl + disp)
 #' chunks <- oomdata_tbl(mtcars, chunk_size = 10)

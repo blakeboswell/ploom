@@ -40,8 +40,6 @@ init_oomlm <- function(formula, weights = NULL) {
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
 #'  [formula()].
-#' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
-#'  [tibble()], [data.frame()], or [list()] of observations to fit
 #' @param weights a one-sided, single term [formula()] specifying weights.
 #' @param ... ignored.
 #' @details
@@ -63,20 +61,20 @@ init_oomlm <- function(formula, weights = NULL) {
 #' \item{call}{the matched call.}
 #' @seealso [oomglm()], [oomdata_tbl()]
 #' @aliases AIC.oomlm coef.oomlm confint.oomlm deviance.oomlm family.oomlm 
-#'  formula.oomlm predict.oomlm print.oomlm print.summary.oomlm summary.oomlm 
+#'  formula.oomlm print.oomlm print.summary.oomlm summary.oomlm 
 #'  vcov.oomlm
 #' @export
 #' @name oomlm
 #' @examples \donttest{
-#' # `oomglm()` is similar to `lm()` for fitting in memory data
-#' 
-#' x <- oomlm(mpg ~ cyl + disp, mtcars)
+#' # `oomglm()` are defined with a call to `oomlm()` and fit to data
+#' # with a call to `update()`
+#' x <- oomlm(mpg ~ cyl + disp)
+#' x <- update(x, mtcars)
 #' print(x)
 #' 
 #' 
-#' # For iteratively updating models, initalize with a call to `oomlm()` and
-#' # update with the `update()` function
-#' 
+#' # `oomlm()` models can be fit with more data via subsequent calls
+#' # to the `update()` function
 #' chunks <- purrr::pmap(mtcars, list)
 #' 
 #' y <- oomlm(mpg ~ cyl + disp)
@@ -90,22 +88,15 @@ init_oomlm <- function(formula, weights = NULL) {
 #' # `oomdata_tbl()` facilitates iterating through data rows in chunks
 #' chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 #' 
-#' # `oomlm()` will automatically fit to all chunks in an `oomdata()` functions
-#' z <- oomlm(mpg ~ cyl + disp, data = chunks)
-#' 
+#' # `update()` will automatically fit over all chunks in an `oomdata()`
+#' # function
+#' z <- oomlm(mpg ~ cyl + disp)
+#' z <- update(z, data = chunks)
 #' summary(z)
 #'
 #' }
-oomlm <- function(formula, data = NULL, weights  = NULL, ...) {
-  
-  object <- init_oomlm(formula, weights)
-  
-  if(!is.null(data)) {
-    object <- update(object, data)
-  }
-  
-  object
-  
+oomlm <- function(formula, weights = NULL, ...) {
+  init_oomlm(formula, weights)
 }
 
 

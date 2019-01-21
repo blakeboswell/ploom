@@ -30,8 +30,6 @@ init_oomlm_robust <- function(formula, weights = NULL, se_type) {
 #' @md
 #' @param formula a symbolic description of the model to be fitted of class
 #'  [formula()].
-#' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
-#'  [tibble()], [data.frame()], or [list()] of observations to fit
 #' @param weights a one-sided, single term [formula()] specifying weights.
 #' @param se_type string indicating what `se` type to use: "HC0", "HC1"
 #'  "stata", or "classical"
@@ -58,7 +56,6 @@ init_oomlm_robust <- function(formula, weights = NULL, se_type) {
 #' @name oomlm_robust
 #' @export
 oomlm_robust <- function(formula,
-                         data    = NULL,
                          weights = NULL,
                          se_type = "HC1", ...) {
   
@@ -68,12 +65,6 @@ oomlm_robust <- function(formula,
     stop(paste(msg, collapse = "\n"))
   }
   
-  object <- init_oomlm_robust(formula, weights, se_type)
-  
-  if(!is.null(data)) {
-    object <- update(object, data)
-  }
-  
-  object
+  init_oomlm_robust(formula, weights, se_type)
   
 }
