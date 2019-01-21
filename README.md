@@ -12,18 +12,19 @@ status](https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg)
 
 ## Overview
 
-**Out-of-memory** and **memory efficient** linear model fitting with
-support for Inference.
+**Memory efficient** Linear and Generalized Linear models with support
+for Inferential Analysis.
 
-## Features
-
-  - Out-of-memory processing capable of fitting **billions+** of
+  - Performs out-of-memory processing capable of fitting **billions** of
     observations
-  - Fit statistics necessary for inferential analysis
-  - In-memory runtime comparable to `lm()` and `glm()` with a fraction
-    of the memory footprint
-  - Functions for streaming data from a Database, file connection, or
-    in-memory source
+  - Performs in-memory processing at runtimes comparable to `lm()` and
+    `glm()` with bounded memory
+  - Generates statistics and artifacts necessary for inferential
+    analysis
+  - Manages iterative processing of data in a Database, file connection,
+    or in-memory source
+
+> `ploom` is currently in beta. See development \[roadmap\] for details.
 
 ## Installation
 
@@ -82,8 +83,8 @@ allocated.
 ``` r
 chunks <- oomdata_tbl(mtcars, chunk_size = 1)
 
-y      <- oomlm(mpg ~ cyl + disp)
-y      <- update(y, data = chunks)
+y <- oomlm(mpg ~ cyl + disp)
+y <- update(y, data = chunks)
 
 all.equal(x, y)
 ```
