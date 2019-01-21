@@ -1,4 +1,14 @@
-
+#' Predicted values based on `oomlm` object 
+#'
+#' @param object object inheriting from class `oomlm`
+#' @param data observations for prediction
+#' @param se_fit indicates if the standard error of predicted means should
+#'   be returned
+#' @param as_function if TRUE a function with only a `data` argument is returned
+#'   for subsequent fitting
+#' @param ... ignored
+#'
+#' @name predict
 #' @method predict oomlm
 #' @export
 predict.oomlm <-function(object,
@@ -23,7 +33,7 @@ predict.oomlm <-function(object,
 #' @export
 predict.oomglm <- function(object, 
                            data,
-                           type   = "link",
+                           type = c("link", "response"),
                            se_fit = FALSE,
                            as_function = FALSE) {
 
@@ -50,7 +60,7 @@ predict.oomglm <- function(object,
     
   }
   
-  if(type == "response") {
+  if(match.arg(type) == "response") {
     
     fam      <- family(object)
     linkinv  <- fam$linkinv

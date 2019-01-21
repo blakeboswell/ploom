@@ -29,10 +29,12 @@ reference:
     - weight
     - end_weight
   - title: Predict
+    contents:
+    - predict
   
 
 navbar:
-  type: broke
+  type: pellucid
   structure:  
     right:  [reference, articles, benchmarking]
     left: [github]

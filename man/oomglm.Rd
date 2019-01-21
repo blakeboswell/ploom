@@ -8,15 +8,12 @@
 \alias{summary.oomglm}
 \title{Out of memory Generalized Linear model}
 \usage{
-oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
-  start = NULL, ...)
+oomglm(formula, family = gaussian(), weights = NULL, start = NULL,
+  ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted of class
 \code{\link[=formula]{formula()}}.}
-
-\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
-\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 
 \item{family}{a \code{\link[=family]{family()}} object.}
 
@@ -25,6 +22,9 @@ oomglm(formula, data = NULL, family = gaussian(), weights = NULL,
 \item{start}{starting values for the parameters in the linear predictor.}
 
 \item{...}{ignored.}
+
+\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
+\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 }
 \value{
 It is up to the user to know when fitting is complete.

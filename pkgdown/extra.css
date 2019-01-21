@@ -1,104 +1,75 @@
 
+/* change font */
+b, strong {
+  font-weight: 500;
+}
 body p {
-    color: #182125;
-    font-size: 16px;
-    font-family: 'Lato', sans-serif;
-    font-weight: lighter;
-    line-height: 1.6;
+  color: #182125; 
+  font-family: 'Lato', sans-serif;
+  font-size: 17px;
+  font-weight: lighter;
+  line-height: 1.6;
 }
-
 blockquote {
-    padding: 10px 20px;
-    margin: 0 0 20px;
-    border-left: 5px solid #eee;
-    font-size: 1em;
-    font-family: 'Lato', sans-serif;
-    font-weight: lighter;
-    line-height: 1.5;
+  font-family: 'Lato', sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
 }
-
 ul {
-    display: block;
-    list-style-type: disc;
-    font-size: 16px;
-    font-family: 'Lato', sans-serif;
-    font-weight: lighter;
-    line-height: 1.5;
+  font-family: 'Lato', sans-serif;
+  font-size: 17px;
+  font-weight: lighter;
+  line-height: 1.5;
 }
 
+
+/* links */
 a {
-  color: #081F2B;
+  color: #1363B1;
 }
-
+#navbar a {
+  color: #182125;
+}
 a:hover {
   color: #1D55EA;
+  text-decoration: none;
 }
 
-.navbar { 
-  background-color: #FFF;
-  border-color: #FFF;
-}
 
+/* enlarge brand label */
 .navbar-brand {
   font-size: 24px;
   line-height:26px;
 }
 
-#navbar > ul:nth-child(1) > li {
-  display: none;
-}
-
-
-.nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus {
-  background-color: #1D55EA;
-  color: #FFF;
-}
-
-#navbar > .dropdown-menu > a:focus {
-  background-color: #1D55EA;
-  color: #FFF;
-}
-
-
+/* remove version label */
 .label {
   display: none;
 }
 
-.label-default {
+/* remove home button when on homepage */
+#navbar .active {
+  display: none;
+}
+
+/* change navbar colors
+   a nonsense type is used in them pkdown.yml
+   which produces a desired side effect
+*/
+.navbar { 
+  background-color: #FFF;
+  border-color: #FFF;
+  color: #182125;
+}
+.navbar-brand a {
+  color: #182125; 
+}
+
+/* change hover behavior of pills */
+.nav-pills>li.active>a, 
+.nav-pills>li.active>a:hover,
+.nav-pills>li.active>a:focus {
+  color: #1D55EA;
   background-color: #FFF;
 }
 
-
-/*
-
-@import url('https://fonts.googleapis.com/css?family=Lato');
-
-body p {
-    color: #182125;
-    font-size: 19px;
-    font-family: 'Lato', sans-serif;
-    font-weight: lighter;
-    line-height: 1.5;
-}
-
-
-code {
-  font-size: 0.95em;
-}
-
-pre code {
-  font-size: 1.2em;
-}
-*/
-
-/* Sidebar --------------------------
-
-#sidebar {
-  font: 18px/1.5em;
-}
-
-#sidebar h2 {
-  font-size: 1.5em;
-  margin-top: 1em;
-}
-*/

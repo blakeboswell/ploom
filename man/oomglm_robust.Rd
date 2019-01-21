@@ -5,15 +5,12 @@
 \alias{vcov.oomglm_robust}
 \title{Out of memory Generalized Linear model with robust standard errors}
 \usage{
-oomglm_robust(formula, data = NULL, family = gaussian(),
-  weights = NULL, start = NULL, se_type = "H1", ...)
+oomglm_robust(formula, family = gaussian(), weights = NULL,
+  start = NULL, se_type = "H1", ...)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted of class
 \code{\link[=formula]{formula()}}}
-
-\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
-\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 
 \item{family}{A \code{\link[=family]{family()}} object}
 
@@ -25,6 +22,9 @@ oomglm_robust(formula, data = NULL, family = gaussian(),
 "stata", or "classical"}
 
 \item{...}{ignored}
+
+\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
+\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 }
 \value{
 It is up to the user to know when fitting is complete.
