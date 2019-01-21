@@ -1,6 +1,6 @@
 Package: ploom
 Version: 0.0
-Title: out-of-memory linear models
+Title: Out-of-memory and memory efficient Linear Model fitting with support for Inference.
 Description: A collection of tools for out-of-memory linear model fitting and
     inference. Implements `lm` and `glm` analogs using Alan Miller's AS274
     updating QR factorization algorithm. Collects and reports an array of

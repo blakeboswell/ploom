@@ -18,45 +18,49 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Overview
 
-A collection of tools for __out-of-memory__ and __memory efficient__ linear model fitting for inferential analysis. Provides `oomlm()` and `oomglm()` functions for linear and generalised linear modeling.  Fitting is performed via Alan Miller's AS274 updating QR factorization algorithm which enables models with `p` variables to be fit in `p^2` memory resulting in
-
-- Out-of-memory procesing capable of fitting billions of observations
-- In-memory runtimes at least as good as `lm()` and `glm()`
-- Efficient memory usage ideal for multi-user environments with heavy regression loads
-
-> `ploom` is in beta. See [roadmap]() for details.
+__Out-of-memory__ and __memory efficient__ linear model fitting with support for Inference.
 
 ## Features
 
-- Linear and Generalized Linear Models with robust standard errors
-- Data streaming functions from Database and file connections as well as
-  chunking of in-memory sources
-- Inferential statistics such as standard errors, prediction intervals,
-  and confidence intervals
-
-> The beta version of `ploom` has essentially the same features as [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html) with a slight runtime improvement. More differentiating features are under development.
+- Out-of-memory processing capable of fitting __billions+__ of observations 
+- Fit statistics necessary for inferential analysis
+- In-memory runtime comparable to `lm()` and `glm()` with a fraction of the memory footprint
+- Functions for streaming data from a Database, file connection, or in-memory source
 
 ## Installation
 
 ```{r, eval = FALSE, message=FALSE}
-# the early development version from GitHub:
+# development version from GitHub:
 # install.packages("devtools")
 devtools::install_github("blakeboswell/ploom")
 ```
 
 ## Usage
 
-Resource efficient in-memory linear and generalized linear models. 
-
 ```{r, eval = TRUE, message=FALSE}
 library(ploom)
 
+# `oomlm()` for fitting linear models
+x <- oomlm(mpg ~ cyl + disp, data = mtcars)
+
+# `oomglm()` models fit via IRLS
+z <- oomglm(mpg ~ cyl + disp)
+z <- iter_weight(z, data = mtcars)
+
+# analyze fit statistics with familiar methods
+tidy(z)
+
+# create residuals via second pass over the data
+pred <- predict(z, mtcars, se_fit = TRUE)
+sum((pred$fit - mtcars[, c("mpg")])^2)
+
+# chunk in-memory `tibbles()` with `oomdata_tbl()`
 chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 
+# `oomlm()` and `oomglm()` will automatically exhaust an `oomdata` stream
 x <- oomlm(mpg ~ cyl + disp, data = chunks)
-tidy(x)
-y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
-tidy(y)
+z <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
+
 ```
 
 Out-of-memory model fitting for data in a Database or on disk.
@@ -74,11 +78,13 @@ y <- iter_weight(oomglm(mpg ~ cyl + disp), data = chunks)
 
 ## Alternatives
 
-[`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
-[`speedglm`](https://cran.r-project.org/web/packages/speedglm/index.html)
+- [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
+- [`speedglm`](https://cran.r-project.org/web/packages/speedglm/index.html)
 
 ## Acknowledgements
 
 Thanks to:
 
+- Fitting is performed via Alan Miller’s AS274 updating QR factorization algorithm
 - [`biglm`](https://cran.r-project.org/web/packages/biglm/index.html)
+

@@ -3,10 +3,16 @@
 \name{predict}
 \alias{predict}
 \alias{predict.oomlm}
-\title{Predicted values based on \code{oomlm} object}
+\alias{predict.oomglm}
+\title{Predict values using \code{oomlm()} and \code{oomglm()} models}
 \usage{
 \method{predict}{oomlm}(object, data = NULL, se_fit = FALSE,
-  as_function = FALSE, ...)
+  interval = c("none", "confidence", "prediction"),
+  as_function = FALSE)
+
+\method{predict}{oomglm}(object, data, type = c("link", "response"),
+  se_fit = FALSE, interval = c("none", "confidence", "prediction"),
+  as_function = FALSE)
 }
 \arguments{
 \item{object}{object inheriting from class \code{oomlm}}
@@ -22,5 +28,34 @@ for subsequent fitting}
 \item{...}{ignored}
 }
 \description{
-Predicted values based on \code{oomlm} object
+Predict values using \code{oomlm()} and \code{oomglm()} models
+}
+\examples{
+\donttest{
+# fit an `oomlm` model
+chunks <- oomdata_tbl(mtcars, chunk_size = 1)
+x  <- oomlm(mpg ~ cyl + disp + hp, chunks)
+
+# call `predict`
+pred <- predict(x, mtcars)
+sum((pred - mtcars$mpg)^2)
+
+# pass TRUE for the `as_function` argument and the
+# return value will be a prediction function with
+# only one argument for data
+pred_fun <- predict(x, mtcars, as_function = TRUE)
+rss      <- 0
+while(!is.null(chunk <- chunks())) {
+ rss <- rss + (pred_fun(chunk) - chunk[, "mpg"])^2
+}
+rss
+
+# pass TRUE for the `se_fit` argument and the
+# return value will include standard errors
+# for the predicted means
+pred <- predict(x, mtcars, se_fit = TRUE)
+names(pred)
+head(pred$se)
+
+}
 }
