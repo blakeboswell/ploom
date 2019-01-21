@@ -44,6 +44,16 @@ expect_attr_equal <- function(x, y) {
   names(xy) <- NULL
   expect_equal(yy, xy)
   
+  yy        <- predict(y, mtcars, se.fit = TRUE)
+  names(yy$se)  <- NULL
+  names(yy$fit) <- NULL
+  xy        <- predict(x, mtcars, se_fit = TRUE)
+  names(xy$se)  <- NULL
+  xy$fit <- drop(xy$fit)
+  names(xy$fit) <- NULL
+  expect_equal(yy$se, xy$se)
+  expect_equal(yy$fit, drop(xy$fit))
+  
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),
     as.matrix(tidy(x)[2:5])
@@ -58,7 +68,7 @@ expect_attr_equal <- function(x, y) {
   expect_equal(quiet(print(x)), x)
   expect_equal(quiet(print(summary(x))), summary(x))
   expect_equal(
-    quiet(summary(x, correlation = TRUE)),
+    quiet(print(summary(x, correlation = TRUE))),
     summary(x, correlation = TRUE)
   )
   
