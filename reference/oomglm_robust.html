@@ -55,7 +55,7 @@ factorization algorithm and estimate robust standard errors." />
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-broke navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-pellucid navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -132,8 +132,8 @@ factorization algorithm and estimate robust standard errors.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>oomglm_robust</span>(<span class='no'>formula</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/family'>gaussian</a></span>(),
-  <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>se_type</span> <span class='kw'>=</span> <span class='st'>"H1"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>oomglm_robust</span>(<span class='no'>formula</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/family'>gaussian</a></span>(), <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>start</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>se_type</span> <span class='kw'>=</span> <span class='st'>"H1"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,11 +142,6 @@ factorization algorithm and estimate robust standard errors.</p>
       <th>formula</th>
       <td><p>a symbolic description of the model to be fitted of class
 <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code></p></td>
-    </tr>
-    <tr>
-      <th>data</th>
-      <td><p>an optional <code><a href='oomdata_dbi.html'>oomdata_tbl()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_dbi()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_con()</a></code>,
-<code>tibble()</code>, <code><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame()</a></code>, or <code><a href='https://www.rdocumentation.org/packages/base/topics/list'>list()</a></code> of observations to fit</p></td>
     </tr>
     <tr>
       <th>family</th>
@@ -168,6 +163,11 @@ factorization algorithm and estimate robust standard errors.</p>
     <tr>
       <th>...</th>
       <td><p>ignored</p></td>
+    </tr>
+    <tr>
+      <th>data</th>
+      <td><p>an optional <code><a href='oomdata_dbi.html'>oomdata_tbl()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_dbi()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_con()</a></code>,
+<code>tibble()</code>, <code><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame()</a></code>, or <code><a href='https://www.rdocumentation.org/packages/base/topics/list'>list()</a></code> of observations to fit</p></td>
     </tr>
     </table>
     
