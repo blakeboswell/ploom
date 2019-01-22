@@ -5,6 +5,7 @@
 #' @param se_fit indicates if the standard error of predicted means should
 #'   be returned
 #' @param interval type of interval calculation
+#' @param level tolerance/confidence level
 #' @param type the type of prediction, one of "reponse" or "link"
 #' @param as_function if TRUE a function with only a `data` argument is returned
 #'   for subsequent fitting
@@ -46,7 +47,8 @@ NULL
 predict.oomlm <- function(object,
                           data     = NULL,
                           se_fit   = FALSE,
-                          interval = c("none", "confidence", "prediction"),
+                          interval = NULL,
+                          level    = 0.95,
                           as_function = FALSE,
                           ...) {
   
@@ -56,24 +58,35 @@ predict.oomlm <- function(object,
   
   fitfxn <- function(data) {
     
-    x  <- model_frame(object$terms, data)
-    x  <- model_matrix(object$terms, x)
+    x   <- model_frame(object$terms, data)
+    x   <- model_matrix(object$terms, x)
+    fit <- x %*% coef(object)
     
     if(se_fit) {
       
-      sigma   <- summary(object)$sigma
+      sobj    <- summary(object)
+      sigma   <- sobj$sigma
       sdm_inv <- object$qr$sdm_inv()
+      ip      <- if(is.null(interval)) 0 else (interval %in% "prediction")
+      dof     <- sobj$df[2]
       
       std_error <- function(obs) {
-        sigma * sqrt(t(obs) %*% sdm_inv %*% obs)
+        sigma * sqrt(ip + t(obs) %*% sdm_inv %*% obs)
       }
       
-      return(list(
-        fit = x %*% coef(object),
-        se  = apply(x, 1, std_error)))
+      se    <- apply(x, 1, std_error)
+      
+      if(!is.null(interval)) {
+        tfrac <- qt((1 - level)/2, dof)
+        fit   <- cbind(fit, fit + se * tfrac, fit - se * tfrac)
+        colnames(fit) <- c("fit", "lwr", "upr")
+      }
+      
+      return(list(fit = fit, se = se))
+      
     }
     
-    x %*% coef(object)
+    fit
     
   }
   
@@ -90,8 +103,7 @@ predict.oomlm <- function(object,
 #' @export
 predict.oomglm <- function(object, 
                            data,
-                           se_fit = FALSE,
-                           interval = c("none", "confidence", "prediction"),
+                           se_fit   = FALSE,
                            type = c("link", "response"),
                            as_function = FALSE,
                            ...) {
@@ -100,28 +112,9 @@ predict.oomglm <- function(object,
     stop("`data` must be provided if `as_function` is FALSE")
   }
   
-  link_pred <- function(data) {
-    
-    x  <- model_frame(object$terms, data)
-    x  <- model_matrix(object$terms, x)
-    
-    if(se_fit) {
-      
-      sigma   <- summary(object)$sigma
-      sdm_inv <- object$qr$sdm_inv()
-      
-      std_error <- function(obs) {
-        sigma * sqrt(t(obs) %*% sdm_inv %*% obs)
-      }
-      
-      return(list(
-        fit = x %*% coef(object),
-        se  = apply(x, 1, std_error)))
-    }
-    
-    x %*% coef(object)
-    
-  }
+  link_pred <- predict.oomlm(object,
+                             se_fit = se_fit,
+                             as_function = TRUE)
   
   if(match.arg(type) == "response") {
     

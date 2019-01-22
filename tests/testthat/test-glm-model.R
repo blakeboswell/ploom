@@ -41,13 +41,13 @@ expect_attr_equal <- function(x, y) {
   xy        <- drop(predict(x, mtcars))
   names(xy) <- NULL
   expect_equal(yy, xy)
-  
+
   yy        <- predict(y, mtcars, type = "response")
   names(yy) <- NULL
   xy        <- drop(predict(x, mtcars, type = "response"))
   names(xy) <- NULL
   expect_equal(yy, xy)
-  
+
   yy        <- predict(y, mtcars, se.fit = TRUE)
   names(yy$se)  <- NULL
   names(yy$fit) <- NULL

@@ -7,11 +7,9 @@
 \title{Predict values using \code{oomlm()} and \code{oomglm()} models}
 \usage{
 \method{predict}{oomlm}(object, data = NULL, se_fit = FALSE,
-  interval = c("none", "confidence", "prediction"),
-  as_function = FALSE, ...)
+  interval = NULL, level = 0.95, as_function = FALSE, ...)
 
-\method{predict}{oomglm}(object, data, se_fit = FALSE,
-  interval = c("none", "confidence", "prediction"), type = c("link",
+\method{predict}{oomglm}(object, data, se_fit = FALSE, type = c("link",
   "response"), as_function = FALSE, ...)
 }
 \arguments{
@@ -23,6 +21,8 @@
 be returned}
 
 \item{interval}{type of interval calculation}
+
+\item{level}{tolerance/confidence level}
 
 \item{as_function}{if TRUE a function with only a \code{data} argument is returned
 for subsequent fitting}

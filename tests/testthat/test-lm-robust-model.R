@@ -6,8 +6,6 @@ se_types      <- c("classical", "HC0", "HC1", "stata")
 
 iter_model <- function(df, eqn, se_type, weights = NULL) {
 
-  print(df)
-  
   x <- oomlm_robust(formula = eqn, se_type = se_type, weights = weights)
 
   for(i in 1:nrow(df)) {
