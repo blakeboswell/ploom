@@ -13,14 +13,12 @@ status](https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg)
 ## Overview
 
 **Memory efficient** Linear and Generalized Linear models with support
-for Inferential Analysis.
+for inference
 
   - Performs out-of-memory processing capable of fitting **billions** of
     observations
   - Performs in-memory processing at runtimes comparable to `lm()` and
     `glm()` with bounded memory
-  - Generates statistics and artifacts necessary for inferential
-    analysis
   - Manages iterative processing of data in a Database, file connection,
     or in-memory source
 
