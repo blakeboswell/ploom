@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Out-of-memory and memory efficient Linear Model fitting with support for Inference. • ploom</title>
+<title>Out-of-memory and memory efficient Linear Model fitting with support for Inference • ploom</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/united/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
-<meta property="og:title" content="Out-of-memory and memory efficient Linear Model fitting with support for Inference.">
+<meta property="og:title" content="Out-of-memory and memory efficient Linear Model fitting with support for Inference">
 <meta property="og:description" content="A collection of tools for out-of-memory linear model fitting and
     inference. Implements `lm` and `glm` analogs using Alan Miller's AS274
     updating QR factorization algorithm. Collects and reports an array of
@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ploom</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9001</span>
       </span>
     </div>
 
@@ -95,21 +95,18 @@
 
 
 <!-- [AppVeyor Build Status]() -->
-<!-- [Coverage Status]() -->
 <div id="overview" class="section level2">
 <h2 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h2>
-<p><strong>Out-of-memory</strong> and <strong>memory efficient</strong> linear model fitting with support for Inference.</p>
-</div>
-<div id="features" class="section level2">
-<h2 class="hasAnchor">
-<a href="#features" class="anchor"></a>Features</h2>
+<p><strong>Memory efficient</strong> Linear and Generalized Linear models with support for Inferential analysis.</p>
 <ul>
-<li>Out-of-memory processing capable of fitting <strong>billions+</strong> of observations</li>
-<li>Fit statistics necessary for inferential analysis</li>
-<li>In-memory runtime comparable to <code><a href="https://www.rdocumentation.org/packages/stats/topics/lm">lm()</a></code> and <code><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm()</a></code> with a fraction of the memory footprint</li>
-<li>Functions for streaming data from a Database, file connection, or in-memory source</li>
+<li>Performs out-of-memory processing capable of fitting <strong>billions</strong> of observations</li>
+<li>Performs in-memory processing at runtimes comparable to <code><a href="https://www.rdocumentation.org/packages/stats/topics/lm">lm()</a></code> and <code><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm()</a></code> with bounded memory</li>
+<li>Manages iterative processing of data in a Database, file connection, or in-memory source</li>
 </ul>
+<blockquote>
+<p><code>ploom</code> is currently in beta. See development [roadmap] for details.</p>
+</blockquote>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -121,42 +118,67 @@
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
+<div id="in-memory-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#in-memory-data" class="anchor"></a>In-memory Data</h3>
+<p><code><a href="reference/oomlm.html">oomlm()</a></code> models are intialized with a <code><a href="https://www.rdocumentation.org/packages/stats/topics/formula">formula()</a></code>; fit to data with calls to <code><a href="reference/update.html">update()</a></code>; and analyzed with standard summary and extractor functions.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ploom)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># `oomlm()` for fitting linear models</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">x &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomlm.html">oomlm</a></span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>disp, <span class="dt">data =</span> mtcars)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">x &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomlm.html">oomlm</a></span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>disp)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">x &lt;-<span class="st"> </span><span class="kw"><a href="reference/update.html">update</a></span>(x, <span class="dt">data =</span> mtcars)</a>
 <a class="sourceLine" id="cb2-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># `oomglm()` models fit via IRLS</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">z &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomglm.html">oomglm</a></span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>disp)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">z &lt;-<span class="st"> </span><span class="kw"><a href="reference/iter_weight.html">iter_weight</a></span>(z, <span class="dt">data =</span> mtcars)</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># analyze fit statistics with familiar methods</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="kw"><a href="https://www.rdocumentation.org/packages/generics/topics/tidy">tidy</a></span>(z)</a></code></pre></div>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/generics/topics/tidy">tidy</a></span>(x)</a></code></pre></div>
 <pre><code>## # A tibble: 3 x 7
 ##   term        estimate std.error statistic  p.value conf.low  conf.high
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;
 ## 1 (Intercept)  34.7       2.55       13.6  4.02e-14  29.5     39.9     
 ## 2 cyl          -1.59      0.712      -2.23 3.37e- 2  -3.04    -0.131   
 ## 3 disp         -0.0206    0.0103     -2.01 5.42e- 2  -0.0416   0.000395</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># create residuals via second pass over the data</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">pred &lt;-<span class="st"> </span><span class="kw"><a href="reference/predict.html">predict</a></span>(z, mtcars, <span class="dt">se_fit =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>((pred<span class="op">$</span>fit <span class="op">-</span><span class="st"> </span>mtcars[, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"mpg"</span>)])<span class="op">^</span><span class="dv">2</span>)</a></code></pre></div>
-<pre><code>## [1] 270.7403</code></pre>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># chunk in-memory `tibbles()` with `oomdata_tbl()`</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">chunks  &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomdata_dbi.html">oomdata_tbl</a></span>(mtcars, <span class="dt">chunk_size =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co"># `oomlm()` and `oomglm()` will automatically exhaust an `oomdata` stream</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">x &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomlm.html">oomlm</a></span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>disp, <span class="dt">data =</span> chunks)</a>
-<a class="sourceLine" id="cb6-6" data-line-number="6">z &lt;-<span class="st"> </span><span class="kw"><a href="reference/iter_weight.html">iter_weight</a></span>(<span class="kw"><a href="reference/oomglm.html">oomglm</a></span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>disp), <span class="dt">data =</span> chunks)</a></code></pre></div>
-<p>Out-of-memory model fitting for data in a Database or on disk.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(RPostgres)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">con    &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(<span class="dt">drv =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/RPostgres/topics/Postgres">Postgres</a></span>(), <span class="dt">dbname =</span> <span class="st">"mtcars"</span>)</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">query  &lt;-<span class="st"> "select mpg, cyl, disp from mtcars;"</span></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">rs     &lt;-<span class="st"> </span><span class="kw">dbSendQuery</span>(con, query)</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">chunks &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomdata_dbi.html">oomdata_dbi</a></span>(rs, <span class="dt">chunk_size =</span> <span class="dv">4</span>)</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">y &lt;-<span class="st"> </span><span class="kw"><a href="reference/iter_weight.html">iter_weight</a></span>(<span class="kw"><a href="reference/oomglm.html">oomglm</a></span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>disp), <span class="dt">data =</span> chunks)</a></code></pre></div>
+<p>Because <code><a href="reference/update.html">update()</a></code> only allocates memory for the provided <code>data</code>, fitting with more calls to <code><a href="reference/update.html">update()</a></code> on smaller <em>chunks</em> of <code>data</code> requires less memory. For example, the following loop produces the same fit while using only ~3% of the memory.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">y  &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomlm.html">oomlm</a></span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>disp)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(mtcars)) {</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  y &lt;-<span class="st"> </span><span class="kw"><a href="reference/update.html">update</a></span>(y, mtcars[i, ])</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">}</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/all.equal">all.equal</a></span>(x, y)</a></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>Its possible to chunk and fit in-memory data without writing custom loops using the function <code><a href="reference/oomdata_dbi.html">oomdata_tbl()</a></code>. The following example is equivalent to the previous in both fit results and total memory allocated.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">chunks &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomdata_dbi.html">oomdata_tbl</a></span>(mtcars, <span class="dt">chunk_size =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">y &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomlm.html">oomlm</a></span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>disp)</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">y &lt;-<span class="st"> </span><span class="kw"><a href="reference/update.html">update</a></span>(y, <span class="dt">data =</span> chunks)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/all.equal">all.equal</a></span>(x, y)</a></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>Fitting with more calls to <code><a href="reference/update.html">update()</a></code> does not result in a runtime increase and frees RAM for simultaneous or parallel fitting. This is ideal in multi-user environments and under heavy regression loads that involve fitting multiple models. See <a href="'/articles/benchmark.html">benchmarking</a> for a detailed runtime comparison with <code><a href="https://www.rdocumentation.org/packages/stats/topics/lm">lm()</a></code>, <code><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm()</a></code>.</p>
+</div>
+<div id="out-of-memory-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#out-of-memory-data" class="anchor"></a>Out-of-memory Data</h3>
+<p>The pattern for fitting <code><a href="reference/oomlm.html">oomlm()</a></code> models to out-of-memory data is the same as in-memory data, except that the data to be fit is read between calls to <code><a href="reference/update.html">update()</a></code>.</p>
+<p>The function <code><a href="reference/oomdata_dbi.html">oomdata_con()</a></code> assist with fitting fron file or gzip connections, and <code><a href="reference/oomdata_dbi.html">oomdata_dbi()</a></code> facilitaties fitting to data stored in any database with a <code>DBI</code> backend.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(RSQLite)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dbplyr)</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dplyr)</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">con &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(), <span class="dt">path =</span> <span class="st">":dbname:"</span>)</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="kw"><a href="https://dplyr.tidyverse.org/reference/copy_to.html">copy_to</a></span>(con, mtcars, <span class="st">"mtcars"</span>, <span class="dt">temporary =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">rs     &lt;-<span class="st"> </span><span class="kw">dbSendQuery</span>(con, <span class="st">"select mpg, cyl, disp from mtcars"</span>)</a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="co">#' fit model</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10">chunks &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomdata_dbi.html">oomdata_dbi</a></span>(rs, <span class="dt">chunk_size =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">z      &lt;-<span class="st"> </span><span class="kw"><a href="reference/update.html">update</a></span>(<span class="kw"><a href="reference/oomlm.html">oomlm</a></span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>disp), <span class="dt">data =</span> chunks)</a>
+<a class="sourceLine" id="cb8-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/all.equal">all.equal</a></span>(x, z)</a></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>See the articles <a href="">NA</a> and <a href="">NA</a> for more on interfacing with databases.</p>
+</div>
+<div id="inference-and-prediction" class="section level3">
+<h3 class="hasAnchor">
+<a href="#inference-and-prediction" class="anchor"></a>Inference and Prediction</h3>
+<p><code>ploom()</code> models are compatible with dozens of <code>stats</code> <code>extractor</code> functions and capable of providing standard errors, robust standard errors, confidence intervals, prediction intervals, and residuals.</p>
+</div>
 </div>
 <div id="alternatives" class="section level2">
 <h2 class="hasAnchor">
@@ -203,10 +225,10 @@
       <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="lifecycle"></a></li>
 <li><a href="https://cran.r-project.org/package=ploom"><img src="https://www.r-pkg.org/badges/version/ploom" alt="CRAN_Status_Badge"></a></li>
 <li><a href="https://api.travis-ci.com/blakeboswell/ploom"><img src="https://api.travis-ci.com/blakeboswell/ploom.svg?branch=develop" alt="Build Status"></a></li>
 <li><a href="https://codecov.io/github/blakeboswell/ploom?branch=develop"><img src="https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg" alt="Coverage status"></a></li>
+<li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="lifecycle"></a></li>
 </ul>
 </div>
 </div>

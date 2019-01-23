@@ -67,7 +67,7 @@ then return NULL once." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ploom</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9001</span>
       </span>
     </div>
 
@@ -208,11 +208,9 @@ this cycle ad-infinitum.</p>
 <span class='co'># ploom model functions automatically iterate over `oomdata` until </span>
 <span class='co'># the source is exhausted (`oomlm()`, `oomlm_robust()`) or until </span>
 <span class='co'># IRLS convergence (`oomglm()`, `oomglm_robust()`)</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oomlm.html'>oomlm</a></span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>, <span class='no'>chunks</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='iter_weight.html'>iter_weight</a></span>(<span class='fu'><a href='oomglm.html'>oomglm</a></span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>), <span class='no'>chunks</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oomlm.html'>oomlm</a></span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>, <span class='no'>chunks</span>)</div><div class='output co'>#&gt; <span class='error'>Error in init_oomlm(formula, weights): `weights` must be a formula</span></div><div class='input'><span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='iter_weight.html'>iter_weight</a></span>(<span class='fu'><a href='oomglm.html'>oomglm</a></span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>), <span class='no'>chunks</span>)
 
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; (Intercept)         cyl        disp 
-#&gt; 34.66099474 -1.58727681 -0.02058363 </div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>y</span>)</div><div class='output co'>#&gt; (Intercept)         cyl        disp 
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; <span class='error'>Error in coef(x): object 'x' not found</span></div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/coef'>coef</a></span>(<span class='no'>y</span>)</div><div class='output co'>#&gt; (Intercept)         cyl        disp 
 #&gt; 34.66099474 -1.58727681 -0.02058363 </div><div class='input'>
 </div></pre>
   </div>

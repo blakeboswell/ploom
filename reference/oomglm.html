@@ -67,7 +67,7 @@ to be fit in p^2 memory." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ploom</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9001</span>
       </span>
     </div>
 
@@ -161,11 +161,6 @@ to be fit in <code>p^2</code> memory.</p>
       <th>...</th>
       <td><p>ignored.</p></td>
     </tr>
-    <tr>
-      <th>data</th>
-      <td><p>an optional <code><a href='oomdata_dbi.html'>oomdata_tbl()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_dbi()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_con()</a></code>,
-<code>tibble()</code>, <code><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame()</a></code>, or <code><a href='https://www.rdocumentation.org/packages/base/topics/list'>list()</a></code> of observations to fit</p></td>
-    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -215,7 +210,7 @@ and if the IRLS algorithm has converged (<code>converged</code>).</p>
 #&gt; </span><span style='color: #555555;'>1</span><span> (Intercept)  34.7       2.55       13.6  4.02</span><span style='color: #555555;'>e</span><span style='color: #BB0000;'>-14</span><span>  29.5     39.9     
 #&gt; </span><span style='color: #555555;'>2</span><span> cyl          -</span><span style='color: #BB0000;'>1.59</span><span>      0.712      -</span><span style='color: #BB0000;'>2.23</span><span> 3.37</span><span style='color: #555555;'>e</span><span style='color: #BB0000;'>- 2</span><span>  -</span><span style='color: #BB0000;'>3.04</span><span>    -</span><span style='color: #BB0000;'>0.131</span><span>   
 #&gt; </span><span style='color: #555555;'>3</span><span> disp         -</span><span style='color: #BB0000;'>0.020</span><span style='color: #BB0000;text-decoration: underline;'>6</span><span>    0.010</span><span style='text-decoration: underline;'>3</span><span>     -</span><span style='color: #BB0000;'>2.01</span><span> 5.42</span><span style='color: #555555;'>e</span><span style='color: #BB0000;'>- 2</span><span>  -</span><span style='color: #BB0000;'>0.041</span><span style='color: #BB0000;text-decoration: underline;'>6</span><span>   0.000</span><span style='text-decoration: underline;'>395</span><span></div><div class='input'>
-<span class='co'># To fit data in chunks, use `oomdata_tbl()`:</span>
+<span class='co'># To fit in-memory data in chunks, use `oomdata_tbl()`:</span>
 
 <span class='no'>y</span>      <span class='kw'>&lt;-</span> <span class='fu'>oomglm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>)
 <span class='no'>chunks</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oomdata_dbi.html'>oomdata_tbl</a></span>(<span class='no'>mtcars</span>, <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>10</span>)

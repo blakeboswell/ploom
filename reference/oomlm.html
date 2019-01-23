@@ -67,7 +67,7 @@ to be fit in p^2 memory." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ploom</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9001</span>
       </span>
     </div>
 
@@ -134,7 +134,7 @@ to be fit in <code>p^2</code> memory.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>oomlm</span>(<span class='no'>formula</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>oomlm</span>(<span class='no'>formula</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -143,11 +143,6 @@ to be fit in <code>p^2</code> memory.</p>
       <th>formula</th>
       <td><p>a symbolic description of the model to be fitted of class
 <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>data</th>
-      <td><p>an optional <code><a href='oomdata_dbi.html'>oomdata_tbl()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_dbi()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_con()</a></code>,
-<code>tibble()</code>, <code><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame()</a></code>, or <code><a href='https://www.rdocumentation.org/packages/base/topics/list'>list()</a></code> of observations to fit</p></td>
     </tr>
     <tr>
       <th>weights</th>
@@ -186,11 +181,12 @@ levels are accepted.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># `oomglm()` is similar to `lm()` for fitting in memory data</span>
-
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>oomlm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>, <span class='no'>mtcars</span>)
+    <pre class="examples"><div class='input'><span class='co'># `oomglm()` are defined with a call to `oomlm()` and fit to data</span>
+<span class='co'># with a call to `update()`</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>oomlm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='update.html'>update</a></span>(<span class='no'>x</span>, <span class='no'>mtcars</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; 
-#&gt; Call:  oomlm(mpg ~ cyl + disp, mtcars)
+#&gt; Call:  oomlm(mpg ~ cyl + disp)
 #&gt; 
 #&gt; Coefficients:
 #&gt; (Intercept)          cyl         disp  
@@ -198,9 +194,8 @@ levels are accepted.</p>
 #&gt; 
 #&gt; Observations included:  32 </div><div class='input'>
 
-<span class='co'># For iteratively updating models, initalize with a call to `oomlm()` and</span>
-<span class='co'># update with the `update()` function</span>
-
+<span class='co'># `oomlm()` models can be fit with more data via subsequent calls</span>
+<span class='co'># to the `update()` function</span>
 <span class='no'>chunks</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>purrr</span><span class='kw ns'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map2.html'>pmap</a></span>(<span class='no'>mtcars</span>, <span class='no'>list</span>)
 
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'>oomlm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>)
@@ -218,11 +213,12 @@ levels are accepted.</p>
 <span class='co'># `oomdata_tbl()` facilitates iterating through data rows in chunks</span>
 <span class='no'>chunks</span>  <span class='kw'>&lt;-</span> <span class='fu'><a href='oomdata_dbi.html'>oomdata_tbl</a></span>(<span class='no'>mtcars</span>, <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>1</span>)
 
-<span class='co'># `oomlm()` will automatically fit to all chunks in an `oomdata()` functions</span>
-<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'>oomlm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
-
+<span class='co'># `update()` will automatically fit over all chunks in an `oomdata()`</span>
+<span class='co'># function</span>
+<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'>oomlm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>)
+<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='update.html'>update</a></span>(<span class='no'>z</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></span>(<span class='no'>z</span>)</div><div class='output co'>#&gt; 
-#&gt; Call:  oomlm(mpg ~ cyl + disp, data = chunks)
+#&gt; Call:  oomlm(mpg ~ cyl + disp)
 #&gt; 
 #&gt;             Estimate Std. Error t value Pr(&gt;|t|)    
 #&gt; (Intercept) 34.66099    2.54700  13.609 4.02e-14 ***
