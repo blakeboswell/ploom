@@ -20,11 +20,10 @@ reference:
     - oomlm
     - oomlm_robust
     - oomglm
-    - oomglm_robust
   - title: Fit
     contents:
-    - update
-    - iter_weight
+    - fit.oomlm
+    - fit.oomglm
     - init_weight
     - weight
     - end_weight
@@ -34,7 +33,7 @@ reference:
   
 
 navbar:
-  type: pellucid
+  type: default
   structure:  
     right:  [reference, articles, benchmarking]
     left: [github]

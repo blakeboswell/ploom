@@ -177,15 +177,14 @@ end_weight <- function(object, tolerance = 1e-8) {
 #' @return [oomglm()] object after performing `max_iter` IRLS iterations on
 #'  `data`.
 #' 
-#' @seealso [oomglm()]
+#' @seealso [fit()]
 #' @export
 iter_weight <- function(object,
                         data,
-                        max_iter  = 4L,
+                        times = 4L,
                         tolerance = 1e-8) {
   
-  
-  for(i in 1:max_iter) {
+  for(i in 1:times) {
     
     if(object$converged) {
       break

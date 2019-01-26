@@ -3,6 +3,48 @@
 #' @export
 generics::tidy
 
+#' @importFrom generics fit
+#' @export
+generics::fit
+
+
+#' Fit `oomlm()` model to additonal observations
+#' 
+#' @md
+#' @description
+#' Update ploom model fit with new data. 
+#' 
+#' @param object [oomlm()] model to be updated
+#' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
+#'   [tibble()], [data.frame()], or [list()] of observations to fit
+#' @param ... ignored
+#' @seealso [oomlm()]
+#' @name update
+fit.oomlm <- function(object, data, ...) {
+  update(object, data)
+}
+
+
+#' Fit [oomglm()] model via Iteratively Reweighted Least Squares (IRLS).
+#' 
+#' @md
+#' @param object [oomglm()] model.
+#' @param data [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
+#'   [tibble()], [data.frame()], or [list()] of observations to fit
+#' @param times Maximum number of IRLS iterations to perform. Will 
+#'   stop iterating if model converges before `max_iter` iterations.
+#' @param tolerance Tolerance used to determine convergence. Represents
+#'  change in coefficient as a multiple of standard error.
+#'
+#' @return [oomglm()] object after performing `times` IRLS iterations on
+#'  `data`.
+#' 
+#' @seealso [oomglm()]
+#' @export
+fit.oomglm <- function(object, data, times, tolerance, ...) {
+  iter_weight(object, data, times, tolerance)
+}
+
 
 #' Tidy an oomlm model
 #' 
@@ -37,3 +79,4 @@ tidy.oomlm <- function(x, ...) {
   tibble::as_tibble(coef_df)
   
 }
+

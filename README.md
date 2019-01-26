@@ -12,17 +12,19 @@ status](https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg)
 
 ## Overview
 
-**Memory efficient** Linear and Generalized Linear models with support
-for inference
+`ploom` provides tools for **memory efficient** fitting of Linear and
+Generalized Linear models. `ploom` fits models with a [bounded
+memory](#aknowledgements) aglorithm enabling:
 
-  - Performs out-of-memory processing capable of fitting **billions** of
+  - **Out-of-memory** processing capable of fitting billions of
     observations
-  - Performs in-memory processing at runtimes comparable to `lm()` and
-    `glm()` with bounded memory
-  - Manages iterative processing of data in a Database, file connection,
-    or in-memory source
+  - **Bounded in-memory** processing with runtimes comparable to `lm()`
+    and `glm()`
 
-> `ploom` is currently in beta. See development \[roadmap\] for details.
+`ploom` models are compatible with many [`stats`]() and [`tidy`]()
+statistical analysis functions. They are capable of generating robust
+standard errors, confidence and prediction intervals, residuals, and
+other artifacts for inferential analysis.
 
 ## Installation
 
@@ -34,19 +36,17 @@ devtools::install_github("blakeboswell/ploom")
 
 ## Usage
 
-### In-memory Data
-
-`oomlm()` models are intialized with a `formula()`; fit to data with
-calls to `update()`; and analyzed with standard summary and extractor
-functions.
+Models are intialized with a `formula()`; fit to data with calls to
+`fit()`; and summarized with standard functions such as `tidy()`,
+`glance()`, and `summary()`.
 
 ``` r
 library(ploom)
 
-x <- oomlm(mpg ~ cyl + disp)
-x <- update(x, data = mtcars)
+y <- oomlm(mpg ~ cyl + disp)
+y <- fit(y, data = mtcars)
 
-tidy(x)
+tidy(y)
 ```
 
     ## # A tibble: 3 x 7
@@ -56,83 +56,53 @@ tidy(x)
     ## 2 cyl          -1.59      0.712      -2.23 3.37e- 2  -3.04    -0.131   
     ## 3 disp         -0.0206    0.0103     -2.01 5.42e- 2  -0.0416   0.000395
 
-Because `update()` only allocates memory for the provided `data`,
-fitting with more calls to `update()` on smaller *chunks* of `data`
-requires less memory. For example, the following loop produces the same
-fit while using only ~3% of the memory.
+#### Fitting in Chunks
+
+Models can be be fit with repeated calls to `fit()` over chunks of data.
+Each call to `fit()` only needs to allocate memory for the provided
+chunk, thereby bounding the fitting process to chunk size.
+
+The function `oomdata_tbl()` enables iteration over an in-memory
+`tibble()` or `data.frame()` object.
 
 ``` r
-y  <- oomlm(mpg ~ cyl + disp)
+chunks <- oomdata_tbl(mtcars, chunk_size = 16)
 
-for(i in 1:nrow(mtcars)) {
-  y <- update(y, mtcars[i, ])
+while((!is.null(chunk <- chunks()))) {
+  print(nrow(chunk))
 }
-
-all.equal(x, y)
 ```
 
-    ## [1] TRUE
+    ## [1] 16
+    ## [1] 16
 
-Its possible to chunk and fit in-memory data without writing custom
-loops using the function `oomdata_tbl()`. The following example is
-equivalent to the previous in both fit results and total memory
-allocated.
+When provided to `fit()`, all chunks will be iterated over and fit.
 
 ``` r
-chunks <- oomdata_tbl(mtcars, chunk_size = 1)
+y <- fit(oomlm(mpg ~ cyl + disp), chunks)
 
-y <- oomlm(mpg ~ cyl + disp)
-y <- update(y, data = chunks)
-
-all.equal(x, y)
+# glance(y)
 ```
 
-    ## [1] TRUE
+#### Working with Databases
 
-Fitting with more calls to `update()` does not result in a runtime
-increase and frees RAM for simultaneous or parallel fitting. This is
-ideal in multi-user environments and under heavy regression loads that
-involve fitting multiple models. See
-[benchmarking]('/articles/benchmark.html) for a detailed runtime
-comparison with `lm()`, `glm()`.
-
-### Out-of-memory Data
-
-The pattern for fitting `oomlm()` models to out-of-memory data is the
-same as in-memory data, except that the data to be fit is read between
-calls to `update()`.
-
-The function `oomdata_con()` assist with fitting fron file or gzip
-connections, and `oomdata_dbi()` facilitaties fitting to data stored in
-any database with a `DBI` backend.
+Similarly, `oomdata_dbi()` facilitaties fitting to data in a database.
+It is compatible with any database having a `DBI` backend.
 
 ``` r
-library(RSQLite)
-library(dbplyr)
-library(dplyr)
-
-con <- dbConnect(SQLite(), path = ":dbname:")
-copy_to(con, mtcars, "mtcars", temporary = FALSE)
-rs     <- dbSendQuery(con, "select mpg, cyl, disp from mtcars")
+#' connect to database
+con     <- DBI::dbConnect(RPostgres::Postgres(), dbname = "mtcars")
+result  <- DBI::dbSendQuery(con, "select mpg, cyl, disp from mtcars;")
 
 #' fit model
-chunks <- oomdata_dbi(rs, chunk_size = 1)
-z      <- update(oomlm(mpg ~ cyl + disp), data = chunks)
-
-all.equal(x, z)
+X <- oomdata_dbi(result, chunk_size = 1)
+y <- fit(oomlm(mpg ~ cyl + disp), X)
 ```
-
-    ## [1] TRUE
 
 See the articles [NA]() and [NA]() for more on interfacing with
 databases.
 
-### Inference and Prediction
-
-`ploom()` models are compatible with dozens of `stats` `extractor`
-functions and capable of providing standard errors, robust standard
-errors, confidence intervals, prediction intervals, and
-    residuals.
+#### Inference and Prediction
 
 ## Alternatives
 

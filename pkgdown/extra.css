@@ -52,10 +52,7 @@ a:hover {
   display: none;
 }
 
-/* change navbar colors
-   a nonsense type is used in them pkdown.yml
-   which produces a desired side effect
-*/
+/* change navbar colors */
 .navbar { 
   background-color: #FFF;
   border-color: #FFF;
@@ -65,19 +62,32 @@ a:hover {
   color: #182125; 
 }
 
-/* change hover behavior of pills */
-.nav-pills>li.active>a, 
-.nav-pills>li.active>a:hover,
-.nav-pills>li.active>a:focus {
-  color: #1D55EA;
-  background-color: #FFF;
-}
-
 /* change hover behavior navbar drop downs */
 .dropdown-menu > li > a:hover,
-.dropdown-menu > li > a:focus {
+.dropdown-menu > li > a:focus,
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus,
+.navbar-default .navbar-nav>.open>a, 
+.navbar-default .navbar-nav>.open>a:hover, 
+.navbar-default .navbar-nav>.open>a:focus {
   color: #1D55EA;
   background-color: #eeeeee;
+}
+
+
+/*
+  color: #1D55EA;
+  background-color: #eeeeee;
+}
+*/
+
+
+/* change hover behavior of pills */
+.nav-pills > li.active > a, 
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  color: #1D55EA;
+  background-color: #FFF;
 }
 
 /* change copy to clipboard button */
@@ -85,6 +95,3 @@ a:hover {
   background-color: #1D55EA;
   border-color: #1D55EA;
 }
-
-
-
