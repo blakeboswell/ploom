@@ -37,21 +37,23 @@ Models are intialized with a `formula()`; fit to data with calls to `fit()`; and
 ```{r, eval = TRUE, message=FALSE}
 library(ploom)
 
+# define model, fit to data, and summarize
 y <- oomlm(mpg ~ cyl + disp)
 y <- fit(y, data = mtcars)
 
 tidy(y)
 ```
 
-#### Fitting in Chunks
+#### Fitting over Chunks
 
-Models can be be fit with repeated calls to `fit()` over chunks of data. Each call to `fit()` only needs to allocate memory for the provided chunk, thereby bounding the fitting process to chunk size.
+Models can be be fit with repeated calls to `fit()` over chunks of data. Each call to `fit()` only needs to allocate memory for the provided chunk, thereby bounding the required memory to chunk size.
 
 The function `oomdata_tbl()` enables iteration over an in-memory `tibble()` or `data.frame()`.
 
 ```{r, eval = TRUE, message=FALSE}
 chunks <- oomdata_tbl(mtcars, chunk_size = 16)
 
+# iterate over all observations in `chunks()`
 while((!is.null(chunk <- chunks()))) {
   print(nrow(chunk))
 }
@@ -60,6 +62,7 @@ while((!is.null(chunk <- chunks()))) {
 `fit()` will automatically fit the model over all chunks.
 
 ```{r, eval = TRUE, message=FALSE}
+# fit model to all chunks
 y <- fit(oomlm(mpg ~ cyl + disp), chunks)
 glance(y)
 ```
@@ -68,14 +71,14 @@ glance(y)
 
 The function `oomdata_dbi()` enables iteratation over a [`DBI`]() result set. `fit()` will automatically fit the model over all chunks.
 
-```{r, eval = FALSE, message=FALSE}
-#' connect to database
-con     <- DBI::dbConnect(RPostgres::Postgres(), dbname = "mtcars")
-result  <- DBI::dbSendQuery(con, "select mpg, cyl, disp from mtcars;")
+```{r, eval = TRUE, message=FALSE}
+# connect to database
+con    <- DBI::dbConnect(RPostgres::Postgres(), dbname="mtcars")
+result <- DBI::dbSendQuery(con, "select mpg, cyl, disp from mtcars;")
+chunks <- oomdata_dbi(result, chunk_size = 16)
 
-#' fit model
-X <- oomdata_dbi(result, chunk_size = 1)
-y <- fit(oomlm(mpg ~ cyl + disp), X)
+# fit model to all chunks
+y <- fit(oomlm(mpg ~ cyl + disp), chunks)
 summary(y)
 ```
 

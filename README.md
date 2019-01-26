@@ -38,6 +38,7 @@ Models are intialized with a `formula()`; fit to data with calls to
 ``` r
 library(ploom)
 
+# define model, fit to data, and summarize
 y <- oomlm(mpg ~ cyl + disp)
 y <- fit(y, data = mtcars)
 
@@ -51,11 +52,11 @@ tidy(y)
     ## 2 cyl          -1.59      0.712      -2.23 3.37e- 2  -3.04    -0.131   
     ## 3 disp         -0.0206    0.0103     -2.01 5.42e- 2  -0.0416   0.000395
 
-#### Fitting in Chunks
+#### Fitting over Chunks
 
 Models can be be fit with repeated calls to `fit()` over chunks of data.
 Each call to `fit()` only needs to allocate memory for the provided
-chunk, thereby bounding the fitting process to chunk size.
+chunk, thereby bounding the required memory to chunk size.
 
 The function `oomdata_tbl()` enables iteration over an in-memory
 `tibble()` or `data.frame()`.
@@ -63,6 +64,7 @@ The function `oomdata_tbl()` enables iteration over an in-memory
 ``` r
 chunks <- oomdata_tbl(mtcars, chunk_size = 16)
 
+# iterate over all observations in `chunks()`
 while((!is.null(chunk <- chunks()))) {
   print(nrow(chunk))
 }
@@ -74,6 +76,7 @@ while((!is.null(chunk <- chunks()))) {
 `fit()` will automatically fit the model over all chunks.
 
 ``` r
+# fit model to all chunks
 y <- fit(oomlm(mpg ~ cyl + disp), chunks)
 glance(y)
 ```
@@ -90,15 +93,30 @@ The function `oomdata_dbi()` enables iteratation over a [`DBI`]() result
 set. `fit()` will automatically fit the model over all chunks.
 
 ``` r
-#' connect to database
-con     <- DBI::dbConnect(RPostgres::Postgres(), dbname = "mtcars")
-result  <- DBI::dbSendQuery(con, "select mpg, cyl, disp from mtcars;")
+# connect to database
+con    <- DBI::dbConnect(RPostgres::Postgres(), dbname="mtcars")
+result <- DBI::dbSendQuery(con, "select mpg, cyl, disp from mtcars;")
+chunks <- oomdata_dbi(result, chunk_size = 16)
 
-#' fit model
-X <- oomdata_dbi(result, chunk_size = 1)
-y <- fit(oomlm(mpg ~ cyl + disp), X)
+# fit model to all chunks
+y <- fit(oomlm(mpg ~ cyl + disp), chunks)
 summary(y)
 ```
+
+    ## 
+    ## Call:  oomlm(mpg ~ cyl + disp)
+    ## 
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 34.66099    2.54700  13.609 4.02e-14 ***
+    ## cyl         -1.58728    0.71184  -2.230   0.0337 *  
+    ## disp        -0.02058    0.01026  -2.007   0.0542 .  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Observations included:  32 
+    ## Residual standard error: 3.055 on 29 degrees of freedom
+    ## Multiple R-squared:  0.7596, Adjusted R-squared:  0.743 
+    ## F-statistic: 45.81 on 2 and 29 DF,  p-value: 1.058e-09
 
 See the articles [NA]() and [NA]() for more on interfacing with
 databases.
