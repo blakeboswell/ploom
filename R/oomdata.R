@@ -78,7 +78,7 @@ oomdata_tbl <- function(data, chunk_size, ...) {
   n      <- nrow(data)
   cursor <- 0
 
-  foo <- function() {
+  fn <- function() {
 
     if (reset) {
       cursor <<- 0
@@ -101,8 +101,8 @@ oomdata_tbl <- function(data, chunk_size, ...) {
 
   }
   
-  class(foo) <- c("oomdata_tbl", "oomdata", class(foo))
-  foo
+  class(fn) <- c("oomdata_tbl", "oomdata", class(fn))
+  fn
   
 }
 
@@ -120,7 +120,7 @@ oomdata_dbi <- function(data,
   DBI::dbClearResult(data)
   data <- DBI::dbSendQuery(con, query)
   
-  foo <- function() {
+  fn <- function() {
     
     if(reset) {
       if(DBI::dbIsValid(data)) {
@@ -146,8 +146,8 @@ oomdata_dbi <- function(data,
     rval
   }
   
-  class(foo) <- c("oomdata_dbi", "oomdata", class(foo))
-  foo
+  class(fn) <- c("oomdata_dbi", "oomdata", class(fn))
+  fn
   
 }
 
@@ -169,7 +169,7 @@ oomdata_con <- function(data,
   first_iter   <- TRUE
   reset        <- FALSE
 
-  conn_fxn <- function(class_name){
+  con_switch <- function(class_name){
     switch(
       class_name,
       "file"        = file,
@@ -179,17 +179,17 @@ oomdata_con <- function(data,
     )
   }
 
-  if(is.null(fxn <- conn_fxn(data_summary$class))) {
+  if(is.null(con_fn <- con_switch(data_summary$class))) {
     stop(paste0("oomdata does not support connection type ", data_summary$class))
   }
 
-  data <- fxn(data_summary$description)
+  data <- con_fn(data_summary$description)
   open(data)
 
-  foo <- function() {
+  fn <- function() {
 
     if(reset) {
-      data  <<- fxn(data_summary$description)
+      data  <<- con_fn(data_summary$description)
       open(data)
       first_iter <<- TRUE
       reset      <<- FALSE
@@ -214,7 +214,7 @@ oomdata_con <- function(data,
     rval
   }
 
-  class(foo) <- c("oomdata_con", "oomdata", class(foo))
-  foo
+  class(fn) <- c("oomdata_con", "oomdata", class(fn))
+  fn
 
 }

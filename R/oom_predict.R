@@ -1,3 +1,4 @@
+
 #' Predict values using `oomlm()` and `oomglm()` models
 #'
 #' @param object object inheriting from class `oomlm`
@@ -58,7 +59,7 @@ predict.oomlm <- function(object,
   
   return_dof <- all(class(object) %in% c("oomlm"))
   
-  fitfxn <- function(new_data) {
+  fn <- function(new_data) {
     
     x   <- model_frame(object$terms, new_data)
     x   <- model_matrix(object$terms, x)
@@ -66,41 +67,35 @@ predict.oomlm <- function(object,
     
     if(se_fit) {
       
-      sobj     <- summary(object)
-      sigma    <- sobj$sigma
-      sdm_inv  <- object$qr$sdm_inv()
-      pi_level <- if(is.null(interval)) 0 else (interval %in% "prediction")
-      dof      <- sobj$df[2]
+      rss    <- object$qr$rss_full
+      smry   <- summary(object)
+      sigma  <- smry$sigma
+      dof    <- smry$df[2]
+      vcov_y <- vcov(object)
+      res_scale <- rss / dof
       
-      std_error <- function(obs, pi_level = 0) {
-        sigma * sqrt(pi_level + t(obs) %*% sdm_inv %*% obs)
-      }
-      
-      se    <- apply(x, 1, std_error)
+      var_y <- apply(x, 1, function(x){
+        tcrossprod(crossprod(x, vcov_y), x)
+      })
       
       if(!is.null(interval)) {
-        
-        pse <- if (pi_level > 0) {
-          apply(x, 1, std_error, pi_level = 1)
-        } else {
-          se
-        }
-        
-        tfrac <- qt((1 - level)/2, dof)
-        fit   <- cbind(fit, fit + pse * tfrac, fit - pse * tfrac)
+        predi <- res_scale * (interval %in% "prediction")
+        intv  <- sqrt(predi + var_y)
+        tval  <- qt((1 - level)/2, dof)
+        fit   <- cbind(fit, fit + intv * tval, fit - intv * tval)
         colnames(fit) <- c(".pred", "lwr", "upr")
       }
       
-      rss       <- object$qr$rss()
-      dof       <- object$df.residual
-      res_scale <- sqrt(tail(rss, 1) / dof)
+      rval <- list(
+        fit    = drop(fit),
+        se.fit = drop(sqrt(var_y))
+      )
       
-      rval <- list(fit = drop(fit), se = drop(se))
       if(return_dof){
         rval[["df"]] <- dof
       }
       
-      rval[["residual_scale"]] <- res_scale
+      rval[["residual.scale"]] <- sqrt(res_scale)
       
       return(rval)
       
@@ -111,10 +106,10 @@ predict.oomlm <- function(object,
   }
   
   if(as_function) {
-    return(fitfxn)
+    return(fn)
   }
   
-  fitfxn(new_data)
+  fn(new_data)
   
 }
 
@@ -132,9 +127,9 @@ predict.oomglm <- function(object,
     stop("`new_data` must be provided if `as_function` is FALSE")
   }
   
-  link_pred <- predict.oomlm(object,
-                             se_fit = se_fit,
-                             as_function = TRUE)
+  link_fn <- predict.oomlm(object,
+                           se_fit = se_fit,
+                           as_function = TRUE)
   
   if(match.arg(type) == "response") {
     
@@ -142,31 +137,31 @@ predict.oomglm <- function(object,
     linkinv  <- fam$linkinv
     mu_eta   <- fam$mu.eta
     
-    resp_pred <- function(new_data) {
+    resp_fn <- function(new_data) {
       
-      pred  <- link_pred(new_data)
+      pred  <- link_fn(new_data)
       if(se_fit) {
         y  <- linkinv(pred$fit)
         return(list(
           fit = y,
-          se  = pred$se %*% mu_eta(y)^2))
+          se  = pred$se.fit %*% mu_eta(y)^2))
       }
       
       linkinv(pred$fit)
       
     }
     
-    fitfxn <- resp_pred
+    fn <- resp_fn
     
   } else {
-    fitfxn <- link_pred
+    fn <- link_fn
   }
   
   if(as_function) {
-    return(fitfxn)
+    return(fn)
   }
   
-  fitfxn(new_data)
+  fn(new_data)
   
 }
 
