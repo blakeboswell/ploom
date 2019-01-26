@@ -46,7 +46,6 @@ Collate:
     'oom_irls.R'
     'oom_predict.R'
     'oom_tidy.R'
-    'oom_update.R'
     'oomdata.R'
     'oomglm.R'
     'oomglm_robust.R'

@@ -12,7 +12,7 @@ iter_model <- function(df,
   x <- oomglm_robust(formula = eqn,
                      weights = weights,
                      se_type = se_type)
-  iter_weight(x, df, max_iter = 8)
+  iter_weight(x, df, times = 8)
   
 }
 

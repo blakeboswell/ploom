@@ -17,12 +17,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Overview
 
-`ploom` provides tools for __memory efficient__ fitting of Linear and Generalized Linear models. `ploom` fits models with a [bounded memory](#aknowledgements) aglorithm enabling:
+`ploom` provides tools for __memory efficient__ fitting of Linear and Generalized Linear models. Inspired by `biglm`, fitting is performed with a [bounded memory](#aknowledgements) algorithm enabling:
 
-- __Out-of-memory__ processing capable of fitting billions of observations
-- __Bounded in-memory__ processing with runtimes comparable to `lm()` and `glm()`
-
-`ploom` models are compatible with many [`stats`]() and [`tidy`]() statistical analysis functions. They are capable of generating robust standard errors, confidence and prediction intervals, residuals, and other artifacts for inferential analysis.
+- Out-of-memory processing capable of fitting __billions__ of observations
+- __Bounded in-memory__ fitting with runtimes comparable to `lm()` and `glm()` while occupying less memory
 
 ## Installation
 
@@ -49,7 +47,7 @@ tidy(y)
 
 Models can be be fit with repeated calls to `fit()` over chunks of data. Each call to `fit()` only needs to allocate memory for the provided chunk, thereby bounding the fitting process to chunk size.
 
-The function `oomdata_tbl()` enables iteration over an in-memory `tibble()` or `data.frame()` object.
+The function `oomdata_tbl()` enables iteration over an in-memory `tibble()` or `data.frame()`.
 
 ```{r, eval = TRUE, message=FALSE}
 chunks <- oomdata_tbl(mtcars, chunk_size = 16)
@@ -59,17 +57,16 @@ while((!is.null(chunk <- chunks()))) {
 }
 ```
 
-When provided to `fit()`, all chunks will be iterated over and fit.
+`fit()` will automatically fit the model over all chunks.
 
 ```{r, eval = TRUE, message=FALSE}
 y <- fit(oomlm(mpg ~ cyl + disp), chunks)
-
-# glance(y)
+glance(y)
 ```
 
 #### Working with Databases
 
-Similarly, `oomdata_dbi()` facilitaties fitting to data in a database.  It is compatible with any database having a `DBI` backend.
+The function `oomdata_dbi()` enables iteratation over a [`DBI`]() result set. `fit()` will automatically fit the model over all chunks.
 
 ```{r, eval = FALSE, message=FALSE}
 #' connect to database
@@ -79,6 +76,7 @@ result  <- DBI::dbSendQuery(con, "select mpg, cyl, disp from mtcars;")
 #' fit model
 X <- oomdata_dbi(result, chunk_size = 1)
 y <- fit(oomlm(mpg ~ cyl + disp), X)
+summary(y)
 ```
 
 See the articles [NA]() and [NA]() for more on interfacing with databases.

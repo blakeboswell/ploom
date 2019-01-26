@@ -61,8 +61,8 @@ init_oomlm <- function(formula, weights = NULL) {
 #' \item{call}{the matched call.}
 #' @seealso [oomglm()], [oomdata_tbl()]
 #' @aliases AIC.oomlm coef.oomlm confint.oomlm deviance.oomlm family.oomlm 
-#'  formula.oomlm print.oomlm print.summary.oomlm summary.oomlm 
-#'  vcov.oomlm
+#'  formula.oomlm print.oomlm print.summary.oomlm summary.oomlm logLik.oomlm
+#'  vcov.oomlm BIC.oomlm
 #' @export
 #' @name oomlm
 #' @examples \donttest{
@@ -101,7 +101,7 @@ oomlm <- function(formula, weights = NULL, ...) {
 
 
 #' @export
-#' @rdname update
+#' @rdname fit.oomlm
 update.oomlm <- function(object, data, ...) {
   
   updater <- function(object, data, ...) {

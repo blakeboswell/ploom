@@ -111,3 +111,63 @@ vcov.oomlm_robust <- function(object, ...) {
 vcov.oomglm_robust <- function(object, ...) {
   vcov.oomlm_robust(object, ...)
 }
+
+
+#' @method logLik oomlm
+#' @export
+logLik.oomlm <- function(object, REML = FALSE, ...) {
+
+  res <- object$residuals
+  p   <- object$qr$rank()
+  n   <- object$qr$num_obs
+  rss <- object$qr$rss_full
+  pw  <- object$qr$pweights
+  
+  n0  <- n
+  
+  # if(REML){
+  #   n <- n - p
+  # }
+
+  val <- 0.5 * (pw - n * (log(2 * pi) + 1 - log(n) + log(rss)))
+  
+  # if(REML) val <- val - sum(log(abs(diag(object$qr$qr)[1L:p])))
+  
+  attr(val, "nall") <- n0 # NB, still omits zero weights
+  attr(val, "nobs") <- n
+  attr(val, "df") <- p + 1
+  class(val) <- "logLik"
+  val
+  
+}
+
+
+#' @method logLik oomglm
+#' @export
+logLik.oomglm <- function(object, ...) {
+  
+  fam <- family(object)$family
+  p   <- object$qr$rank()
+  
+  if(fam %in% c("gaussian", "Gamma", "inverse.gaussian")) {
+    p <- p + 1
+  }
+  
+  val <- p - AIC(object) / 2
+  
+  attr(val, "nobs") <- object$qr$num_obs
+  attr(val, "df")   <- p
+  class(val) <- "logLik"
+  val
+  
+}
+
+
+#' @method BIC oomlm
+#' @export
+BIC.oomlm <- function(object, ...) {
+  lls <- logLik(object)
+  nos <- attr(lls, "nobs")
+  -2 * as.numeric(lls) + log(nos) * attr(lls, "df")
+}
+

@@ -7,6 +7,10 @@ generics::tidy
 #' @export
 generics::fit
 
+#' @importFrom generics glance
+#' @export
+generics::glance
+
 
 #' Fit `oomlm()` model to additonal observations
 #' 
@@ -19,7 +23,8 @@ generics::fit
 #'   [tibble()], [data.frame()], or [list()] of observations to fit
 #' @param ... ignored
 #' @seealso [oomlm()]
-#' @name update
+#' @export
+#' @rdname fit.oomlm
 fit.oomlm <- function(object, data, ...) {
   update(object, data)
 }
@@ -32,16 +37,18 @@ fit.oomlm <- function(object, data, ...) {
 #' @param data [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
 #'   [tibble()], [data.frame()], or [list()] of observations to fit
 #' @param times Maximum number of IRLS iterations to perform. Will 
-#'   stop iterating if model converges before `max_iter` iterations.
+#'   stop iterating if model converges before `times` iterations.
 #' @param tolerance Tolerance used to determine convergence. Represents
 #'  change in coefficient as a multiple of standard error.
-#'
+#' @param ... ignored
+#' 
 #' @return [oomglm()] object after performing `times` IRLS iterations on
 #'  `data`.
 #' 
 #' @seealso [oomglm()]
 #' @export
-fit.oomglm <- function(object, data, times, tolerance, ...) {
+#' @rdname fit.oomglm
+fit.oomglm <- function(object, data, times = 2L, tolerance = 1e-8, ...) {
   iter_weight(object, data, times, tolerance)
 }
 
@@ -78,5 +85,72 @@ tidy.oomlm <- function(x, ...) {
   
   tibble::as_tibble(coef_df)
   
+}
+
+
+
+#' Returns a tibble with exactly one row of goodness of fitness measures
+#' and related statistics.
+#' 
+#' @param x `oomlm` model object
+#' @param ... ignored.
+#'
+#' @return A one-row [tibble::tibble] with columns:
+#' 
+#'   \item{r.squared}{The percent of variance explained by the model}
+#'   \item{adj.r.squared}{r.squared adjusted based on the degrees of freedom}
+#'   \item{sigma}{The square root of the estimated residual variance}
+#'   \item{statistic}{F-statistic}
+#'   \item{p.value}{p-value from the F test, describing whether the full
+#'   regression is significant}
+#'   \item{df}{Degrees of freedom used by the coefficients}
+#'   \item{logLik}{the data's log-likelihood under the model}
+#'   \item{AIC}{the Akaike Information Criterion}
+#'   \item{BIC}{the Bayesian Information Criterion}
+#'   \item{deviance}{deviance}
+#'   \item{df.residual}{residual degrees of freedom}
+#'
+#' @export
+#' @seealso [glance()]
+glance.oomlm <- function(x, ...) {
+  sx   <- summary.oomlm(x)
+  rval <- glance.summary.oomlm(sx, ...)
+  rval$logLik <- logLik(x)
+  rval$AIC    <- AIC(x)
+  rval$BIC    <- BIC(x)
+  rval$deviance    <- deviance(x)
+  rval$df.residual <- x$df.residual
+  rval
+}
+
+
+#' @rdname glance.oomlm
+#' @export
+glance.summary.oomlm <- function(x, ...) {
+  
+  fstat <- x$fstatistic
+  
+  tibble::tibble(
+    r.squared       = x$r.squared
+    , adj.r.squared = x$adj.r.squared
+    , sigma         = x$sigma
+    , statistic     = x$fstatistic[1]
+    , p.value       = pf(fstat[1], fstat[2], fstat[3], lower.tail = FALSE)
+  )
+  
+}
+
+
+#' @rdname glance.oomlm
+#' @export
+glance.oomglm <- function(x, ...) {
+  tibble::tibble(
+    df.null  = x$df.null
+    , logLik = logLik(x)
+    , AIC    = AIC(x)
+    , BIC    = BIC(x)
+    , deviance    = deviance(x)
+    , df.residual = x$df.residual
+  )
 }
 

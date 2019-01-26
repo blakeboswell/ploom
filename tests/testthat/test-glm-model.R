@@ -3,7 +3,7 @@ context("test-glm-model.R")
 
 iter_model <- function(df, eqn, weights = NULL) {
   x <- oomglm(formula = eqn, weights = weights)
-  iter_weight(x, df, max_iter = 8)
+  iter_weight(x, df, times = 8)
 }
 
 

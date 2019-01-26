@@ -41,7 +41,7 @@ benchmark_lm <- function(num_obs, df) {
       x  <- iter_weight(
         oomglm(formula = lm_formula),
         data = df[1:num_obs, ],
-        max_iter = 8
+        times = 8
       )
       coef(x)
     },

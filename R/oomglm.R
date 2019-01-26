@@ -1,4 +1,16 @@
 
+#' return true if model is gaussian family with identity link
+#' 
+#' not currently in use
+#' 
+#' @param object  `oomglm` model
+#' @keywords internal
+ols_model <- function(object) {
+  fam <- object$family
+  fam$family == "gaussian" & fam$link == "identity"
+} 
+
+
 #' Initialize Out of memory Generalized Linear Regression Model
 #' 
 #' @md
@@ -72,7 +84,6 @@ glm_adjust <- function(object, chunk) {
   offset <- chunk$offset
 
   fam    <- object$family
-
   beta   <- object$irls$beta
   rss    <- object$irls$rss
   dev    <- object$irls$deviance
@@ -113,7 +124,7 @@ glm_adjust <- function(object, chunk) {
 init_weight <- function(object) {
   
   if(object$iter > 0) {
-    object$irls$beta <- coef(object)  
+    object$irls$beta <- coef(object)
   }
   
   object$irls$rss      <- 0.0
@@ -169,21 +180,21 @@ end_weight <- function(object, tolerance = 1e-8) {
 #' @param object [oomglm()] model.
 #' @param data [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
 #'   [tibble()], [data.frame()], or [list()] of observations to fit
-#' @param max_iter Maximum number of IRLS iterations to perform. Will 
-#'   stop iterating if model converges before `max_iter` iterations.
+#' @param times Maximum number of IRLS iterations to perform. Will 
+#'   stop iterating if model converges before `times` iterations.
 #' @param tolerance Tolerance used to determine convergence. Represents
 #'  change in coefficient as a multiple of standard error.
 #'
-#' @return [oomglm()] object after performing `max_iter` IRLS iterations on
+#' @return [oomglm()] object after performing `times` IRLS iterations on
 #'  `data`.
 #' 
 #' @seealso [fit()]
 #' @export
 iter_weight <- function(object,
                         data,
-                        times = 4L,
+                        times = 2L,
                         tolerance = 1e-8) {
-  
+
   for(i in 1:times) {
     
     if(object$converged) {
@@ -238,7 +249,7 @@ iter_weight <- function(object,
 #' \item{weights}{The weights [`formula()`] provided to the model.}
 #' \item{call}{The matched call.}
 #' @seealso [iter_weight()], [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()]
-#' @aliases print.oomglm print.summary.oomglm summary.oomglm
+#' @aliases print.oomglm print.summary.oomglm summary.oomglm logLik.oomglm
 #' @export
 #' @name oomglm
 #' @examples \donttest{
@@ -248,7 +259,7 @@ iter_weight <- function(object,
 #' 
 #' # reweight 4 times or until convergence
 #' x <- oomglm(mpg ~ cyl + disp)
-#' x <- iter_weight(x, mtcars, max_iter = 4)
+#' x <- iter_weight(x, mtcars, times = 4)
 #' 
 #' tidy(x)
 #' 
@@ -256,7 +267,7 @@ iter_weight <- function(object,
 #' 
 #' y      <- oomglm(mpg ~ cyl + disp)
 #' chunks <- oomdata_tbl(mtcars, chunk_size = 10)
-#' y      <- iter_weight(y, chunks, max_iter = 4)
+#' y      <- iter_weight(y, chunks, times = 4)
 #' 
 #' tidy(y)
 #'
@@ -330,17 +341,13 @@ update_oomglm <- function(object, data, ...) {
   }
   
   if(inherits(data, what = "oomdata")) {
-    
     while(!is.null(chunk <- data())) {
       object <- updater(object, chunk, ...)
     }
-    
-    object
-    
   } else {
-    updater(object, data, ...)
+    object <- updater(object, data, ...)
   }
-  
+
 }
 
 

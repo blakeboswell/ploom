@@ -4,7 +4,7 @@
 \alias{fit.oomglm}
 \title{Fit \code{\link[=oomglm]{oomglm()}} model via Iteratively Reweighted Least Squares (IRLS).}
 \usage{
-\method{fit}{oomglm}(object, data, times, tolerance, ...)
+\method{fit}{oomglm}(object, data, times = 2L, tolerance = 1e-08, ...)
 }
 \arguments{
 \item{object}{\code{\link[=oomglm]{oomglm()}} model.}
@@ -13,10 +13,12 @@
 \code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
 
 \item{times}{Maximum number of IRLS iterations to perform. Will
-stop iterating if model converges before \code{max_iter} iterations.}
+stop iterating if model converges before \code{times} iterations.}
 
 \item{tolerance}{Tolerance used to determine convergence. Represents
 change in coefficient as a multiple of standard error.}
+
+\item{...}{ignored}
 }
 \value{
 \code{\link[=oomglm]{oomglm()}} object after performing \code{times} IRLS iterations on

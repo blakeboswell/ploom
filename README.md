@@ -13,18 +13,13 @@ status](https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg)
 ## Overview
 
 `ploom` provides tools for **memory efficient** fitting of Linear and
-Generalized Linear models. `ploom` fits models with a [bounded
-memory](#aknowledgements) aglorithm enabling:
+Generalized Linear models. Inspired by `biglm`, fitting is performed
+with a [bounded memory](#aknowledgements) algorithm enabling:
 
-  - **Out-of-memory** processing capable of fitting billions of
+  - Out-of-memory processing capable of fitting **billions** of
     observations
-  - **Bounded in-memory** processing with runtimes comparable to `lm()`
-    and `glm()`
-
-`ploom` models are compatible with many [`stats`]() and [`tidy`]()
-statistical analysis functions. They are capable of generating robust
-standard errors, confidence and prediction intervals, residuals, and
-other artifacts for inferential analysis.
+  - **Bounded in-memory** fitting with runtimes comparable to `lm()` and
+    `glm()` while occupying less memory
 
 ## Installation
 
@@ -63,7 +58,7 @@ Each call to `fit()` only needs to allocate memory for the provided
 chunk, thereby bounding the fitting process to chunk size.
 
 The function `oomdata_tbl()` enables iteration over an in-memory
-`tibble()` or `data.frame()` object.
+`tibble()` or `data.frame()`.
 
 ``` r
 chunks <- oomdata_tbl(mtcars, chunk_size = 16)
@@ -76,18 +71,23 @@ while((!is.null(chunk <- chunks()))) {
     ## [1] 16
     ## [1] 16
 
-When provided to `fit()`, all chunks will be iterated over and fit.
+`fit()` will automatically fit the model over all chunks.
 
 ``` r
 y <- fit(oomlm(mpg ~ cyl + disp), chunks)
-
-# glance(y)
+glance(y)
 ```
+
+    ## # A tibble: 1 x 10
+    ##   r.squared adj.r.squared sigma statistic p.value logLik   AIC   BIC
+    ##       <dbl>         <dbl> <dbl>     <dbl>   <dbl>  <dbl> <dbl> <dbl>
+    ## 1     0.760         0.743  3.06      45.8 1.06e-9  -79.6  167.  173.
+    ## # … with 2 more variables: deviance <dbl>, df.residual <dbl>
 
 #### Working with Databases
 
-Similarly, `oomdata_dbi()` facilitaties fitting to data in a database.
-It is compatible with any database having a `DBI` backend.
+The function `oomdata_dbi()` enables iteratation over a [`DBI`]() result
+set. `fit()` will automatically fit the model over all chunks.
 
 ``` r
 #' connect to database
@@ -97,6 +97,7 @@ result  <- DBI::dbSendQuery(con, "select mpg, cyl, disp from mtcars;")
 #' fit model
 X <- oomdata_dbi(result, chunk_size = 1)
 y <- fit(oomlm(mpg ~ cyl + disp), X)
+summary(y)
 ```
 
 See the articles [NA]() and [NA]() for more on interfacing with

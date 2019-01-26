@@ -11,7 +11,9 @@
 \alias{print.oomlm}
 \alias{print.summary.oomlm}
 \alias{summary.oomlm}
+\alias{logLik.oomlm}
 \alias{vcov.oomlm}
+\alias{BIC.oomlm}
 \title{Out of memory Linear model}
 \usage{
 oomlm(formula, weights = NULL, ...)

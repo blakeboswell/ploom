@@ -69,7 +69,7 @@ benchmark_lm <- function(num_obs, chunk_size, table_prefix, vars) {
       x     <- iter_weight(
         oomglm(formula = lm_formula),
         data = feed,
-        max_iter = 8L
+        times = 8L
       )
 
       # RPostgres::dbDisconnect(con)
