@@ -108,7 +108,7 @@ vcov.oomlm_robust <- function(object, ...) {
 
 #' @method logLik oomlm
 #' @export
-logLik.oomlm <- function(object, REML = FALSE, ...) {
+logLik.oomlm <- function(object, ...) {
 
   res <- object$residuals
   p   <- object$qr$rank()

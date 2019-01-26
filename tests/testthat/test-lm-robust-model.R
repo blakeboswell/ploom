@@ -1,159 +1,126 @@
 context("test-lm-robust-model.R")
 
-robust_models <- readRDS("../testdata/robust-models.Rds")
-se_types      <- c("classical", "HC0", "HC1", "stata")
+lm_robust_data <- readRDS("../testdata/lm_robust.Rds")
+
+pred_types <- c(
+  "tidy_x"
+  , "none"
+  , "se_fit"
+  , "conf"
+  , "pred"
+)
+
+se_types <- c(
+  "HC0",
+  "HC1",
+  "stata",
+  "classical"
+)
 
 
-iter_model <- function(df, eqn, se_type, weights = NULL) {
-
-  x <- oomlm_robust(formula = eqn, se_type = se_type, weights = weights)
-
-  for(i in 1:nrow(df)) {
-    x <- update(x, df[i, ])
+build_models <- function(se_type, df) {
+  
+  fn1 <- function(se_type, df) {
+    
+    eqn1 <- mpg ~ cyl + disp + hp + wt
+    eqn2 <- mpg ~ 0 + cyl + disp + hp + wt
+    
+    x1  <- oomlm_robust(eqn1, se_type = se_type)
+    x1  <- fit(x1,  data = df)
+    x2  <- oomlm_robust(eqn2, se_type = se_type)
+    x2  <- fit(x2,  data = df)
+    x3  <- oomlm_robust(eqn1, weights = ~w, se_type = se_type)
+    x3  <- fit(x3,  data = df)
+    x4  <- oomlm_robust(eqn2, weights = ~w, se_type = se_type)
+    x4  <- fit(x4,  data = df)
+    
+    list(x1, x2, x3, x4)
+    
   }
-
-  x
+  
+  models <- fn1(se_type, df)
+  
+  fn2 <- function(x) {
+    px1 <- predict(x, df)
+    px2 <- predict(x, df, se_fit = TRUE)
+    px3 <- predict(x, df, se_fit = TRUE, interval = "confidence")
+    px4 <- predict(x, df, se_fit = TRUE, interval = "prediction")
+    
+    list(
+      tidy_x  = tidy(x), 
+      none    = px1,
+      se_fit  = px2,
+      conf    = px3,
+      pred    = px4
+    )
+  }
+  
+  lapply(models, fn2)
   
 }
 
 
-expect_summary_equal <- function(sy, sx) {
+set.seed(42)
+df       <- mtcars
+w        <- runif(nrow(mtcars))
+df['w']  <- w / sum(w)
 
-  expect_equal(sy$adj.r.squared, sx$adj.r.squared)
-  # expect_equal(sy$aliased, sx$aliased)
-  expect_equal(
-    sy$coefficients[, 1:ncol(sx$coefficients)],
-    sx$coefficients)
-  # expect_equal(sy$correlation, sx$correlation)
-  # expect_equal(sy$cov.unscaled, sx$cov.unscaled)
-  # expect_equal(sy$df, sx$df)
-  expect_equal(sy$fstatistic, sx$fstatistic)
-  expect_equal(sy$r.squared, sx$r.squared)
-  # expect_equal(sy$sigma, sx$sigma)
-  # expect_equal(sy$terms, sx$names)
+oomlm_robust_data <- lapply(se_types, build_models, df = df)
+names(oomlm_robust_data) <- se_types
 
+
+expect_attr_equal <- function(se_type) {
+  
+  se_type <- "HC0"
+  
+  y <- lm_robust_data[[se_type]][[1]][["tidy_x"]]
+  x <- oomlm_robust_data[[se_type]][[1]][["tidy_x"]]
+  expect_equal(as.data.frame(x), y[, 1:7])
+  
+  y <- lm_robust_data[[se_type]][[1]][["none"]]
+  x <- oomlm_robust_data[[se_type]][[1]][["none"]]
+  expect_equal(y, x)
+
+  y <- lm_robust_data[[se_type]][[1]][["se_fit"]]
+  x <- oomlm_robust_data[[se_type]][[1]][["se_fit"]]
+  expect_equal(y, head(x, 2))
+  
+  y <- lm_robust_data[[se_type]][[1]][["conf"]]
+  x <- oomlm_robust_data[[se_type]][[1]][["conf"]]
+  colnames(x$fit) <- colnames(y$fit)
+  rownames(x$fit) <- NULL
+  expect_equal(y, head(x, 2))
+  
+  y <- lm_robust_data[[se_type]][[1]][["pred"]]
+  x <- oomlm_robust_data[[se_type]][[1]][["pred"]]
+  colnames(x$fit) <- colnames(y$fit)
+  rownames(x$fit) <- NULL
+  expect_equal(y, head(x, 2))
+ 
 }
 
 
-test_that("robust oomlm", {
-
-  df <- mtcars
-  f  <- mpg ~ cyl + disp + hp + wt
-
-  for(se_type in se_types) {
-
-    y <- robust_models[["regular"]][[se_type]]
-    x <- iter_model(df, f, se_type = se_type)
-
-    # expect_equal(coef(x), coef(y))
-    # expect_equal(vcov(x), vcov(y))
-
-    expect_summary_equal(
-      y,
-      summary(x, correlation = TRUE)
-    )
-
-    # expect_equal(
-    #   predict(y, mtcars),
-    #   drop(predict(x, mtcars))
-    # )
-
-  }
-
+test_that("robust oomlm HC0", {
+  expect_attr_equal("HC0")
 })
 
-
-test_that("weighted robust oomlm", {
-
-  df      <- mtcars
-  set.seed(42)
-  w       <- runif(nrow(mtcars))
-  df['w'] <- w / sum(w)
-
-  f <- mpg ~ cyl + disp + hp + wt
-
-  for(se_type in se_types) {
-
-    y <- robust_models[["weights"]][[se_type]]
-    x <- iter_model(df, f, weights = ~w, se_type = se_type)
-
-    # expect_equal(coef(x), coef(y))
-    # expect_equal(vcov(x), vcov(y))
-    expect_summary_equal(
-      y,
-      summary(x, correlation = TRUE)
-    )
-
-    # expect_equal(
-    #   predict(y, df),
-    #   drop(predict(x, df))
-    # )
-
-  }
+test_that("robust oomlm HC1", {
+  expect_attr_equal("HC1")
 })
 
-
-test_that("robust oomlm without intercept", {
-
-  df <- mtcars
-  f  <- mpg ~ 0 + cyl + disp + hp + wt
-
-  for(se_type in se_types) {
-
-    y <- robust_models[["noint"]][[se_type]]
-    x <- iter_model(df, f, se_type = se_type)
-
-    # expect_equal(coef(x), coef(y))
-    # expect_equal(vcov(x), vcov(y))
-    expect_summary_equal(
-      y,
-      summary(x, correlation = TRUE)
-    )
-
-    # expect_equal(
-    #   predict(y, df),
-    #   drop(predict(x, df))
-    # )
-
-  }
-
+test_that("robust oomlm stata", {
+  expect_attr_equal("stata")
 })
 
-
-test_that("weighted robust oomlm without intercept", {
-
-  df      <- mtcars
-  set.seed(42)
-  w       <- runif(nrow(mtcars))
-  df['w'] <- w / sum(w)
-
-  f <- mpg ~ 0 + cyl + disp + hp + wt
-
-  for(se_type in se_types) {
-
-    y <- robust_models[["weights_noint"]][[se_type]]
-    x <- iter_model(df, f, weights = ~w, se_type = se_type)
-
-    # expect_equal(vcov(x), vcov(y))
-    expect_summary_equal(
-      y,
-      summary(x, correlation = TRUE)
-    )
-
-    # expect_equal(
-    #   predict(y, df),
-    #   drop(predict(x, df))
-    # )
-  }
-
+test_that("robust oomlm classical", {
+  expect_attr_equal("classical")
 })
-
 
 test_that("bad se_type input", {
 
   df <- mtcars
   f  <- mpg ~ cyl + disp + hp + wt
 
-  expect_error(oomlm_robust(formula = f, se_type = "foobar"))
+  expect_error(oomlm_robust(formula = f, se_type = "wut?"))
 
 })

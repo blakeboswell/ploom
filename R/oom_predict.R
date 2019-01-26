@@ -68,9 +68,7 @@ predict.oomlm <- function(object,
     if(se_fit) {
       
       rss    <- object$qr$rss_full
-      smry   <- summary(object)
-      sigma  <- smry$sigma
-      dof    <- smry$df[2]
+      dof    <- object$df.residual
       vcov_y <- vcov(object)
       res_scale <- rss / dof
       
