@@ -14,7 +14,7 @@
 #' @examples \donttest{
 #' # fit an `oomlm` model
 #' chunks <- oomdata_tbl(mtcars, chunk_size = 1)
-#' x  <- oomlm(mpg ~ cyl + disp + hp, chunks)
+#' x  <- fit(oomlm(mpg ~ cyl + disp + hp), chunks)
 #' 
 #' # call `predict`
 #' pred <- predict(x, mtcars)

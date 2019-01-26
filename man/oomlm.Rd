@@ -46,27 +46,27 @@ to be fit in \code{p^2} memory.
 }
 \details{
 The provided \code{\link[=formula]{formula()}} must not contain any data-dependent terms to ensure
-consistency across calls to \code{\link[=update]{update()}}. Factors are permitted, but the
+consistency across calls to \code{\link[=fit]{fit()}}. Factors are permitted, but the
 levels of the factor must be the same across all data chunks. Empty factor
 levels are accepted.
 }
 \examples{
 \donttest{
 # `oomglm()` are defined with a call to `oomlm()` and fit to data
-# with a call to `update()`
+# with a call to `fit()`
 x <- oomlm(mpg ~ cyl + disp)
-x <- update(x, mtcars)
+x <- fit(x, mtcars)
 print(x)
 
 
 # `oomlm()` models can be fit with more data via subsequent calls
-# to the `update()` function
+# to the `fit()` function
 chunks <- purrr::pmap(mtcars, list)
 
 y <- oomlm(mpg ~ cyl + disp)
 
 for(chunk in chunks) {
-  y <- update(y, chunk)
+  y <- fit(y, chunk)
 }
 
 tidy(x)
@@ -74,10 +74,10 @@ tidy(x)
 # `oomdata_tbl()` facilitates iterating through data rows in chunks
 chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 
-# `update()` will automatically fit over all chunks in an `oomdata()`
+# `fit()` will automatically fit over all chunks in an `oomdata()`
 # function
 z <- oomlm(mpg ~ cyl + disp)
-z <- update(z, data = chunks)
+z <- fit(z, data = chunks)
 summary(z)
 
 }

@@ -61,7 +61,7 @@ and if the IRLS algorithm has converged (\code{converged}).
 
 # reweight 4 times or until convergence
 x <- oomglm(mpg ~ cyl + disp)
-x <- iter_weight(x, mtcars, times = 4)
+x <- fit(x, mtcars, times = 4)
 
 tidy(x)
 
@@ -69,7 +69,7 @@ tidy(x)
 
 y      <- oomglm(mpg ~ cyl + disp)
 chunks <- oomdata_tbl(mtcars, chunk_size = 10)
-y      <- iter_weight(y, chunks, times = 4)
+y      <- fit(y, chunks, times = 4)
 
 tidy(y)
 

@@ -60,8 +60,8 @@
 #' # ploom model functions automatically iterate over `oomdata` until 
 #' # the source is exhausted (`oomlm()`, `oomlm_robust()`) or until 
 #' # IRLS convergence (`oomglm()`, `oomglm_robust()`)
-#' x <- oomlm(mpg ~ cyl + disp, chunks)
-#' y <- iter_weight(oomglm(mpg ~ cyl + disp), chunks)
+#' x <- fit(oomlm(mpg ~ cyl + disp), chunks)
+#' y <- fit(oomglm(mpg ~ cyl + disp), chunks)
 #'
 #' coef(x)
 #' coef(y)
