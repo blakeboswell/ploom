@@ -48,7 +48,6 @@ Collate:
     'oom_tidy.R'
     'oomdata.R'
     'oomglm.R'
-    'oomglm_robust.R'
     'oomglm_summary.R'
     'oomlm.R'
     'oomlm_robust.R'

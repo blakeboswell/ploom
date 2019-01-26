@@ -106,13 +106,6 @@ vcov.oomlm_robust <- function(object, ...) {
 }
 
 
-#' @method vcov oomglm_robust
-#' @export
-vcov.oomglm_robust <- function(object, ...) {
-  vcov.oomlm_robust(object, ...)
-}
-
-
 #' @method logLik oomlm
 #' @export
 logLik.oomlm <- function(object, REML = FALSE, ...) {

@@ -3,7 +3,7 @@ context("test-glm-model.R")
 
 iter_model <- function(df, eqn, weights = NULL) {
   x <- oomglm(formula = eqn, weights = weights)
-  iter_weight(x, df, times = 8)
+  fit(x, df, times = 8)
 }
 
 
@@ -13,16 +13,17 @@ expect_summary_equal <- function(sy, sx) {
   expect_equal(sy$family, sx$family)
   expect_equal(sy$deviance, sx$deviance)
   expect_equal(sy$df.residual, sx$df.residual)
-  # expect_equal(sy$null.deviance, sx$null.deviance)
   expect_equal(sy$df.null, sx$df.null)
   expect_equal(sy$iter, sx$iter)
   expect_equal(sy$coefficients, sx$coefficients)
   expect_equal(sy$aliased, sx$aliased)
-  # expect_equal(sy$dispersion, sx$dispersion)
   expect_equal(sy$df, sx$df)
   expect_equal(sy$correlation, sx$correlation)
   expect_equal(sy$cov.unscaled, sx$cov.unscaled)
-
+  
+  # not impl
+  # expect_equal(sy$null.deviance, sx$null.deviance)
+  # expect_equal(sy$dispersion, sx$dispersion)
 }
 
 
@@ -37,27 +38,14 @@ expect_attr_equal <- function(x, y) {
   expect_equal(vcov(x), vcov(y))
 
   yy        <- predict(y, mtcars)
-  names(yy) <- NULL
-  xy        <- drop(predict(x, mtcars))
-  names(xy) <- NULL
+  xy        <- predict(x, mtcars)
   expect_equal(yy, xy)
-
-  yy        <- predict(y, mtcars, type = "response")
-  names(yy) <- NULL
-  xy        <- drop(predict(x, mtcars, type = "response"))
-  names(xy) <- NULL
-  expect_equal(yy, xy)
-
-  yy        <- predict(y, mtcars, se.fit = TRUE)
-  names(yy$se)  <- NULL
-  names(yy$fit) <- NULL
-  xy        <- predict(x, mtcars, se_fit = TRUE)
-  names(xy$se)  <- NULL
-  xy$fit <- drop(xy$fit)
-  names(xy$fit) <- NULL
-  expect_equal(yy$se, xy$se)
-  expect_equal(yy$fit, xy$fit)
   
+  yy        <- predict(y, mtcars, se.fit = TRUE)
+  xy        <- predict(x, mtcars, se_fit = TRUE)
+  names(xy) <- names(yy)
+  expect_equal(yy, xy)
+
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),
     as.matrix(tidy(x)[2:5])

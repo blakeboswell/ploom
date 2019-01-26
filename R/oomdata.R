@@ -59,7 +59,7 @@
 #'
 #' # ploom model functions automatically iterate over `oomdata` until 
 #' # the source is exhausted (`oomlm()`, `oomlm_robust()`) or until 
-#' # IRLS convergence (`oomglm()`, `oomglm_robust()`)
+#' # IRLS convergence (`oomglm()``)
 #' x <- fit(oomlm(mpg ~ cyl + disp), chunks)
 #' y <- fit(oomglm(mpg ~ cyl + disp), chunks)
 #'

@@ -1,7 +1,7 @@
 #' Predict values using `oomlm()` and `oomglm()` models
 #'
 #' @param object object inheriting from class `oomlm`
-#' @param data observations for prediction
+#' @param new_data observations for prediction
 #' @param se_fit indicates if the standard error of predicted means should
 #'   be returned
 #' @param interval type of interval calculation
@@ -45,48 +45,68 @@ NULL
 #' @rdname predict
 #' @export
 predict.oomlm <- function(object,
-                          data     = NULL,
+                          new_data = NULL,
                           se_fit   = FALSE,
                           interval = NULL,
                           level    = 0.95,
                           as_function = FALSE,
                           ...) {
   
-  if(!as_function && is.null(data)){
-    stop("`data` must be provided if `as_function` is FALSE")
+  if(!as_function && is.null(new_data)){
+    stop("`new_data` must be provided if `as_function` is FALSE")
   }
   
-  fitfxn <- function(data) {
+  return_dof <- all(class(object) %in% c("oomlm"))
+  
+  fitfxn <- function(new_data) {
     
-    x   <- model_frame(object$terms, data)
+    x   <- model_frame(object$terms, new_data)
     x   <- model_matrix(object$terms, x)
     fit <- x %*% coef(object)
     
     if(se_fit) {
       
-      sobj    <- summary(object)
-      sigma   <- sobj$sigma
-      sdm_inv <- object$qr$sdm_inv()
-      ip      <- if(is.null(interval)) 0 else (interval %in% "prediction")
-      dof     <- sobj$df[2]
+      sobj     <- summary(object)
+      sigma    <- sobj$sigma
+      sdm_inv  <- object$qr$sdm_inv()
+      pi_level <- if(is.null(interval)) 0 else (interval %in% "prediction")
+      dof      <- sobj$df[2]
       
-      std_error <- function(obs) {
-        sigma * sqrt(ip + t(obs) %*% sdm_inv %*% obs)
+      std_error <- function(obs, pi_level = 0) {
+        sigma * sqrt(pi_level + t(obs) %*% sdm_inv %*% obs)
       }
       
       se    <- apply(x, 1, std_error)
       
       if(!is.null(interval)) {
+        
+        pse <- if (pi_level > 0) {
+          apply(x, 1, std_error, pi_level = 1)
+        } else {
+          se
+        }
+        
         tfrac <- qt((1 - level)/2, dof)
-        fit   <- cbind(fit, fit + se * tfrac, fit - se * tfrac)
-        colnames(fit) <- c("fit", "lwr", "upr")
+        fit   <- cbind(fit, fit + pse * tfrac, fit - pse * tfrac)
+        colnames(fit) <- c(".pred", "lwr", "upr")
       }
       
-      return(list(fit = fit, se = se))
+      rss       <- object$qr$rss()
+      dof       <- object$df.residual
+      res_scale <- sqrt(tail(rss, 1) / dof)
+      
+      rval <- list(fit = drop(fit), se = drop(se))
+      if(return_dof){
+        rval[["df"]] <- dof
+      }
+      
+      rval[["residual_scale"]] <- res_scale
+      
+      return(rval)
       
     }
     
-    fit
+    drop(fit)
     
   }
   
@@ -94,7 +114,7 @@ predict.oomlm <- function(object,
     return(fitfxn)
   }
   
-  fitfxn(data)
+  fitfxn(new_data)
   
 }
 
@@ -102,14 +122,14 @@ predict.oomlm <- function(object,
 #' @rdname predict
 #' @export
 predict.oomglm <- function(object, 
-                           data,
-                           se_fit   = FALSE,
-                           type = c("link", "response"),
+                           new_data,
+                           type   = c("link", "response"),
+                           se_fit = FALSE,
                            as_function = FALSE,
                            ...) {
 
-  if(!as_function && is.null(data)){
-    stop("`data` must be provided if `as_function` is FALSE")
+  if(!as_function && is.null(new_data)){
+    stop("`new_data` must be provided if `as_function` is FALSE")
   }
   
   link_pred <- predict.oomlm(object,
@@ -122,10 +142,9 @@ predict.oomglm <- function(object,
     linkinv  <- fam$linkinv
     mu_eta   <- fam$mu.eta
     
-    resp_pred <- function(data) {
+    resp_pred <- function(new_data) {
       
-      pred <- link_pred(data)
-      
+      pred  <- link_pred(new_data)
       if(se_fit) {
         y  <- linkinv(pred$fit)
         return(list(
@@ -133,7 +152,7 @@ predict.oomglm <- function(object,
           se  = pred$se %*% mu_eta(y)^2))
       }
       
-      linkinv(pred)
+      linkinv(pred$fit)
       
     }
     
@@ -147,7 +166,7 @@ predict.oomglm <- function(object,
     return(fitfxn)
   }
   
-  fitfxn(data)
+  fitfxn(new_data)
   
 }
 

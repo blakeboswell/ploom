@@ -6,16 +6,16 @@
 \alias{predict.oomglm}
 \title{Predict values using \code{oomlm()} and \code{oomglm()} models}
 \usage{
-\method{predict}{oomlm}(object, data = NULL, se_fit = FALSE,
+\method{predict}{oomlm}(object, new_data = NULL, se_fit = FALSE,
   interval = NULL, level = 0.95, as_function = FALSE, ...)
 
-\method{predict}{oomglm}(object, data, se_fit = FALSE, type = c("link",
-  "response"), as_function = FALSE, ...)
+\method{predict}{oomglm}(object, new_data, type = c("link", "response"),
+  se_fit = FALSE, as_function = FALSE, ...)
 }
 \arguments{
 \item{object}{object inheriting from class \code{oomlm}}
 
-\item{data}{observations for prediction}
+\item{new_data}{observations for prediction}
 
 \item{se_fit}{indicates if the standard error of predicted means should
 be returned}

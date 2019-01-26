@@ -28,30 +28,6 @@ update_sandwich <- function(qr, mm, n, p, y, offset, w) {
 }
 
 
-# #' vcov implementation for updating linear model
-# #' (Miller AS274 QR factorization) as implemented
-# #' in package `biglm`
-# #' @param np number of parameters in model
-# #' @param D diagonals of cross products matrix
-# #' @param rbar the off diagonal portion of the R matrix
-# #' @keywords internal
-# squared_design_inv <- function(np, D, rbar) {
-#   
-#   R         <- diag(np)
-#   R[row(R) > col(R)] <- rbar
-#   R         <- t(R)
-#   R         <- sqrt(D) * R
-#   
-#   ok        <- D != 0
-#   R[ok, ok] <- chol2inv(R[ok, ok, drop = FALSE])
-#   R[!ok, ]  <- NA
-#   R[, !ok]  <- NA
-# 
-#   R
-#   
-# }
-
-
 #' Hubert/White sandwich vcov implementation for updating linear
 #' model (Miller AS274 QR factorization) as implemented 
 #' in package `biglm`

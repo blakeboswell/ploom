@@ -6,7 +6,7 @@ iter_model <- function(df, eqn, weights = NULL) {
   x <- oomlm(formula = eqn, weights = weights)
   
   for(i in 1:nrow(df)) {
-    x <- update(x, df[i, ])
+    x <- fit(x, df[i, ])
   }
 
   x
@@ -40,20 +40,25 @@ expect_attr_equal <- function(x, y) {
   expect_equal(vcov(x), vcov(y))
   
   yy        <- predict(y, mtcars)
-  names(yy) <- NULL
-  xy        <- drop(predict(x, mtcars))
-  names(xy) <- NULL
+  xy        <- predict(x, mtcars)
   expect_equal(yy, xy)
   
   yy        <- predict(y, mtcars, se.fit = TRUE)
-  names(yy$se)  <- NULL
-  names(yy$fit) <- NULL
   xy        <- predict(x, mtcars, se_fit = TRUE)
-  names(xy$se)  <- NULL
-  xy$fit <- drop(xy$fit)
-  names(xy$fit) <- NULL
-  expect_equal(yy$se, xy$se)
-  expect_equal(yy$fit, drop(xy$fit))
+  names(xy) <- names(yy)
+  expect_equal(yy, xy)
+  
+  yy <- predict(y, mtcars, se.fit = TRUE, interval = "confidence")
+  xy <- predict(x, mtcars, se_fit = TRUE, interval = "confidence")
+  names(xy)     <- names(yy)
+  colnames(xy$fit) <- colnames(yy$fit)
+  expect_equal(yy, xy)
+  
+  yy <- predict(y, mtcars, se.fit = TRUE, interval = "prediction")
+  xy <- predict(x, mtcars, se_fit = TRUE, interval = "prediction")
+  names(xy)     <- names(yy)
+  colnames(xy$fit) <- colnames(yy$fit)
+  expect_equal(yy, xy)
   
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),
@@ -138,8 +143,8 @@ test_that("oomlm", {
   df <- mtcars
   f  <- mpg ~ cyl + disp + hp + wt
   y  <- lm(f, data = df)
-  x  <- update(oomlm(f),
-               oomdata_tbl(df, chunk_size = 2))
+  x  <- fit(oomlm(f),
+            oomdata_tbl(df, chunk_size = 2))
 
   expect_attr_equal(x, y)
 
@@ -154,8 +159,8 @@ test_that("weighted oomlm", {
 
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = df, weights = w)
-  x <- update(oomlm(f, weights = ~w),
-              oomdata_tbl(df, chunk_size = 2))
+  x <- fit(oomlm(f, weights = ~w),
+           oomdata_tbl(df, chunk_size = 2))
 
   expect_attr_equal(x, y)
 
@@ -171,8 +176,8 @@ test_that("weighted oomlm with zero weight", {
 
   f <- mpg ~ cyl + disp + hp + wt
   y <- lm(f, data = df, weights = w)
-  x <- update(oomlm(f, weights = ~w),
-              oomdata_tbl(df, chunk_size = 2))
+  x <- fit(oomlm(f, weights = ~w),
+           oomdata_tbl(df, chunk_size = 2))
 
   expect_attr_equal(x, y)
 })
@@ -185,8 +190,8 @@ test_that("oomlm without intercept", {
   f  <- mpg ~ 0 + cyl + disp + hp + wt
 
   y <- lm(f, data = df)
-  x <- update(oomlm(f),
-              oomdata_tbl(df, chunk_size = 2))
+  x <- fit(oomlm(f),
+           oomdata_tbl(df, chunk_size = 2))
 
   expect_attr_equal(x, y)
 
@@ -202,8 +207,8 @@ test_that("weighted oomlm without intercept", {
   f <- mpg ~ 0 + cyl + disp + hp + wt
 
   y <- lm(f, data = df, weights = w)
-  x <- update(oomlm(f, weights = ~w),
-              oomdata_tbl(df, chunk_size = 2))
+  x <- fit(oomlm(f, weights = ~w),
+           oomdata_tbl(df, chunk_size = 2))
 
   expect_attr_equal(x, y)
 

@@ -47,7 +47,7 @@ model_frame <- function(formula, data = NULL) {
   extras     <- list()
   extranames <- NULL
   subset     <- NULL
-  rownames   <- NULL
+  rownames   <- .row_names_info(data, 0L)
   
   data       <- .External2(getFromNamespace("C_modelframe", "stats"),
                            formula,

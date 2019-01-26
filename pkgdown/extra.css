@@ -36,6 +36,15 @@ a:hover {
 }
 
 
+.navbar-default .navbar-link {
+  color: #182125;
+}
+.navbar-default .navbar-link:hover {
+  color: #1D55EA;
+  text-decoration: none;
+}
+
+
 /* enlarge brand label */
 .navbar-brand {
   font-size: 24px;
@@ -54,8 +63,8 @@ a:hover {
 
 /* change navbar colors */
 .navbar { 
-  background-color: #FFF;
-  border-color: #FFF;
+  background-color:#FFF;
+  border-color: #eee;
   color: #182125;
 }
 .navbar-brand a {
