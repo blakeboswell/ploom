@@ -46,12 +46,8 @@ expect_attr_equal <- function(x, y, df) {
   names(xy) <- names(yy)
   expect_equal(yy, xy)
   
-  yy <- resid(y)
-  xy <- resid(x, df, type = "deviance")
-  expect_equal(yy, xy)
-  
   yy <- residuals(y)
-  xy <- residuals(x, df, type = "deviance")
+  xy <- oomglm_residuals(x, df, type = "deviance")
   expect_equal(yy, xy)
 
   expect_equal(

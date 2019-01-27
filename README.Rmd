@@ -45,7 +45,7 @@ Models are intialized with a `formula()`; fit to data with calls to `fit()`; and
 library(ploom)
 
 # define model, fit to data, and summarize
-y <- oomlm(mpg ~ cyl + disp)
+y <- oomlm(mpg ~ wt + qsec + factor(am))
 y <- fit(y, data = mtcars)
 
 tidy(y)
@@ -70,7 +70,7 @@ while((!is.null(chunk <- chunks()))) {
 
 ```{r, eval = TRUE, message=FALSE}
 # fit model to all chunks
-y <- fit(oomlm(mpg ~ cyl + disp), chunks)
+y <- fit(oomlm(mpg ~ wt + qsec + factor(am)), chunks)
 glance(y)
 ```
 
@@ -81,11 +81,11 @@ The function `oomdata_dbi()` enables iteratation over a [`DBI`]() result set. `f
 ```{r, eval = TRUE, message=FALSE}
 # connect to database
 con    <- DBI::dbConnect(RPostgres::Postgres(), dbname="mtcars")
-result <- DBI::dbSendQuery(con, "select mpg, cyl, disp from mtcars;")
+result <- DBI::dbSendQuery(con, "select mpg, wt, qsec, am from mtcars;")
 chunks <- oomdata_dbi(result, chunk_size = 16)
 
 # fit model to all chunks
-y <- fit(oomlm(mpg ~ cyl + disp), chunks)
+y <- fit(oomlm(mpg ~ wt + qsec + factor(am)), chunks)
 summary(y)
 ```
 
@@ -102,7 +102,10 @@ head(yhat[["fit"]])
 
 `ploom` models do not store the residuals during fitting.
 
-
+```{r, eval = TRUE, message=FALSE}
+u <- oomlm_residuals(y, data = mtcars)
+sum(u^2)
+```
 
 ## Alternatives
 

@@ -168,65 +168,96 @@ predict.oomglm <- function(object,
 #' calculate residuals for oomlm
 #'
 #' @param object `oomlm` model
-#' @param new_data data to calculate residuals
-#' @param type residual calculation method, "deviance"
+#' @param data data to calculate residuals
+#' @param as_function if TRUE a function with only a `data` argument is returned
+#'   for subsequent residual calculations
 #' 
-#' @keywords internal
-residuals_oomlm <- function(object, new_data) {
+#' @export
+oomlm_residuals <- function(object, data, as_function = FALSE) {
 
-  x    <- unpack_oomchunk(object, new_data)
-  y    <- x$response - x$offset
-  yhat <- x$data %*% coef(object)
+  if(!as_function && is.null(data)){
+    stop("`data` must be provided if `as_function` is FALSE")
+  }
+  fn <- function(data) {
+    x    <- unpack_oomchunk(object, data)
+    y    <- x$response - x$offset
+    yhat <- x$data %*% coef(object)
+    
+    drop(y - yhat)
+  }
   
-  drop(y - yhat)
+  if(as_function) {
+    return(fn)
+  }
+  
+  fn(data)
   
 }
-
 
 
 #' calculate residuals for oomglm
 #'
 #' @param object `oomlm` model
-#' @param new_data data to calculate residuals
-#' @param type residual calculation method, "deviance"
+#' @param data data to calculate residuals
+#' @param type residual calculation method
+#' @param as_function if TRUE a function with only a `data` argument is returned
+#'   for subsequent residual calculations
 #' 
-#' @keywords internal
-residuals_oomglm <- function(object, new_data, type = c("deviance"
-                                                        , "pearson"
-                                                        , "response"
-                                                        , "working")) {
+#' @export
+oomglm_residuals <- function(object,
+                             data,
+                             type = c("deviance"
+                                      , "pearson"
+                                      , "response"
+                                      , "working"),
+                             as_function = FALSE) {
+  
+  if(!as_function && is.null(data)){
+    stop("`data` must be provided if `as_function` is FALSE")
+  }
   
   type <- match.arg(type)
-  fam  <- object$family
   
-  x    <- unpack_oomchunk(object, new_data)
-  xadj <- glm_adjust(object, x)
-  wts  <- xadj$w
-  eta  <- xadj$z
-  y    <- x$response
-  yhat <- x$data %*% coef(object)
-  r    <- y - yhat
-  
-  switch(
-    type,
-    deviance=,pearson=,response=
-      if(is.null(y)) {
-        y <- yhat + r * fam$mu.eta(eta)
-      })
-  
-  res <- switch(
-    type,
-    deviance = if(object$df.residual > 0) {
-      d.res <- sqrt(pmax(fam$dev.resids(y, yhat, wts), 0))
+  fn <- function(data) {
+    
+    fam  <- object$family
+    
+    x    <- unpack_oomchunk(object, data)
+    xadj <- glm_adjust(object, x)
+    wts  <- xadj$w
+    eta  <- xadj$z
+    y    <- x$response
+    yhat <- x$data %*% coef(object)
+    r    <- y - yhat
+    
+    switch(
+      type,
+      deviance=,pearson=,response=
+        if(is.null(y)) {
+          y <- yhat + r * fam$mu.eta(eta)
+        })
+    
+    res <- switch(
+      type,
+      deviance = if(object$df.residual > 0) {
+        d.res <- sqrt(pmax(fam$dev.resids(y, yhat, wts), 0))
         ifelse(y > yhat, d.res, -d.res)
       } else {
         rep(0, length(yhat))
       },
-    pearson = (y - yhat) * sqrt(wts) / sqrt(fam$variance(yhat)),
-    working = r,
-    response = y - yhat
-  )
+      pearson = (y - yhat) * sqrt(wts) / sqrt(fam$variance(yhat)),
+      working = r,
+      response = y - yhat
+    )
+    
+    drop(res)
+
+  }
   
-  drop(res)
+  if(as_function) {
+    return(fn)  
+  }
+  
+  fn(data)
 
 }

@@ -1,39 +1,5 @@
 
 
-#' @method resid oomlm
-#' @export
-resid.oomlm <- function(object, data, as_function = FALSE) {
-  if(as_function) {
-    return(function(data) residuals_oomlm(object, data))
-  }
-  residuals_oomlm(object, data)
-}
-
-
-#' @method residuals oomlm
-#' @export
-residuals.oomlm <- function(object, data, as_function = FALSE, ...) {
-  resid.oomlm(object, data, as_function)
-}
-
-
-#' @method resid oomglm
-#' @export
-resid.oomglm <- function(object, data, type = c("deviance"), as_function = FALSE) {
-  if(as_function) {
-    return(function(data) residuals_oomglm(object, data, type = type))
-  }
-  residuals_oomglm(object, data, type = type)
-}
-
-
-#' @method residuals oomglm
-#' @export
-residuals.oomglm <- function(object, data, type = c("deviance"), as_function = FALSE) {
-  resid.oomglm(object, data, type, as_function = FALSE)
-}
-
-
 #' @method formula oomlm
 #' @export
 formula.oomlm <- function(x, ...) {

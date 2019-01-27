@@ -6,6 +6,8 @@
 \alias{print.summary.oomglm}
 \alias{summary.oomglm}
 \alias{logLik.oomglm}
+\alias{residuals.oomglm}
+\alias{resid.oomglm}
 \title{Out of memory Generalized Linear model}
 \usage{
 oomglm(formula, family = gaussian(), weights = NULL, start = NULL,

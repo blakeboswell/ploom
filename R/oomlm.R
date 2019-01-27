@@ -62,7 +62,7 @@ init_oomlm <- function(formula, weights = NULL) {
 #' @seealso [oomglm()], [oomdata_tbl()]
 #' @aliases AIC.oomlm coef.oomlm confint.oomlm deviance.oomlm family.oomlm 
 #'  formula.oomlm print.oomlm print.summary.oomlm summary.oomlm logLik.oomlm
-#'  vcov.oomlm BIC.oomlm
+#'  vcov.oomlm BIC.oomlm residuals.oomlm resid.oomlm
 #' @export
 #' @name oomlm
 #' @examples \donttest{

@@ -48,18 +48,19 @@ Models are intialized with a `formula()`; fit to data with calls to
 library(ploom)
 
 # define model, fit to data, and summarize
-y <- oomlm(mpg ~ cyl + disp)
+y <- oomlm(mpg ~ wt + qsec + factor(am))
 y <- fit(y, data = mtcars)
 
 tidy(y)
 ```
 
-    ## # A tibble: 3 x 7
-    ##   term        estimate std.error statistic  p.value conf.low  conf.high
-    ##   <chr>          <dbl>     <dbl>     <dbl>    <dbl>    <dbl>      <dbl>
-    ## 1 (Intercept)  34.7       2.55       13.6  4.02e-14  29.5     39.9     
-    ## 2 cyl          -1.59      0.712      -2.23 3.37e- 2  -3.04    -0.131   
-    ## 3 disp         -0.0206    0.0103     -2.01 5.42e- 2  -0.0416   0.000395
+    ## # A tibble: 4 x 7
+    ##   term        estimate std.error statistic    p.value conf.low conf.high
+    ##   <chr>          <dbl>     <dbl>     <dbl>      <dbl>    <dbl>     <dbl>
+    ## 1 (Intercept)     9.62     6.96       1.38 0.178       -4.64       23.9 
+    ## 2 wt             -3.92     0.711     -5.51 0.00000695  -5.37       -2.46
+    ## 3 qsec            1.23     0.289      4.25 0.000216     0.635       1.82
+    ## 4 factor(am)1     2.94     1.41       2.08 0.0467       0.0457      5.83
 
 #### Fitting over Chunks
 
@@ -86,14 +87,14 @@ while((!is.null(chunk <- chunks()))) {
 
 ``` r
 # fit model to all chunks
-y <- fit(oomlm(mpg ~ cyl + disp), chunks)
+y <- fit(oomlm(mpg ~ wt + qsec + factor(am)), chunks)
 glance(y)
 ```
 
     ## # A tibble: 1 x 10
-    ##   r.squared adj.r.squared sigma statistic p.value logLik   AIC   BIC
-    ##       <dbl>         <dbl> <dbl>     <dbl>   <dbl>  <dbl> <dbl> <dbl>
-    ## 1     0.760         0.743  3.06      45.8 1.06e-9  -79.6  167.  173.
+    ##   r.squared adj.r.squared sigma statistic  p.value logLik   AIC   BIC
+    ##       <dbl>         <dbl> <dbl>     <dbl>    <dbl>  <dbl> <dbl> <dbl>
+    ## 1     0.850         0.834  2.46      52.7 1.21e-11  -72.1  154.  161.
     ## # … with 2 more variables: deviance <dbl>, df.residual <dbl>
 
 #### Working with Databases
@@ -104,28 +105,29 @@ set. `fit()` will automatically fit the model over all chunks.
 ``` r
 # connect to database
 con    <- DBI::dbConnect(RPostgres::Postgres(), dbname="mtcars")
-result <- DBI::dbSendQuery(con, "select mpg, cyl, disp from mtcars;")
+result <- DBI::dbSendQuery(con, "select mpg, wt, qsec, am from mtcars;")
 chunks <- oomdata_dbi(result, chunk_size = 16)
 
 # fit model to all chunks
-y <- fit(oomlm(mpg ~ cyl + disp), chunks)
+y <- fit(oomlm(mpg ~ wt + qsec + factor(am)), chunks)
 summary(y)
 ```
 
     ## 
-    ## Call:  oomlm(mpg ~ cyl + disp)
+    ## Call:  oomlm(mpg ~ wt + qsec + factor(am))
     ## 
     ##             Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept) 34.66099    2.54700  13.609 4.02e-14 ***
-    ## cyl         -1.58728    0.71184  -2.230   0.0337 *  
-    ## disp        -0.02058    0.01026  -2.007   0.0542 .  
+    ## (Intercept)   9.6178     6.9596   1.382 0.177915    
+    ## wt           -3.9165     0.7112  -5.507 6.95e-06 ***
+    ## qsec          1.2259     0.2887   4.247 0.000216 ***
+    ## factor(am)1   2.9358     1.4109   2.081 0.046716 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Observations included:  32 
-    ## Residual standard error: 3.055 on 29 degrees of freedom
-    ## Multiple R-squared:  0.7596, Adjusted R-squared:  0.743 
-    ## F-statistic: 45.81 on 2 and 29 DF,  p-value: 1.058e-09
+    ## Residual standard error: 2.459 on 28 degrees of freedom
+    ## Multiple R-squared:  0.8497, Adjusted R-squared:  0.8336 
+    ## F-statistic: 52.75 on 3 and 28 DF,  p-value: 1.21e-11
 
 See the articles [NA]() and [NA]() for more on interfacing with
 databases.
@@ -142,16 +144,22 @@ yhat <- predict(y, new_data = mtcars, se_fit = TRUE, interval = "prediction")
 head(yhat[["fit"]])
 ```
 
-    ##                      .pred       lwr      upr
-    ## Mazda RX4         21.84395 15.377338 28.31057
-    ## Mazda RX4 Wag     21.84395 15.377338 28.31057
-    ## Datsun 710        26.08886 19.588791 32.58892
-    ## Hornet 4 Drive    19.82676 13.427084 26.22643
-    ## Hornet Sportabout 14.55267  8.096698 21.00865
-    ## Valiant           20.50602 14.157647 26.85439
+    ##                      .pred      lwr      upr
+    ## Mazda RX4         22.47046 17.22244 27.71849
+    ## Mazda RX4 Wag     22.15825 16.89630 27.42019
+    ## Datsun 710        26.28107 21.00938 31.55275
+    ## Hornet 4 Drive    20.85744 15.62898 26.08590
+    ## Hornet Sportabout 17.00959 11.74463 22.27455
+    ## Valiant           20.85409 15.57760 26.13058
 
-`ploom` models do not store the residuals during
-    fitting.
+`ploom` models do not store the residuals during fitting.
+
+``` r
+u <- oomlm_residuals(y, data = mtcars)
+sum(u^2)
+```
+
+    ## [1] 169.2859
 
 ## Alternatives
 

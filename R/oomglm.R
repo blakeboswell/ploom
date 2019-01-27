@@ -250,6 +250,7 @@ iter_weight <- function(object,
 #' \item{call}{The matched call.}
 #' @seealso [iter_weight()], [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()]
 #' @aliases print.oomglm print.summary.oomglm summary.oomglm logLik.oomglm
+#'   residuals.oomglm resid.oomglm
 #' @export
 #' @name oomglm
 #' @examples \donttest{
