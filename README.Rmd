@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Overview
 
-`ploom` provides tools for __memory efficient__ fitting of Linear and Generalized Linear models. Inspired by `biglm`, `ploom` fits models with a bounded memory [__algorithm__](#acknowledgements) enabling:
+`ploom` provides tools for __memory efficient__ fitting of Linear and Generalized Linear models. Inspired by `biglm`, `ploom` fits models with a bounded memory [algorithm](#acknowledgements) enabling:
 
 - Out-of-memory (OOM) processing capable of fitting __billions__ of observations
 - _Fast_ in-memory processing that requires less resources than `lm()` and `glm()`
@@ -25,8 +25,8 @@ knitr::opts_chunk$set(echo = TRUE)
 `ploom` contains functions for iterative processing of in-memory data, data in databases, and data on disk. `ploom` models are compatible with `stats` summary functions, `tidy()` and `glance()`, and implement `predict()` and `resid()` functions for in-memory and OOM data sources.
 
 __See More:__\
-[__Usage__]() and [__Vignette__]() for a more detailed capability overview\
-[__Benchmarking__]() for comparisons with other commonly used packages
+[Usage]() and [Vignette]() for a more detailed capability overview\
+[Benchmarking]() for comparisons with other commonly used packages
 
 
 ## Installation

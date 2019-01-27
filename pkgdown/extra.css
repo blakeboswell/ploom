@@ -34,6 +34,13 @@ a:hover {
   color: #1D55EA;
   text-decoration: none;
 }
+body p a {
+  font-weight: 500;
+}
+code a {
+  font-weight: normal;
+}
+
 
 
 .navbar-default .navbar-link {
@@ -53,8 +60,12 @@ a:hover {
 
 /* remove version label */
 .label {
-  display: none;
+  background-color: transparent;
+  color: #182125;
+  font-size: 10px;
+  font-weight: lighter;
 }
+
 
 /* remove home button when on homepage */
 #navbar .active {

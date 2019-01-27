@@ -14,7 +14,7 @@ status](https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg)
 
 `ploom` provides tools for **memory efficient** fitting of Linear and
 Generalized Linear models. Inspired by `biglm`, `ploom` fits models with
-a bounded memory [**algorithm**](#acknowledgements) enabling:
+a bounded memory [algorithm](#acknowledgements) enabling:
 
   - Out-of-memory (OOM) processing capable of fitting **billions** of
     observations
@@ -27,9 +27,8 @@ data in databases, and data on disk. `ploom` models are compatible with
 `predict()` and `resid()` functions for in-memory and OOM data sources.
 
 **See More:**  
-[**Usage**]() and [**Vignette**]() for a more detailed capability
-overview  
-[**Benchmarking**]() for comparisons with other commonly used packages
+[Usage]() and [Vignette]() for a more detailed capability overview  
+[Benchmarking]() for comparisons with other commonly used packages
 
 ## Installation
 
