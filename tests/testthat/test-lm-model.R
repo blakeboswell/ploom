@@ -2,13 +2,10 @@ context("test-lm-model.R")
 
 
 iter_model <- function(df, eqn, weights = NULL) {
-
   x <- oomlm(formula = eqn, weights = weights)
-  
   for(i in 1:nrow(df)) {
     x <- fit(x, df[i, ])
   }
-
   x
 }
 
@@ -29,7 +26,7 @@ expect_summary_equal <- function(sy, sx) {
 }
 
 
-expect_attr_equal <- function(x, y) {
+expect_attr_equal <- function(x, y, df) {
   
   expect_summary_equal(
     summary(y, correlation = TRUE),
@@ -39,27 +36,32 @@ expect_attr_equal <- function(x, y) {
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
   
-  yy        <- predict(y, mtcars)
-  xy        <- predict(x, mtcars)
+  yy        <- predict(y, df)
+  xy        <- predict(x, df)
   expect_equal(yy, xy)
   
-  yy        <- predict(y, mtcars, se.fit = TRUE)
-  xy        <- predict(x, mtcars, se_fit = TRUE)
+  yy        <- predict(y, df, se.fit = TRUE)
+  xy        <- predict(x, df, se_fit = TRUE)
   expect_equal(yy, xy)
   
-  yy <- predict(y, mtcars, se.fit = TRUE, interval = "confidence")
-  xy <- predict(x, mtcars, se_fit = TRUE, interval = "confidence")
+  yy <- predict(y, df, se.fit = TRUE, interval = "confidence")
+  xy <- predict(x, df, se_fit = TRUE, interval = "confidence")
   colnames(xy$fit) <- colnames(yy$fit)
   expect_equal(yy, xy)
   
-  yy <- predict(y, mtcars, se.fit = TRUE, interval = "prediction")
-  xy <- predict(x, mtcars, se_fit = TRUE, interval = "prediction")
+  yy <- predict(y, df, se.fit = TRUE, interval = "prediction")
+  xy <- predict(x, df, se_fit = TRUE, interval = "prediction")
   colnames(xy$fit) <- colnames(yy$fit)
   expect_equal(yy, xy)
   
   yy <- resid(y)
-  xy <- resid(x, mtcars)
+  xy <- resid(x, df)
   expect_equal(yy, xy)
+  
+  yy <- residuals(y)
+  xy <- residuals(x, df)
+  expect_equal(yy, xy)
+  
   
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),
@@ -90,7 +92,7 @@ test_that("updating oomlm", {
   y <- lm(f, data = mtcars)
   x <- iter_model(mtcars, f)
   
-  expect_attr_equal(x, y)
+  expect_attr_equal(x, y, mtcars)
   
 })
 
@@ -105,7 +107,7 @@ test_that("weighted updating oomlm", {
   y <- lm(f, data = df, weights = w)
   x <- iter_model(df, f, weights = ~w)
 
-  expect_attr_equal(x, y)
+  expect_attr_equal(x, y, df)
 
 })
 
@@ -118,7 +120,7 @@ test_that("updating oomlm without intercept", {
   y <- lm(f, data = df)
   x <- iter_model(df, f)
 
-  expect_attr_equal(x, y)
+  expect_attr_equal(x, y, df)
 
 })
 
@@ -134,7 +136,7 @@ test_that("weighted updating oomlm without intercept", {
   y <- lm(f, data = df, weights = w)
   x <- iter_model(df, f, weights = ~w)
 
-  expect_attr_equal(x, y)
+  expect_attr_equal(x, y, df)
 
 })
 
@@ -147,7 +149,7 @@ test_that("oomlm", {
   x  <- fit(oomlm(f),
             oomdata_tbl(df, chunk_size = 2))
 
-  expect_attr_equal(x, y)
+  expect_attr_equal(x, y, df)
 
 })
 
@@ -163,7 +165,7 @@ test_that("weighted oomlm", {
   x <- fit(oomlm(f, weights = ~w),
            oomdata_tbl(df, chunk_size = 2))
 
-  expect_attr_equal(x, y)
+  expect_attr_equal(x, y, df)
 
 })
 
@@ -180,7 +182,7 @@ test_that("weighted oomlm with zero weight", {
   x <- fit(oomlm(f, weights = ~w),
            oomdata_tbl(df, chunk_size = 2))
 
-  expect_attr_equal(x, y)
+  expect_attr_equal(x, y, df)
 })
 
 
@@ -194,7 +196,7 @@ test_that("oomlm without intercept", {
   x <- fit(oomlm(f),
            oomdata_tbl(df, chunk_size = 2))
 
-  expect_attr_equal(x, y)
+  expect_attr_equal(x, y, df)
 
 })
 
@@ -211,7 +213,7 @@ test_that("weighted oomlm without intercept", {
   x <- fit(oomlm(f, weights = ~w),
            oomdata_tbl(df, chunk_size = 2))
 
-  expect_attr_equal(x, y)
+  expect_attr_equal(x, y, df)
 
 })
 

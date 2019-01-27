@@ -96,7 +96,7 @@ expect_attr_equal <- function(se_type) {
   colnames(x$fit) <- colnames(y$fit)
   rownames(x$fit) <- NULL
   expect_equal(y, head(x, 2))
- 
+  
 }
 
 

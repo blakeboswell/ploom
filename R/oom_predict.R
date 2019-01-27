@@ -43,25 +43,6 @@
 NULL
 
 
-#' calculate residuals residuals
-#' 
-#' separate to keep from predict std error complexity
-#'
-#' @param object `oomlm` model
-#' @param new_data data to calculate residuals
-#' @keywords internal
-calculate_residuals <- function(object, new_data) {
-  
-  mf   <- model_frame(object$terms, new_data)
-  mm   <- model_matrix(object$terms, new_data)
-  yhat <- mm %*% coef(object)
-  y    <- model_response(mf) 
-  
-  drop(y - yhat)
-  
-}
-
-
 #' @rdname predict
 #' @export
 predict.oomlm <- function(object,
@@ -182,3 +163,70 @@ predict.oomglm <- function(object,
   
 }
 
+
+
+#' calculate residuals for oomlm
+#'
+#' @param object `oomlm` model
+#' @param new_data data to calculate residuals
+#' @param type residual calculation method, "deviance"
+#' 
+#' @keywords internal
+residuals_oomlm <- function(object, new_data) {
+
+  x    <- unpack_oomchunk(object, new_data)
+  y    <- x$response - x$offset
+  yhat <- x$data %*% coef(object)
+  
+  drop(y - yhat)
+  
+}
+
+
+
+#' calculate residuals for oomglm
+#'
+#' @param object `oomlm` model
+#' @param new_data data to calculate residuals
+#' @param type residual calculation method, "deviance"
+#' 
+#' @keywords internal
+residuals_oomglm <- function(object, new_data, type = c("deviance"
+                                                        , "pearson"
+                                                        , "response"
+                                                        , "working")) {
+  
+  type <- match.arg(type)
+  fam  <- object$family
+  
+  x    <- unpack_oomchunk(object, new_data)
+  xadj <- glm_adjust(object, x)
+  wts  <- xadj$w
+  eta  <- xadj$z
+  y    <- x$response
+  yhat <- x$data %*% coef(object)
+  r    <- y - yhat
+  
+  switch(
+    type,
+    deviance=,pearson=,response=
+      if(is.null(y)) {
+        y <- yhat + r * fam$mu.eta(eta)
+      })
+  
+  res <- switch(
+    type,
+    deviance = if(object$df.residual > 0) {
+      d.res <- sqrt(pmax(fam$dev.resids(y, yhat, wts), 0))
+        ifelse(y > yhat, d.res, -d.res)
+      } else {
+        rep(0, length(yhat))
+      },
+    pearson = (y - yhat) * sqrt(wts) / sqrt(fam$variance(yhat)),
+    working = r,
+    response = y - yhat
+  )
+  
+  drop(res)
+
+}
