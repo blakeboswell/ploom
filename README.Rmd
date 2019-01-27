@@ -17,10 +17,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Overview
 
-`ploom` provides tools for __memory efficient__ fitting of Linear and Generalized Linear models. Inspired by `biglm`, fitting is performed with a [bounded memory](#aknowledgements) algorithm enabling:
+`ploom` provides tools for __memory efficient__ fitting of Linear and Generalized Linear models. Inspired by `biglm`, `ploom` fits models with a bounded memory [__algorithm__](#acknowledgements) enabling:
 
-- Out-of-memory processing capable of fitting __billions__ of observations
-- __Bounded in-memory__ fitting with runtimes comparable to `lm()` and `glm()` while occupying less memory
+- Out-of-memory (OOM) processing capable of fitting __billions__ of observations
+- _Fast_ in-memory processing that requires less resources than `lm()` and `glm()`
+
+`ploom` contains functions for iterative processing of in-memory data, data in databases, and data on disk. `ploom` models are compatible with `stats` summary functions, `tidy()` and `glance()`, and implement `predict()` and `resid()` functions for in-memory and OOM data sources.
+
+__See More:__\
+[__Usage__]() and [__Vignette__]() for a more detailed capability overview\
+[__Benchmarking__]() for comparisons with other commonly used packages
+
 
 ## Installation
 
@@ -84,7 +91,18 @@ summary(y)
 
 See the articles [NA]() and [NA]() for more on interfacing with databases.
 
-#### Inference and Prediction
+#### Prediction & Residuals
+
+Prediction with `ploom` models is performed with the `predict()` function.  `predict()` provides options for confidence intervals, prediction intervals, and standard error in addition to fit.
+
+```{r, eval = TRUE, message=FALSE}
+yhat <- predict(y, new_data = mtcars, se_fit = TRUE, interval = "prediction")
+head(yhat[["fit"]])
+```
+
+`ploom` models do not store the residuals during fitting.
+
+
 
 ## Alternatives
 

@@ -13,13 +13,23 @@ status](https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg)
 ## Overview
 
 `ploom` provides tools for **memory efficient** fitting of Linear and
-Generalized Linear models. Inspired by `biglm`, fitting is performed
-with a [bounded memory](#aknowledgements) algorithm enabling:
+Generalized Linear models. Inspired by `biglm`, `ploom` fits models with
+a bounded memory [**algorithm**](#acknowledgements) enabling:
 
-  - Out-of-memory processing capable of fitting **billions** of
+  - Out-of-memory (OOM) processing capable of fitting **billions** of
     observations
-  - **Bounded in-memory** fitting with runtimes comparable to `lm()` and
-    `glm()` while occupying less memory
+  - *Fast* in-memory processing that requires less resources than `lm()`
+    and `glm()`
+
+`ploom` contains functions for iterative processing of in-memory data,
+data in databases, and data on disk. `ploom` models are compatible with
+`stats` summary functions, `tidy()` and `glance()`, and implement
+`predict()` and `resid()` functions for in-memory and OOM data sources.
+
+**See More:**  
+[**Usage**]() and [**Vignette**]() for a more detailed capability
+overview  
+[**Benchmarking**]() for comparisons with other commonly used packages
 
 ## Installation
 
@@ -121,7 +131,28 @@ summary(y)
 See the articles [NA]() and [NA]() for more on interfacing with
 databases.
 
-#### Inference and Prediction
+#### Prediction & Residuals
+
+Prediction with `ploom` models is performed with the `predict()`
+function. `predict()` provides options for confidence intervals,
+prediction intervals, and standard error in addition to
+fit.
+
+``` r
+yhat <- predict(y, new_data = mtcars, se_fit = TRUE, interval = "prediction")
+head(yhat[["fit"]])
+```
+
+    ##                      .pred       lwr      upr
+    ## Mazda RX4         21.84395 15.377338 28.31057
+    ## Mazda RX4 Wag     21.84395 15.377338 28.31057
+    ## Datsun 710        26.08886 19.588791 32.58892
+    ## Hornet 4 Drive    19.82676 13.427084 26.22643
+    ## Hornet Sportabout 14.55267  8.096698 21.00865
+    ## Valiant           20.50602 14.157647 26.85439
+
+`ploom` models do not store the residuals during
+    fitting.
 
 ## Alternatives
 
