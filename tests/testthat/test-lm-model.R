@@ -45,19 +45,20 @@ expect_attr_equal <- function(x, y) {
   
   yy        <- predict(y, mtcars, se.fit = TRUE)
   xy        <- predict(x, mtcars, se_fit = TRUE)
-  # names(xy) <- names(yy)
   expect_equal(yy, xy)
   
   yy <- predict(y, mtcars, se.fit = TRUE, interval = "confidence")
   xy <- predict(x, mtcars, se_fit = TRUE, interval = "confidence")
-  # names(xy)     <- names(yy)
   colnames(xy$fit) <- colnames(yy$fit)
   expect_equal(yy, xy)
   
   yy <- predict(y, mtcars, se.fit = TRUE, interval = "prediction")
   xy <- predict(x, mtcars, se_fit = TRUE, interval = "prediction")
-  # names(xy)     <- names(yy)
   colnames(xy$fit) <- colnames(yy$fit)
+  expect_equal(yy, xy)
+  
+  yy <- resid(y)
+  xy <- resid(x, mtcars)
   expect_equal(yy, xy)
   
   expect_equal(

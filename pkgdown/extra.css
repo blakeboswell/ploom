@@ -52,13 +52,13 @@ code a {
 }
 
 
-/* enlarge brand label */
+/* brand label */
 .navbar-brand {
   font-size: 24px;
   line-height:26px;
 }
 
-/* remove version label */
+/* version label */
 .label {
   background-color: transparent;
   color: #182125;
@@ -95,13 +95,6 @@ code a {
 }
 
 
-/*
-  color: #1D55EA;
-  background-color: #eeeeee;
-}
-*/
-
-
 /* change hover behavior of pills */
 .nav-pills > li.active > a, 
 .nav-pills > li.active > a:hover,
@@ -111,7 +104,9 @@ code a {
 }
 
 /* change copy to clipboard button */
-.btn-primary {
-  background-color: #1D55EA;
-  border-color: #1D55EA;
+.btn-primary,
+.btn-primary:hover {
+  color:#1D55EA;
+  background-color: #eeeeee;
+  border-color: #eeeeee;
 }

@@ -1,4 +1,22 @@
 
+
+#' @method resid oomlm
+#' @export
+resid.oomlm <- function(object, data, as_function = FALSE) {
+  if(as_function) {
+    return(function(data) calculate_residuals(object, data))
+  }
+  calculate_residuals(object, data)
+}
+
+
+#' @method residuals oomlm
+#' @export
+residuals.oomlm <- function(object, data, as_function = FALSE, ...) {
+  resid.oomlm(object, data, as_function)
+}
+
+
 #' @method formula oomlm
 #' @export
 formula.oomlm <- function(x, ...) {

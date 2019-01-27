@@ -43,6 +43,25 @@
 NULL
 
 
+#' calculate residuals residuals
+#' 
+#' separate to keep from predict std error complexity
+#'
+#' @param object `oomlm` model
+#' @param new_data data to calculate residuals
+#' @keywords internal
+calculate_residuals <- function(object, new_data) {
+  
+  mf   <- model_frame(object$terms, new_data)
+  mm   <- model_matrix(object$terms, new_data)
+  yhat <- mm %*% coef(object)
+  y    <- model_response(mf) 
+  
+  drop(y - yhat)
+  
+}
+
+
 #' @rdname predict
 #' @export
 predict.oomlm <- function(object,
