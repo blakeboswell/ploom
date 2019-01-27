@@ -1,4 +1,4 @@
-
+ 
 #' @importFrom generics tidy
 #' @export
 generics::tidy
@@ -10,6 +10,10 @@ generics::fit
 #' @importFrom generics glance
 #' @export
 generics::glance
+
+#' @importFrom generics augment
+#' @export
+generics::augment
 
 
 #' Fit `oomlm()` model to additonal observations
@@ -153,4 +157,22 @@ glance.oomglm <- function(x, ...) {
     , df.residual = x$df.residual
   )
 }
+
+
+#' augment data with prediction, std error, and residuals
+#' 
+#' @param x `oomlm()` model
+#' @param data `tibble()` or other data source
+#' @param std_error calculate standard error of prediction
+#' @param interval interval type to return
+#'
+#' @export
+#' @seealso [augment()], [stats::predict.lm()]
+augment.oomlm <- function(x, data, std_error = FALSE, interval = "confidence", ...) {
+  
+  y <- predict(x, data, std_error = std_error, interval = interval)
+  tibble::as_tibble(cbind(data, y))
+  
+}
+
 

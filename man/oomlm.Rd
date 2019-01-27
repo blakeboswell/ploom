@@ -14,8 +14,6 @@
 \alias{logLik.oomlm}
 \alias{vcov.oomlm}
 \alias{BIC.oomlm}
-\alias{residuals.oomlm}
-\alias{resid.oomlm}
 \title{Out of memory Linear model}
 \usage{
 oomlm(formula, weights = NULL, ...)

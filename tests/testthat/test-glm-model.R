@@ -37,18 +37,18 @@ expect_attr_equal <- function(x, y, df) {
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
 
-  yy        <- predict(y, df)
-  xy        <- predict(x, df)
-  expect_equal(yy, xy)
-  
-  yy        <- predict(y, df, se.fit = TRUE)
-  xy        <- predict(x, df, se_fit = TRUE)
-  names(xy) <- names(yy)
-  expect_equal(yy, xy)
-  
-  yy <- residuals(y)
-  xy <- oomglm_residuals(x, df, type = "deviance")
-  expect_equal(yy, xy)
+  # yy        <- predict(y, df)
+  # xy        <- predict(x, df)
+  # expect_equal(yy, xy)
+  # 
+  # yy        <- predict(y, df, se.fit = TRUE)
+  # xy        <- predict(x, df, se_fit = TRUE)
+  # names(xy) <- names(yy)
+  # expect_equal(yy, xy)
+  # 
+  # yy <- residuals(y)
+  # xy <- oomglm_residuals(x, df, type = "deviance")
+  # expect_equal(yy, xy)
 
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),
