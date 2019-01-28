@@ -136,30 +136,57 @@ databases.
 
 Prediction with `ploom` models is performed with the `predict()`
 function. `predict()` provides options for confidence intervals,
-prediction intervals, and standard error in addition to
-fit.
+prediction intervals, and standard error in addition to fit.
 
 ``` r
-yhat <- predict(y, new_data = mtcars, se_fit = TRUE, interval = "prediction")
-head(yhat[["fit"]])
+predict(y, new_data = mtcars, std_error = TRUE, interval = "prediction")
 ```
 
-    ##                      .pred      lwr      upr
-    ## Mazda RX4         22.47046 17.22244 27.71849
-    ## Mazda RX4 Wag     22.15825 16.89630 27.42019
-    ## Datsun 710        26.28107 21.00938 31.55275
-    ## Hornet 4 Drive    20.85744 15.62898 26.08590
-    ## Hornet Sportabout 17.00959 11.74463 22.27455
-    ## Valiant           20.85409 15.57760 26.13058
+    ## # A tibble: 32 x 4
+    ##    .pred .std_error .pred_lower .pred_upper
+    ##    <dbl>      <dbl>       <dbl>       <dbl>
+    ##  1  22.5      0.720       17.2         27.7
+    ##  2  22.2      0.744       16.9         27.4
+    ##  3  26.3      0.760       21.0         31.6
+    ##  4  20.9      0.685       15.6         26.1
+    ##  5  17.0      0.749       11.7         22.3
+    ##  6  20.9      0.768       15.6         26.1
+    ##  7  15.1      0.942        9.66        20.4
+    ##  8  21.6      0.747       16.4         26.9
+    ##  9  25.4      1.34        19.6         31.1
+    ## 10  18.6      0.605       13.4         23.8
+    ## # … with 22 more rows
 
-`ploom` models do not store the residuals during fitting.
+`ploom` models do not store the residuals during fitting. Residuals are
+accessible on demand with `residuals()`:
 
 ``` r
-u <- oomlm_residuals(y, data = mtcars)
-sum(u^2)
+sum(residuals(y, data = mtcars)^2)
 ```
 
     ## [1] 169.2859
+
+Similarly we can use `augment()` but we must provide data.
+
+``` r
+augment(y, data = mtcars, std_error = TRUE)
+```
+
+    ## # A tibble: 32 x 10
+    ##    .rownames   mpg    wt  qsec `factor(am)` .pred .resid .std_error
+    ##    <chr>     <dbl> <dbl> <dbl> <fct>        <dbl>  <dbl>      <dbl>
+    ##  1 Mazda RX4  21    2.62  16.5 1             22.5 -1.47       0.720
+    ##  2 Mazda RX…  21    2.88  17.0 1             22.2 -1.16       0.744
+    ##  3 Datsun 7…  22.8  2.32  18.6 1             26.3 -3.48       0.760
+    ##  4 Hornet 4…  21.4  3.22  19.4 0             20.9  0.543      0.685
+    ##  5 Hornet S…  18.7  3.44  17.0 0             17.0  1.69       0.749
+    ##  6 Valiant    18.1  3.46  20.2 0             20.9 -2.75       0.768
+    ##  7 Duster 3…  14.3  3.57  15.8 0             15.1 -0.754      0.942
+    ##  8 Merc 240D  24.4  3.19  20   0             21.6  2.76       0.747
+    ##  9 Merc 230   22.8  3.15  22.9 0             25.4 -2.55       1.34 
+    ## 10 Merc 280   19.2  3.44  18.3 0             18.6  0.621      0.605
+    ## # … with 22 more rows, and 2 more variables: .pred_lower <dbl>,
+    ## #   .pred_upper <dbl>
 
 ## Alternatives
 

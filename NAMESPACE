@@ -2,6 +2,8 @@
 
 S3method(AIC,oomlm)
 S3method(BIC,oomlm)
+S3method(augment,oomglm)
+S3method(augment,oomlm)
 S3method(coef,Rcpp_BoundedQr)
 S3method(coef,oomlm)
 S3method(confint,oomlm)

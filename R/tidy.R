@@ -92,7 +92,6 @@ tidy.oomlm <- function(x, ...) {
 }
 
 
-
 #' Returns a tibble with exactly one row of goodness of fitness measures
 #' and related statistics.
 #' 
@@ -168,11 +167,61 @@ glance.oomglm <- function(x, ...) {
 #'
 #' @export
 #' @seealso [augment()], [stats::predict.lm()]
-augment.oomlm <- function(x, data, std_error = FALSE, interval = "confidence", ...) {
+augment.oomlm <- function(x, data,
+                          std_error = FALSE,
+                          interval  = "confidence",
+                          ...) {
   
-  y <- predict(x, data, std_error = std_error, interval = interval)
-  tibble::as_tibble(cbind(data, y))
+  df <- tibble::as_tibble(model_frame(terms(x), data))
+  if (tibble::has_rownames(data)) {
+    df <- tibble::add_column(df, .rownames = rownames(data), .before = TRUE)
+  }
   
+  chunk <- unpack_oomchunk(x, data)
+  
+  u <- residuals_oomlm_x(x, chunk)
+  y <- predict_oomlm_x(x, chunk, std_error = std_error, interval = interval)
+  
+  rval <- tibble::as_tibble(cbind(df, tibble::tibble(.pred = y$fit[, 1])))
+  rval$.resid <- u$.resid
+  
+  if(std_error) {
+    rval[[".std_error"]] = y$std_error
+    if(!is.null(interval)) {
+      rval[[".pred_lower"]] <- y$fit[, 2]
+      rval[[".pred_upper"]] <- y$fit[, 3]
+    }
+  }
+  
+  rval
+  
+}
+
+
+#' augment data with prediction, std error, and residuals
+#' 
+#' @param x `oomlm()` model
+#' @param data `tibble()` or other data source
+#' @param type link or response
+#' @param std_error calculate standard error of prediction
+#' @param ... ignored
+#' 
+#' @export
+#' @seealso [augment()], [stats::predict.lm()]
+augment.oomglm <- function(x, data,
+                           type = "response",
+                           std_error = FALSE,
+                           ...) {
+
+  df <- tibble::as_tibble(model_frame(terms(x), data))
+  if (tibble::has_rownames(data)) {
+    df <- tibble::add_column(df, .rownames = rownames(data), .before = TRUE)
+  }
+    
+  pred <- predict_oomglm(x, type, std_error)(data)
+  res  <- residuals_oomglm(x, type)(data)
+  tibble::as_tibble(cbind(df, pred, res))
+
 }
 
 

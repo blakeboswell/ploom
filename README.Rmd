@@ -96,15 +96,19 @@ See the articles [NA]() and [NA]() for more on interfacing with databases.
 Prediction with `ploom` models is performed with the `predict()` function.  `predict()` provides options for confidence intervals, prediction intervals, and standard error in addition to fit.
 
 ```{r, eval = TRUE, message=FALSE}
-yhat <- predict(y, new_data = mtcars, se_fit = TRUE, interval = "prediction")
-head(yhat[["fit"]])
+predict(y, new_data = mtcars, std_error = TRUE, interval = "prediction")
 ```
 
-`ploom` models do not store the residuals during fitting.
+`ploom` models do not store the residuals during fitting.  Residuals are accessible on demand with `residuals()`:
 
 ```{r, eval = TRUE, message=FALSE}
-u <- oomlm_residuals(y, data = mtcars)
-sum(u^2)
+sum(residuals(y, data = mtcars)^2)
+```
+
+Similarly we can use `augment()` but we must provide data.
+
+```{r, eval = TRUE, message=FALSE}
+augment(y, data = mtcars, std_error = TRUE)
 ```
 
 ## Alternatives

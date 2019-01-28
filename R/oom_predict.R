@@ -57,57 +57,12 @@ predict.oomlm <- function(object,
     stop("`new_data` must be provided if `as_function` is FALSE")
   }
   
-  rval <- predict_oomlm(object,
-                        new_data,
-                        std_error,
-                        interval,
-                        level,
-                        as_function)
+  fn <- predict_oomlm(object, new_data, std_error, interval, level)
   
   if(as_function) {
-    return(rval)
+   return(fn) 
   }
-  
-  if(std_error) {
-    x <- tibble::tibble(
-      .pred      = rval$fit[, 1],
-      .std_error = rval$std_error
-    )
-    if(!is.null(interval)) {
-      x[[".pred_lower"]] <- rval$fit[, 2]
-      x[[".pred_upper"]] <- rval$fit[, 3]
-    }
-    return(x)
-  }
-  
-  tibble::tibble(.pred = drop(rval))
-  
-}
 
-
-#' @rdname predict
-#' @keywords internal
-predict_oomlm <-  function(object,
-                           new_data  = NULL,
-                           std_error = FALSE,
-                           interval  = NULL,
-                           level     = 0.95,
-                           as_function = FALSE,
-                           ...) {
-  
-  fn <- function(new_data) {
-    x <- unpack_oomchunk(object, new_data)
-    predict_oomlm_x(object,
-                    x$data,
-                    std_error,
-                    interval,
-                    level)
-  }
-  
-  if(as_function) {
-    return(fn)
-  }
-  
   fn(new_data)
   
 }
@@ -115,13 +70,45 @@ predict_oomlm <-  function(object,
 
 #' @rdname predict
 #' @keywords internal
+predict_oomlm <- function(object, new_data,
+                          std_error = FALSE,
+                          interval  = NULL,
+                          level     = 0.95) {
+  
+  function(new_data) {
+    
+    x <- unpack_oomchunk(object, new_data)
+    y <- predict_oomlm_x(object, x, std_error, interval, level)
+    
+    if(std_error) {
+      x <- tibble::tibble(
+        .pred      = y$fit[, 1],
+        .std_error = y$std_error
+      )
+      if(!is.null(interval)) {
+        x[[".pred_lower"]] <- y$fit[, 2]
+        x[[".pred_upper"]] <- y$fit[, 3]
+      }
+      return(x)
+    }
+    
+    tibble::tibble(.pred = drop(y))
+    
+  }
+   
+}
+
+
+#' @rdname predict
+#' @keywords internal
 predict_oomlm_x <- function(object,
-                            x = NULL,
+                            x,
                             std_error = FALSE,
                             interval  = NULL,
                             level     = 0.95) {
- 
-  fit <- x %*% coef(object)
+
+  return_dof <- all(class(object) %in% c("oomlm"))
+  fit <- x$data %*% coef(object)
   
   if(std_error) {
     
@@ -130,7 +117,7 @@ predict_oomlm_x <- function(object,
     vcov_y <- vcov(object)
     res_scale <- rss / dof
     
-    var_y <- apply(x, 1, function(x){
+    var_y <- apply(x$data, 1, function(x){
       tcrossprod(crossprod(x, vcov_y), x)
     })
     
@@ -139,34 +126,22 @@ predict_oomlm_x <- function(object,
       intv  <- sqrt(predi + var_y)
       tval  <- qt((1 - level)/2, dof)
       fit   <- cbind(fit, fit + intv * tval, fit - intv * tval)
-      colnames(fit) <- c(".pred", ".pred_lower", ".pred_lower")
+      colnames(fit) <- c(".pred", ".pred_lower", ".pred_upper")
     }
     
-    rval <- list(
-      fit     = fit,
-      std_error = sqrt(var_y)
-    )
-    
-    return_dof <- all(class(object) %in% c("oomlm"))
-    if(return_dof){
-      rval[["df"]] <- dof
-    }
-    
-    rval[["residual_scale"]] <- sqrt(res_scale)
-    
-    return(rval)
+    return(list(fit = fit, std_error = sqrt(var_y)))
     
   }
   
   fit
-   
+  
 }
 
 
 #' @rdname predict
 #' @export
 predict.oomglm <- function(object, new_data,
-                           type = c("link", "response"),
+                           type = "response",
                            std_error   = FALSE,
                            as_function = FALSE,
                            ...) {
@@ -175,62 +150,7 @@ predict.oomglm <- function(object, new_data,
     stop("`new_data` must be provided if `as_function` is FALSE")
   }
   
-  rval <- predict_oomglm(object, new_data, type, std_error, as_function)
-  
-  if(as_function) {
-    return(rval)
-  }
-  
-  if(std_error) {
-    x <- tibble::as_tibble(
-      .pred      = rval$fit,
-      .std_error = rval$std_error
-    )
-    return(x)
-  }
-  
-  tibble::tibble(.pred = drop(rval))
-  
-}
-
-
-#' @rdname predict
-#' @keywords internal
-predict_oomglm <- function(object, new_data,
-                           type = c("link", "response"),
-                           std_error   = FALSE,
-                           as_function = FALSE,
-                           ...) {
-
-  link_fn <- predict_oomlm(object,
-                           std_error   = std_error,
-                           as_function = TRUE)
-  
-  if(match.arg(type) == "response") {
-    
-    fam      <- family(object)
-    linkinv  <- fam$linkinv
-    mu_eta   <- fam$mu.eta
-    
-    resp_fn <- function(new_data) {
-      
-      pred  <- link_fn(new_data)
-      if(std_error) {
-        y  <- linkinv(pred$fit)
-        return(list(
-          fit = y,
-          se  = pred$std_error %*% mu_eta(y)^2))
-      }
-      
-      linkinv(pred$fit)
-      
-    }
-    
-    fn <- resp_fn
-    
-  } else {
-    fn <- link_fn
-  }
+  fn <- predict_oomglm(object, type, std_error)
   
   if(as_function) {
     return(fn)
@@ -243,28 +163,50 @@ predict_oomglm <- function(object, new_data,
 
 #' @rdname predict
 #' @keywords internal
-predict_oomglm_x <- function(object, x,
-                             type = c("link", "response"),
-                             std_error   = FALSE) {
+predict_oomglm <- function(object,
+                           type = "response",
+                           std_error = FALSE) {
 
-  pred <- predict_oomlm_x(object, x)
-  
-  if(match.arg(type) == "response") {
+  if(type == "link") {
+    
+    function(new_data) {
+      chunk <- unpack_oomchunk(object, new_data)
+      fit   <- predict_oomlm_x(object, chunk, std_error)
+      if(std_error) {
+        return(tibble::tibble(
+          .pred = drop(fit$fit),
+          .std_error = fit$std_error)
+        )
+      }
+      tibble::tibble(.pred = drop(fit))
+    }
+    
+  } else {
     
     fam      <- family(object)
     linkinv  <- fam$linkinv
     mu_eta   <- fam$mu.eta
     
-    if(std_error) {
-      y    <- linkinv(pred$fit)
-      pred <- list(fit = y, se = pred$std_error %*% mu_eta(y)^2)
-    } else {
-      pred <- linkinv(pred$fit)
+    function(new_data) {
+      
+      chunk <- unpack_oomchunk(object, new_data)
+      z     <- predict_oomlm_x(object, chunk, std_error)
+    
+      if(std_error) {
+        se <- z$std_error * abs(mu_eta(z$fit))
+        y  <- linkinv(z$fit)
+        return(tibble::tibble(
+          .pred      = drop(y),
+          .std_error = drop(se)
+        ))
+      } else {
+        y <- linkinv(z)
+      }
+      
+      tibble::tibble(.pred = drop(y))
+      
     }
     
   }
   
-  pred
-  
 }
-
