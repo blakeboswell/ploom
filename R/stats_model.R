@@ -14,6 +14,17 @@ deparse2 <- function(x) {
 }
 
 
+#'
+#' @param x `oomlm` or `oomglm` object
+#' @param data  tibble or data.frame
+model_frame_tibble <- function(x, data) {
+  df <- tibble::as_tibble(model_frame(terms(x), data))
+  if (tibble::has_rownames(data)) {
+    df <- tibble::add_column(df, .rownames = rownames(data), .before = TRUE)
+  }
+}
+
+
 #' Lifted from `stats`. modified to be faster and less robust
 #' 
 #' @md

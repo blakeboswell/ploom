@@ -213,15 +213,11 @@ augment.oomglm <- function(x, data,
                            std_error = FALSE,
                            ...) {
 
-  df <- tibble::as_tibble(model_frame(terms(x), data))
-  if (tibble::has_rownames(data)) {
-    df <- tibble::add_column(df, .rownames = rownames(data), .before = TRUE)
-  }
-    
-  pred <- predict_oomglm(x, type, std_error)(data)
-  res  <- residuals_oomglm(x, type)(data)
+  df    <- model_frame_tibble(x, data)
+  chunk <- unpack_oomchunk(x, data)
+  pred  <- predict_oomglm_x(x, chunk, type, std_error)
+  res   <- residuals_oomglm_x(x, chunk, type)
   tibble::as_tibble(cbind(df, pred, res))
 
 }
-
 

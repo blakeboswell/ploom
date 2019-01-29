@@ -166,47 +166,57 @@ predict.oomglm <- function(object, new_data,
 predict_oomglm <- function(object,
                            type = "response",
                            std_error = FALSE) {
+  function(new_data) {
+    
+    x <- unpack_oomchunk(object, new_data)
+    y <- predict_oomglm_x(object, x, type = type, std_error = std_error)
+    
+    if(std_error) {
+      return(tibble::tibble(
+        .pred      = y$fit[, 1],
+        .std_error = y$std_error
+      ))
+    }
 
+    tibble::tibble(.pred = drop(y))
+    
+  }
+}
+
+
+#' @rdname predict
+#' @keywords internal
+predict_oomglm_x <- function(object, data, type = "response", std_error = FALSE) {
+  
   if(type == "link") {
     
-    function(new_data) {
-      chunk <- unpack_oomchunk(object, new_data)
-      fit   <- predict_oomlm_x(object, chunk, std_error)
-      if(std_error) {
-        return(tibble::tibble(
-          .pred = drop(fit$fit),
-          .std_error = fit$std_error)
-        )
-      }
-      tibble::tibble(.pred = drop(fit))
+    y <- predict_oomlm_x(object, data, std_error)
+    
+    if(std_error) {
+      return(list(fit = y$fit, std_error = y$std_error))
     }
+    
+    y
     
   } else {
     
     fam      <- family(object)
     linkinv  <- fam$linkinv
     mu_eta   <- fam$mu.eta
-    
-    function(new_data) {
       
-      chunk <- unpack_oomchunk(object, new_data)
-      z     <- predict_oomlm_x(object, chunk, std_error)
-    
-      if(std_error) {
-        se <- z$std_error * abs(mu_eta(z$fit))
-        y  <- linkinv(z$fit)
-        return(tibble::tibble(
-          .pred      = drop(y),
-          .std_error = drop(se)
-        ))
-      } else {
-        y <- linkinv(z)
-      }
+    z <- predict_oomlm_x(object, data, std_error)
       
-      tibble::tibble(.pred = drop(y))
-      
+    if(std_error) {
+      std_error <- z$std_error * abs(mu_eta(z$fit))
+      y  <- linkinv(z$fit)
+      return(list(fit = y, std_error = std_error))
+    } else {
+      y <- linkinv(z)
     }
     
+    y
+      
   }
   
 }
+
