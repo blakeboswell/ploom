@@ -22,6 +22,7 @@ model_frame_tibble <- function(x, data) {
   if (tibble::has_rownames(data)) {
     df <- tibble::add_column(df, .rownames = rownames(data), .before = TRUE)
   }
+  df
 }
 
 

@@ -172,28 +172,23 @@ augment.oomlm <- function(x, data,
                           interval  = "confidence",
                           ...) {
   
-  df <- tibble::as_tibble(model_frame(terms(x), data))
-  if (tibble::has_rownames(data)) {
-    df <- tibble::add_column(df, .rownames = rownames(data), .before = TRUE)
-  }
-  
+  df    <- model_frame_tibble(x, data)
   chunk <- unpack_oomchunk(x, data)
-  
   u <- residuals_oomlm_x(x, chunk)
   y <- predict_oomlm_x(x, chunk, std_error = std_error, interval = interval)
   
-  rval <- tibble::as_tibble(cbind(df, tibble::tibble(.pred = y$fit[, 1])))
-  rval$.resid <- u$.resid
+  df[[".pred"]]  <- y$fit[, 1]
+  df[[".resid"]] <- u$.resid
   
   if(std_error) {
-    rval[[".std_error"]] = y$std_error
+    df[[".std_error"]] = y$std_error
     if(!is.null(interval)) {
-      rval[[".pred_lower"]] <- y$fit[, 2]
-      rval[[".pred_upper"]] <- y$fit[, 3]
+      df[[".pred_lower"]] <- y$fit[, 2]
+      df[[".pred_upper"]] <- y$fit[, 3]
     }
   }
   
-  rval
+  df
   
 }
 

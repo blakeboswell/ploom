@@ -69,25 +69,13 @@ Each call to `fit()` only needs to allocate memory for the provided
 chunk, thereby bounding the required memory to chunk size.
 
 The function `oomdata_tbl()` enables iteration over an in-memory
-`tibble()` or `data.frame()`.
+`tibble()` or `data.frame()`. When provided to `fit()`, all chunks will
+iterated over.
 
 ``` r
 chunks <- oomdata_tbl(mtcars, chunk_size = 16)
-
-# iterate over all observations in `chunks()`
-while((!is.null(chunk <- chunks()))) {
-  print(nrow(chunk))
-}
-```
-
-    ## [1] 16
-    ## [1] 16
-
-`fit()` will automatically fit the model over all chunks.
-
-``` r
-# fit model to all chunks
 y <- fit(oomlm(mpg ~ wt + qsec + factor(am)), chunks)
+
 glance(y)
 ```
 
