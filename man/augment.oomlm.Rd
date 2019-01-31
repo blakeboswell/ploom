@@ -15,6 +15,8 @@
 \item{std_error}{calculate standard error of prediction}
 
 \item{interval}{interval type to return}
+
+\item{...}{ignored}
 }
 \description{
 augment data with prediction, std error, and residuals

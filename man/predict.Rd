@@ -3,44 +3,33 @@
 \name{predict}
 \alias{predict}
 \alias{predict.oomlm}
-\alias{predict_oomlm}
-\alias{predict_oomlm_x}
 \alias{predict.oomglm}
-\alias{predict_oomglm}
 \title{Predict values using \code{oomlm()} and \code{oomglm()} models}
 \usage{
 \method{predict}{oomlm}(object, new_data = NULL, std_error = FALSE,
   interval = NULL, level = 0.95, as_function = FALSE, ...)
 
-predict_oomlm(object, new_data, std_error = FALSE, interval = NULL,
-  level = 0.95)
-
-predict_oomlm_x(object, x, std_error = FALSE, interval = NULL,
-  level = 0.95)
-
 \method{predict}{oomglm}(object, new_data, type = "response",
   std_error = FALSE, as_function = FALSE, ...)
-
-predict_oomglm(object, type = "response", std_error = FALSE)
 }
 \arguments{
 \item{object}{object inheriting from class \code{oomlm}}
 
 \item{new_data}{observations for prediction}
 
+\item{std_error}{indicates if the standard error of predicted means should
+be returned}
+
 \item{interval}{type of interval calculation}
 
 \item{level}{tolerance/confidence level for interval calculation}
 
-\item{as_function}{if TRUE a function with only a \code{data} argument is returned
+\item{as_function}{if TRUE a function with only a \code{new_data} argument is returned
 for subsequent fitting}
 
 \item{...}{ignored}
 
 \item{type}{the type of prediction}
-
-\item{srd_error}{indicates if the standard error of predicted means should
-be returned}
 }
 \description{
 Predict values using \code{oomlm()} and \code{oomglm()} models
@@ -74,4 +63,3 @@ head(pred$se)
 
 }
 }
-\keyword{internal}

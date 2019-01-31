@@ -164,7 +164,8 @@ glance.oomglm <- function(x, ...) {
 #' @param data `tibble()` or other data source
 #' @param std_error calculate standard error of prediction
 #' @param interval interval type to return
-#'
+#' @param ... ignored
+#' 
 #' @export
 #' @seealso [augment()], [stats::predict.lm()]
 augment.oomlm <- function(x, data,

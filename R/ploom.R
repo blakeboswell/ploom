@@ -5,7 +5,8 @@
 #' @importFrom stats AIC coef deviance formula gaussian
 #'   pf printCoefmat pt symnum terms family as.formula
 #'   makepredictcall na.fail model.frame model.matrix
-#'   contrasts<- confint confint.lm BIC logLik qt resid
+#'   contrasts<- confint confint.lm BIC logLik qt
+#'   resid residuals
 #' @importFrom utils head read.table tail getFromNamespace
 #' @importFrom stats .MFclass
 NULL

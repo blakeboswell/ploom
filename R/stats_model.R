@@ -14,9 +14,12 @@ deparse2 <- function(x) {
 }
 
 
-#'
+#' return model_frame value as tibble
+#' 
 #' @param x `oomlm` or `oomglm` object
 #' @param data  tibble or data.frame
+#' 
+#' @keywords internal
 model_frame_tibble <- function(x, data) {
   df <- tibble::as_tibble(model_frame(terms(x), data))
   if (tibble::has_rownames(data)) {

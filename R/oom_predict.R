@@ -3,12 +3,12 @@
 #'
 #' @param object object inheriting from class `oomlm`
 #' @param new_data observations for prediction
-#' @param srd_error indicates if the standard error of predicted means should
+#' @param std_error indicates if the standard error of predicted means should
 #'   be returned
 #' @param interval type of interval calculation
 #' @param level tolerance/confidence level for interval calculation
 #' @param type the type of prediction
-#' @param as_function if TRUE a function with only a `data` argument is returned
+#' @param as_function if TRUE a function with only a `new_data` argument is returned
 #'   for subsequent fitting
 #' @param ... ignored
 #'
@@ -57,7 +57,7 @@ predict.oomlm <- function(object,
     stop("`new_data` must be provided if `as_function` is FALSE")
   }
   
-  fn <- predict_oomlm(object, new_data, std_error, interval, level)
+  fn <- predict_oomlm(object, std_error, interval, level)
   
   if(as_function) {
    return(fn) 
@@ -68,9 +68,15 @@ predict.oomlm <- function(object,
 }
 
 
-#' @rdname predict
+#' return function that will predict and format output
+#' 
+#' @param object `oomlm` model object
+#' @param std_error if TRUE calculate standard error
+#' @param interval interval type
+#' @param level the confidence/tolerence for interval calculation
+#' 
 #' @keywords internal
-predict_oomlm <- function(object, new_data,
+predict_oomlm <- function(object,
                           std_error = FALSE,
                           interval  = NULL,
                           level     = 0.95) {
@@ -99,16 +105,22 @@ predict_oomlm <- function(object, new_data,
 }
 
 
-#' @rdname predict
+#' perform `oomlm` prediction
+#'
+#' @param object `oomlm` model object
+#' @param new_data covariates for prediction
+#' @param std_error if TRUE calculate standard error
+#' @param interval interval type
+#' @param level the confidence/tolerence for interval calculation
+#' 
 #' @keywords internal
-predict_oomlm_x <- function(object,
-                            x,
+predict_oomlm_x <- function(object, new_data,
                             std_error = FALSE,
                             interval  = NULL,
                             level     = 0.95) {
 
-  return_dof <- all(class(object) %in% c("oomlm"))
-  fit <- x$data %*% coef(object)
+  X   <- new_data$data
+  fit <- X %*% coef(object)
   
   if(std_error) {
     
@@ -117,7 +129,7 @@ predict_oomlm_x <- function(object,
     vcov_y <- vcov(object)
     res_scale <- rss / dof
     
-    var_y <- apply(x$data, 1, function(x){
+    var_y <- apply(X, 1, function(x){
       tcrossprod(crossprod(x, vcov_y), x)
     })
     
@@ -161,7 +173,12 @@ predict.oomglm <- function(object, new_data,
 }
 
 
-#' @rdname predict
+#' return function that will predict and format output
+#' 
+#' @param object `oomglm` model object
+#' @param type type of prediction, link or response
+#' @param std_error if TRUE calculate standard error
+#' 
 #' @keywords internal
 predict_oomglm <- function(object,
                            type = "response",
@@ -184,13 +201,19 @@ predict_oomglm <- function(object,
 }
 
 
-#' @rdname predict
+#' perform `oomglm` prediction
+#'
+#' @param object `oomglm` model object
+#' @param new_data covariates for prediction
+#' @param type type of prediction, link or response
+#' @param std_error if TRUE calculate standard error
+#' 
 #' @keywords internal
-predict_oomglm_x <- function(object, data, type = "response", std_error = FALSE) {
+predict_oomglm_x <- function(object, new_data, type = "response", std_error = FALSE) {
   
   if(type == "link") {
     
-    y <- predict_oomlm_x(object, data, std_error)
+    y <- predict_oomlm_x(object, new_data, std_error)
     
     if(std_error) {
       return(list(fit = y$fit, std_error = y$std_error))
@@ -204,7 +227,7 @@ predict_oomglm_x <- function(object, data, type = "response", std_error = FALSE)
     linkinv  <- fam$linkinv
     mu_eta   <- fam$mu.eta
       
-    z <- predict_oomlm_x(object, data, std_error)
+    z <- predict_oomlm_x(object, new_data, std_error)
       
     if(std_error) {
       std_error <- z$std_error * abs(mu_eta(z$fit))

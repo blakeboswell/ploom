@@ -6,15 +6,16 @@
 #' @param type residual calculation method
 #' @param as_function if TRUE a function with only a `data` argument is returned
 #'   for subsequent residual calculations
+#' @param ... ignored  
+#' 
 #' @name resid
 NULL
 
-
-#' @rdname resid
-resid     <- function (x, ...) { UseMethod("resid", x) }
-
-#' @rdname resid
-residuals <- function (x, ...) { UseMethod("resid", x) }
+#' 
+#' #' @rdname resid
+#' resid     <- function (x, ...) { UseMethod("resid", x) }
+#' #' @rdname resid
+#' residuals <- function (x, ...) { UseMethod("resid", x) }
 
 
 #' @rdname resid

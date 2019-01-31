@@ -2,15 +2,10 @@
 % Please edit documentation in R/oom_residuals.R
 \name{resid}
 \alias{resid}
-\alias{residuals}
 \alias{resid.oomlm}
 \alias{resid.oomglm}
 \title{calculate residuals for oomglm}
 \usage{
-resid(x, ...)
-
-residuals(x, ...)
-
 \method{resid}{oomlm}(object, data, as_function = FALSE, ...)
 
 \method{resid}{oomglm}(object, data, type = c("deviance", "pearson",
@@ -24,8 +19,15 @@ residuals(x, ...)
 \item{as_function}{if TRUE a function with only a \code{data} argument is returned
 for subsequent residual calculations}
 
+\item{...}{ignored}
+
 \item{type}{residual calculation method}
 }
 \description{
 calculate residuals for oomglm
+
+#' @rdname resid
+resid     <- function (x, ...) { UseMethod("resid", x) }
+#' @rdname resid
+residuals <- function (x, ...) { UseMethod("resid", x) }
 }
