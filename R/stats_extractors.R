@@ -1,5 +1,4 @@
 
-
 #' @method formula oomlm
 #' @export
 formula.oomlm <- function(x, ...) {

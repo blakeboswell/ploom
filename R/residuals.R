@@ -15,14 +15,16 @@ NULL
 #' @rdname residuals
 #' @method residuals oomlm
 #' @export
-resid.oomlm <- function(object, data, as_function = FALSE, ...) {
+resid.oomlm <- function(object, data,
+                        as_function = FALSE, ...) {
   residuals.oomlm(object, data, as_function = FALSE, ...)
 }
 
 #' @rdname residuals
 #' @method residuals oomlm
 #' @export
-residuals.oomlm <- function(object, data, as_function = FALSE, ...) {
+residuals.oomlm <- function(object, data,
+                            as_function = FALSE, ...) {
   
   if(!as_function && is.null(data)){
     stop("`data` must be provided if `as_function` is FALSE")
@@ -72,8 +74,7 @@ resid.oomglm <- function(object, data,
                                   , "pearson"
                                   , "response"
                                   , "working"),
-                         as_function = FALSE,
-                         ...) {
+                         as_function = FALSE, ...) {
   
   residuals.oomglm(object, data, type, as_function)
   
@@ -89,8 +90,7 @@ residuals.oomglm <- function(object, data,
                                       , "pearson"
                                       , "response"
                                       , "working"),
-                         as_function = FALSE,
-                         ...) {
+                         as_function = FALSE, ...) {
   
   if(!as_function && is.null(data)){
     stop("`data` must be provided if `as_function` is FALSE")

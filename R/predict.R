@@ -50,8 +50,7 @@ predict.oomlm <- function(object,
                           std_error = FALSE,
                           interval  = NULL,
                           level     = 0.95,
-                          as_function = FALSE,
-                          ...) {
+                          as_function = FALSE, ...) {
   
   if(!as_function && is.null(new_data)){
     stop("`new_data` must be provided if `as_function` is FALSE")
@@ -209,7 +208,9 @@ predict_oomglm <- function(object,
 #' @param std_error if TRUE calculate standard error
 #' 
 #' @keywords internal
-predict_oomglm_x <- function(object, new_data, type = "response", std_error = FALSE) {
+predict_oomglm_x <- function(object, new_data,
+                             type = "response",
+                             std_error = FALSE) {
   
   if(type == "link") {
     

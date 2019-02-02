@@ -68,7 +68,8 @@ update.Rcpp_BoundedQr <- function(object, X, y, weights, ...) {
 #' @param ... ignored
 #' @export
 #' @keywords internal
-coef.Rcpp_BoundedQr <- function(object, nvar = NULL, ...){
+coef.Rcpp_BoundedQr <- function(object,
+                                nvar = NULL, ...){
   
   if (is.null(nvar)) {
     nvar <- object$num_params

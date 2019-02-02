@@ -16,11 +16,6 @@ generics::glance
 generics::augment
 
 
-broom_names <- function(col_names) {
-  
-}
-
-
 #' Fit `oomlm()` model to additonal observations
 #' 
 #' @md

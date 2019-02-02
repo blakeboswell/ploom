@@ -20,10 +20,7 @@
 #' @param start starting values for the parameters in the linear predictor.
 #' 
 #' @keywords internal
-init_oomglm <- function(formula,
-                        family,
-                        weights,
-                        start) {
+init_oomglm <- function(formula, family, weights, start) {
   
   if(is.character(family)) {
     family <- get(family, mode = "function", envir = parent.frame())
@@ -156,7 +153,8 @@ weight <- function(object, data) {
 
 #' @export
 #' @rdname init_weight
-end_weight <- function(object, tolerance = 1e-8) {
+end_weight <- function(object,
+                       tolerance = 1e-8) {
 
   object$iter <- object$iter + 1L 
   beta_old    <- object$irls$beta
@@ -190,8 +188,7 @@ end_weight <- function(object, tolerance = 1e-8) {
 #' 
 #' @seealso [fit()]
 #' @export
-iter_weight <- function(object,
-                        data,
+iter_weight <- function(object, data,
                         times = 2L,
                         tolerance = 1e-8) {
 
@@ -275,8 +272,7 @@ iter_weight <- function(object,
 oomglm <- function(formula,
                    family   = gaussian(),
                    weights  = NULL,
-                   start    = NULL,
-                   ...) {
+                   start    = NULL, ...) {
 
   init_oomglm(formula, family, weights, start)
 
@@ -355,8 +351,7 @@ update_oomglm <- function(object, data, ...) {
 #' @method print oomglm
 #' @export
 print.oomglm <- function(x,
-                         digits = max(3L, getOption("digits") - 3L),
-                         ...) {
+                         digits = max(3L, getOption("digits") - 3L), ...) {
   
   cat("\nCall:  ",
       paste(deparse(x$call), sep = "\n", collapse = "\n"),

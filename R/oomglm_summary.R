@@ -3,8 +3,7 @@
 #' @export
 summary.oomglm <- function(object,
                            correlation  = FALSE,
-                           symbolic.cor = FALSE,
-                           ...) {
+                           symbolic.cor = FALSE, ...) {
 
     rval <- summary.oomlm(object, correlation, symbolic.cor, ...)
     

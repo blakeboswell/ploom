@@ -1,13 +1,11 @@
 
-
 # Mimic base `lm` as closely as possible
 #
 #' @method summary oomlm
 #' @export
 summary.oomlm <- function(object,
                           correlation  = FALSE,
-                          symbolic.cor = FALSE,
-                          ...) {
+                          symbolic.cor = FALSE, ...) {
 
   if(!inherits(object, "oomlm")) {
     stop("not an oomlm object.")

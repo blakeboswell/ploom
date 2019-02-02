@@ -1,5 +1,4 @@
 
-
 #' Initialize Updating Linear Model
 #' 
 #' @md
@@ -95,7 +94,8 @@ init_oomlm <- function(formula, weights = NULL) {
 #' summary(z)
 #'
 #' }
-oomlm <- function(formula, weights = NULL, ...) {
+oomlm <- function(formula,
+                  weights = NULL, ...) {
   init_oomlm(formula, weights)
 }
 
@@ -155,7 +155,6 @@ update.oomlm <- function(object, data, ...) {
   }
   
 }
-
 
 
 #' @export

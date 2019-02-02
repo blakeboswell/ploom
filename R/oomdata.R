@@ -109,9 +109,8 @@ oomdata_tbl <- function(data, chunk_size, ...) {
 
 #' @export
 #' @name oomdata_dbi
-oomdata_dbi <- function(data,
-                        chunk_size,
-                        ...) {
+oomdata_dbi <- function(data, chunk_size, ...) {
+  
   reset  <- FALSE
   con    <- data@conn
   query  <- data@sql
@@ -154,8 +153,7 @@ oomdata_dbi <- function(data,
 
 #' @export
 #' @name oomdata_dbi
-oomdata_con <- function(data,
-                        chunk_size,
+oomdata_con <- function(data, chunk_size,
                         header    = TRUE,
                         col_names = NULL, ...) {
 

@@ -4,7 +4,7 @@
 \alias{init_oomlm_robust}
 \title{Initialize generalized linear model with robust standard errors}
 \usage{
-init_oomlm_robust(formula, weights = NULL, se_type)
+init_oomlm_robust(formula, weights, se_type)
 }
 \arguments{
 \item{formula}{a symbolic description of the model to be fitted

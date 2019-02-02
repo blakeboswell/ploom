@@ -8,7 +8,7 @@
 #' @param weights A one-sided, single term `formula` specifying weights.
 #' @param se_type method for robust standard error estimation
 #' @keywords internal
-init_oomlm_robust <- function(formula, weights = NULL, se_type) {
+init_oomlm_robust <- function(formula, weights, se_type) {
   
   object          <- init_oomlm(formula, weights)
   
