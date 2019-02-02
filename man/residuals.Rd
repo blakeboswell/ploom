@@ -2,11 +2,18 @@
 % Please edit documentation in R/oom_residuals.R
 \name{residuals}
 \alias{residuals}
+\alias{resid.oomlm}
 \alias{residuals.oomlm}
+\alias{resid.oomglm}
 \alias{residuals.oomglm}
 \title{calculate residuals for oomglm}
 \usage{
 \method{residuals}{oomlm}(object, data, as_function = FALSE, ...)
+
+\method{residuals}{oomlm}(object, data, as_function = FALSE, ...)
+
+\method{residuals}{oomglm}(object, data, type = c("deviance", "pearson",
+  "response", "working"), as_function = FALSE, ...)
 
 \method{residuals}{oomglm}(object, data, type = c("deviance", "pearson",
   "response", "working"), as_function = FALSE, ...)

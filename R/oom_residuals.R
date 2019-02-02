@@ -15,6 +15,13 @@ NULL
 #' @rdname residuals
 #' @method residuals oomlm
 #' @export
+resid.oomlm <- function(object, data, as_function = FALSE, ...) {
+  residuals.oomlm(object, data, as_function = FALSE, ...)
+}
+
+#' @rdname residuals
+#' @method residuals oomlm
+#' @export
 residuals.oomlm <- function(object, data, as_function = FALSE, ...) {
   
   if(!as_function && is.null(data)){
@@ -55,6 +62,23 @@ residuals_oomlm_x <- function(object, x) {
   yhat <- x$data %*% coef(object)
   y - yhat
 }
+
+
+#' @rdname residuals
+#' @method residuals oomglm
+#' @export
+resid.oomglm <- function(object, data,
+                         type = c("deviance"
+                                  , "pearson"
+                                  , "response"
+                                  , "working"),
+                         as_function = FALSE,
+                         ...) {
+  
+  residuals.oomglm(object, data, type, as_function)
+  
+}
+
 
 
 #' @rdname residuals
