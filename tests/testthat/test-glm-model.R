@@ -136,17 +136,17 @@ test_that("weighted updating oomglm without intercept", {
 })
 
 
-# test_that("weighted oomglm with zero weight", {
-#   
-#   df      <- mtcars
-#   w       <- runif(nrow(mtcars))
-#   w[4:7]  <- 0.0
-#   df['w'] <- w / sum(w)
-#   
-#   f <- mpg ~ cyl + disp + hp + wt
-#   y <- glm(f, data = df, weights = w)
-#   x <- fit(oomglm(f, weights = ~w),
-#            oomdata_tbl(df, chunk_size = 2))
-#   
-#   expect_attr_equal(x, y, df)
-# })
+test_that("weighted oomglm with zero weight", {
+
+  df      <- mtcars
+  w       <- runif(nrow(mtcars))
+  w[4:7]  <- 0.0
+  df['w'] <- w / sum(w)
+
+  f <- mpg ~ cyl + disp + hp + wt
+  y <- glm(f, data = df, weights = w)
+  x <- fit(oomglm(f, weights = ~w),
+           oomdata_tbl(df, chunk_size = 2))
+
+  expect_attr_equal(x, y, df)
+})

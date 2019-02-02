@@ -8,7 +8,7 @@ summary.oomglm <- function(object,
     rval <- summary.oomlm(object, correlation, symbolic.cor, ...)
     
     rval$family      <- object$family  
-    rval$deviance    <- object$iwls$deviance
+    rval$deviance    <- object$qr$rss_full
     rval$aic         <- AIC(object)
     rval$df.residual <- object$df.residual
     rval$df.null     <- object$df.null
