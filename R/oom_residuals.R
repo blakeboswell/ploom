@@ -8,19 +8,14 @@
 #'   for subsequent residual calculations
 #' @param ... ignored  
 #' 
-#' @name resid
+#' @name residuals
 NULL
 
-#' 
-#' #' @rdname resid
-#' resid     <- function (x, ...) { UseMethod("resid", x) }
-#' #' @rdname resid
-#' residuals <- function (x, ...) { UseMethod("resid", x) }
 
-
-#' @rdname resid
+#' @rdname residuals
+#' @method residuals oomlm
 #' @export
-resid.oomlm <- function(object, data, as_function = FALSE, ...) {
+residuals.oomlm <- function(object, data, as_function = FALSE, ...) {
   
   if(!as_function && is.null(data)){
     stop("`data` must be provided if `as_function` is FALSE")
@@ -43,8 +38,9 @@ resid.oomlm <- function(object, data, as_function = FALSE, ...) {
 #' @keywords internal
 residuals_oomlm <- function(object) {
   function(data) {
-    x <- unpack_oomchunk(object, data)
-    residuals_oomlm_x(object, x)
+    chunk <- unpack_oomchunk(object, data)
+    r <- residuals_oomlm_x(object, chunk)
+    tibble::tibble(.resid = drop(r))
   }
 }
 
@@ -57,19 +53,18 @@ residuals_oomlm <- function(object) {
 residuals_oomlm_x <- function(object, x) {
   y    <- x$response - x$offset
   yhat <- x$data %*% coef(object)
-  r    <- drop(y - yhat)
-  tibble::tibble(.resid = r)
+  y - yhat
 }
 
 
-#' @rdname resid
+#' @rdname residuals
+#' @method residuals oomglm
 #' @export
-resid.oomglm <- function(object,
-                         data,
-                         type = c("deviance"
-                                  , "pearson"
-                                  , "response"
-                                  , "working"),
+residuals.oomglm <- function(object, data,
+                             type = c("deviance"
+                                      , "pearson"
+                                      , "response"
+                                      , "working"),
                          as_function = FALSE,
                          ...) {
   
@@ -102,8 +97,9 @@ residuals_oomglm <- function(object,
   type <- match.arg(type)
   
   function(data) {
-    x    <- unpack_oomchunk(object, data)
-    residuals_oomglm_x(object, x, type)
+    chunk <- unpack_oomchunk(object, data)
+    r <- residuals_oomglm_x(object, chunk, type)
+    tibble::tibble(.resid = drop(r))
   }
   
 }
@@ -144,6 +140,6 @@ residuals_oomglm_x <- function(object, x, type) {
     response = y - yhat
   )
   
-  tibble::tibble(.resid = drop(res))
+  res
   
 }

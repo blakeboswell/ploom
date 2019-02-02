@@ -19,7 +19,8 @@ Imports:
   methods,
   generics,
   stats,
-  tibble
+  tibble,
+  magrittr
 LinkingTo:
   Rcpp (>= 0.12.15),
   RcppArmadillo

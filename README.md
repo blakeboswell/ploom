@@ -47,11 +47,9 @@ Models are intialized with a `formula()`; fit to data with calls to
 ``` r
 library(ploom)
 
-# define model, fit to data, and summarize
-y <- oomlm(mpg ~ wt + qsec + factor(am))
-y <- fit(y, data = mtcars)
-
-tidy(y)
+oomlm(mpg ~ wt + qsec + factor(am)) %>%
+  fit(data = mtcars) %>%
+  tidy()
 ```
 
     ## # A tibble: 4 x 7
@@ -152,7 +150,7 @@ accessible on demand with `residuals()`:
 sum(residuals(y, data = mtcars)^2)
 ```
 
-    ## [1] 169.2859
+    ## [1] 0
 
 Similarly we can use `augment()` but we must provide data.
 

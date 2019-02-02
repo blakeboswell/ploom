@@ -44,11 +44,11 @@ Models are intialized with a `formula()`; fit to data with calls to `fit()`; and
 ```{r, eval = TRUE, message=FALSE}
 library(ploom)
 
-# define model, fit to data, and summarize
 y <- oomlm(mpg ~ wt + qsec + factor(am))
 y <- fit(y, data = mtcars)
 
 tidy(y)
+
 ```
 
 #### Fitting over Chunks
@@ -76,7 +76,7 @@ chunks <- oomdata_dbi(result, chunk_size = 16)
 
 # fit model to all chunks
 y <- fit(oomlm(mpg ~ wt + qsec + factor(am)), chunks)
-summary(y)
+augment(y, data = mtcars)
 ```
 
 See the articles [NA]() and [NA]() for more on interfacing with databases.

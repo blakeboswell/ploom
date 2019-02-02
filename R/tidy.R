@@ -178,15 +178,17 @@ augment.oomlm <- function(x, data,
   u <- residuals_oomlm_x(x, chunk)
   y <- predict_oomlm_x(x, chunk, std_error = std_error, interval = interval)
   
-  df[[".pred"]]  <- y$fit[, 1]
-  df[[".resid"]] <- u$.resid
-  
   if(std_error) {
-    df[[".std_error"]] = y$std_error
+    df[[".pred"]]      <- y$fit[, 1]
+    df[[".std_error"]] <- y$std_error
+    df[[".resid"]]     <- u$.resid
     if(!is.null(interval)) {
       df[[".pred_lower"]] <- y$fit[, 2]
       df[[".pred_upper"]] <- y$fit[, 3]
     }
+  } else {
+    df[[".pred"]]  <- y[, 1]
+    df[[".resid"]] <- u[, 1]
   }
   
   df
