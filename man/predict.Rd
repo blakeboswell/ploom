@@ -4,35 +4,36 @@
 \alias{predict}
 \alias{predict.oomlm}
 \alias{predict.oomglm}
-\title{Predict values using \code{oomlm()} and \code{oomglm()} models}
+\title{Predict values using \code{oomlm} and \code{oomglm} models}
 \usage{
 \method{predict}{oomlm}(object, new_data = NULL, std_error = FALSE,
   interval = NULL, level = 0.95, as_function = FALSE, ...)
 
-\method{predict}{oomglm}(object, new_data, type = "response",
+\method{predict}{oomglm}(object, new_data = NULL, type = "response",
   std_error = FALSE, as_function = FALSE, ...)
 }
 \arguments{
-\item{object}{object inheriting from class \code{oomlm}}
+\item{object}{An object inheriting from class \code{oomlm}.}
 
-\item{new_data}{observations for prediction}
+\item{new_data}{Observations for prediction.}
 
-\item{std_error}{indicates if the standard error of predicted means should
-be returned}
+\item{std_error}{Indicates if the standard error of predicted means should
+be returned.}
 
-\item{interval}{type of interval calculation}
+\item{interval}{Type of interval calculation, "confidence" or "prediction.
+Is ignored if \code{std_error} is \code{FALSE}.}
 
-\item{level}{tolerance/confidence level for interval calculation}
+\item{level}{Confidence level for interval calculation.}
 
-\item{as_function}{if TRUE a function with only a \code{new_data} argument is returned
-for subsequent fitting}
+\item{as_function}{If \code{TRUE}, a function requiring only \code{new_data} is
+returned for subsequent fitting.}
 
-\item{...}{ignored}
+\item{...}{Ignored.}
 
-\item{type}{the type of prediction}
+\item{type}{The type of prediction for \code{oomglm} models, "response" or "link".}
 }
 \description{
-Predict values using \code{oomlm()} and \code{oomglm()} models
+Predict values using \code{oomlm} and \code{oomglm} models
 }
 \examples{
 \donttest{
@@ -48,18 +49,21 @@ sum((pred - mtcars$mpg)^2)
 # return value will be a prediction function with
 # only one argument for data
 pred_fun <- predict(x, mtcars, as_function = TRUE)
-rss      <- 0
-while(!is.null(chunk <- chunks())) {
- rss <- rss + (pred_fun(chunk) - chunk[, "mpg"])^2
-}
-rss
+pred_fun(mtcars[1, ])
 
-# pass TRUE for the `se_fit` argument and the
+# pass TRUE for the `std_error` argument and the
 # return value will include standard errors
 # for the predicted means
-pred <- predict(x, mtcars, se_fit = TRUE)
-names(pred)
-head(pred$se)
+pred <- predict(x, mtcars, std_error = TRUE)
+head(pred)
+
+# with std_error true, we can specify that a confidence or
+# prediction interval be returned
+pred <- predict(x, mtcars, std_error = TRUE, interval = "confidence")
+head(pred)
+}
 
 }
+\seealso{
+\code{\link[=oomlm]{oomlm()}}, \code{\link[=oomglm]{oomglm()}}
 }

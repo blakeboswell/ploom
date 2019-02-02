@@ -19,7 +19,7 @@ and related statistics.}
 \item{...}{ignored.}
 }
 \value{
-A one-row \link[tibble:tibble]{tibble::tibble} with columns:
+A one-row \link{tibble} with columns:
 
 \item{r.squared}{The percent of variance explained by the model}
 \item{adj.r.squared}{r.squared adjusted based on the degrees of freedom}

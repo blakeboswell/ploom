@@ -2,34 +2,33 @@
 % Please edit documentation in R/residuals.R
 \name{residuals}
 \alias{residuals}
-\alias{resid.oomlm}
 \alias{residuals.oomlm}
-\alias{resid.oomglm}
 \alias{residuals.oomglm}
-\title{calculate residuals for oomglm}
+\title{Calculate residuals for \code{oomlm} and \code{oomglm} models}
 \usage{
-\method{resid}{oomglm}(object, data, as_function = FALSE, ...)
+\method{residuals}{oomlm}(object, data = NULL, as_function = FALSE,
+  ...)
 
-\method{residuals}{oomlm}(object, data, as_function = FALSE, ...)
-
-\method{resid}{oomglm}(object, data, type = c("deviance", "pearson",
-  "response", "working"), as_function = FALSE, ...)
-
-\method{residuals}{oomglm}(object, data, type = c("deviance", "pearson",
-  "response", "working"), as_function = FALSE, ...)
+\method{residuals}{oomglm}(object, data = NULL, type = c("deviance",
+  "pearson", "response", "working"), as_function = FALSE, ...)
 }
 \arguments{
-\item{object}{\code{oomlm} or \code{oomglm} model}
+\item{object}{An object inheriting from class \code{oomlm}}
 
-\item{data}{data to calculate residuals}
+\item{data}{Observations for residual calculation.}
 
-\item{as_function}{if TRUE a function with only a \code{data} argument is returned
-for subsequent residual calculations}
+\item{as_function}{If \code{TRUE}, a function requiring only \code{data} is
+returned for subsequent residual calculations.}
 
-\item{...}{ignored}
+\item{...}{Ignored.}
 
-\item{type}{residual calculation method}
+\item{type}{Residual calculation method for \code{oomglm} models.}
 }
 \description{
-calculate residuals for oomglm
+Returns the difference between actual and predicted values.
+Since \code{oomlm} models do not store data while fitting, \code{data}
+must be supplied to calculate residuals.
+}
+\seealso{
+\code{\link[=oomlm]{oomlm()}}, \code{\link[=oomglm]{oomglm()}}
 }

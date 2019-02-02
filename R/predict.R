@@ -1,16 +1,17 @@
 
-#' Predict values using `oomlm()` and `oomglm()` models
+#' Predict values using `oomlm` and `oomglm` models
 #'
-#' @param object object inheriting from class `oomlm`
-#' @param new_data observations for prediction
-#' @param std_error indicates if the standard error of predicted means should
-#'   be returned
-#' @param interval type of interval calculation
-#' @param level tolerance/confidence level for interval calculation
-#' @param type the type of prediction
-#' @param as_function if TRUE a function with only a `new_data` argument is returned
-#'   for subsequent fitting
-#' @param ... ignored
+#' @param object An object inheriting from class `oomlm`.
+#' @param new_data Observations for prediction.
+#' @param std_error Indicates if the standard error of predicted means should
+#'   be returned.
+#' @param interval Type of interval calculation, "confidence" or "prediction.
+#'   Is ignored if `std_error` is `FALSE`.
+#' @param level Confidence level for interval calculation.
+#' @param type The type of prediction for `oomglm` models, "response" or "link".
+#' @param as_function If `TRUE`, a function requiring only `new_data` is
+#'   returned for subsequent fitting.
+#' @param ... Ignored.
 #'
 #' @examples \donttest{
 #' # fit an `oomlm` model
@@ -25,20 +26,21 @@
 #' # return value will be a prediction function with
 #' # only one argument for data
 #' pred_fun <- predict(x, mtcars, as_function = TRUE)
-#' rss      <- 0
-#' while(!is.null(chunk <- chunks())) {
-#'  rss <- rss + (pred_fun(chunk) - chunk[, "mpg"])^2
-#' }
-#' rss
+#' pred_fun(mtcars[1, ])
 #' 
-#' # pass TRUE for the `se_fit` argument and the
+#' # pass TRUE for the `std_error` argument and the
 #' # return value will include standard errors
 #' # for the predicted means
-#' pred <- predict(x, mtcars, se_fit = TRUE)
-#' names(pred)
-#' head(pred$se)
+#' pred <- predict(x, mtcars, std_error = TRUE)
+#' head(pred)
 #'
+#' # with std_error true, we can specify that a confidence or
+#' # prediction interval be returned
+#' pred <- predict(x, mtcars, std_error = TRUE, interval = "confidence")
+#' head(pred)
 #' }
+#' 
+#' @seealso [oomlm()], [oomglm()] 
 #' @name predict
 NULL
 
@@ -67,12 +69,37 @@ predict.oomlm <- function(object,
 }
 
 
-#' return function that will predict and format output
+#' @rdname predict
+#' @export
+predict.oomglm <- function(object,
+                           new_data    = NULL,
+                           type        = "response",
+                           std_error   = FALSE,
+                           as_function = FALSE, ...) {
+  
+  if(!as_function && is.null(new_data)){
+    stop("`new_data` must be provided if `as_function` is FALSE")
+  }
+  
+  fn <- predict_oomglm(object, type, std_error)
+  
+  if(as_function) {
+    return(fn)
+  }
+  
+  fn(new_data)
+  
+}
+
+
+#' Internal. Return function that will predict and format output
 #' 
-#' @param object `oomlm` model object
-#' @param std_error if TRUE calculate standard error
-#' @param interval interval type
-#' @param level the confidence/tolerence for interval calculation
+#' @param object An `oomlm` model object.
+#' @param std_error Indicates if the standard error of predicted means should
+#'   be returned.
+#' @param interval Type of interval calculation, "confidence" or "prediction.
+#'   Is ignored if `std_error` is FALSE.
+#' @param level Confidence level for interval calculation.
 #' 
 #' @keywords internal
 predict_oomlm <- function(object,
@@ -104,13 +131,15 @@ predict_oomlm <- function(object,
 }
 
 
-#' perform `oomlm` prediction
-#'
-#' @param object `oomlm` model object
-#' @param new_data covariates for prediction
-#' @param std_error if TRUE calculate standard error
-#' @param interval interval type
-#' @param level the confidence/tolerence for interval calculation
+#' Internal. Perform `oomlm` prediction
+#' 
+#' @param object An `oomlm` model object.
+#' @param new_data Observations for prediction.
+#' @param std_error Indicates if the standard error of predicted means should
+#'   be returned.
+#' @param interval Type of interval calculation, "confidence" or "prediction.
+#'   Is ignored if `std_error` is FALSE.
+#' @param level Confidence level for interval calculation.
 #' 
 #' @keywords internal
 predict_oomlm_x <- function(object, new_data,
@@ -149,35 +178,13 @@ predict_oomlm_x <- function(object, new_data,
 }
 
 
-#' @rdname predict
-#' @export
-predict.oomglm <- function(object, new_data,
-                           type = "response",
-                           std_error   = FALSE,
-                           as_function = FALSE,
-                           ...) {
-  
-  if(!as_function && is.null(new_data)){
-    stop("`new_data` must be provided if `as_function` is FALSE")
-  }
-  
-  fn <- predict_oomglm(object, type, std_error)
-  
-  if(as_function) {
-    return(fn)
-  }
-  
-  fn(new_data)
-  
-}
-
-
-#' return function that will predict and format output
+#' Internal. Return function that will predict and format output
 #' 
-#' @param object `oomglm` model object
-#' @param type type of prediction, link or response
-#' @param std_error if TRUE calculate standard error
-#' 
+#' @param object An `oomglm` model object.
+#' @param type The type of prediction for `oomglm` models, "response" or "link".
+#' @param std_error Indicates if the standard error of predicted means should
+#'   be returned.
+#'  
 #' @keywords internal
 predict_oomglm <- function(object,
                            type = "response",
@@ -200,13 +207,14 @@ predict_oomglm <- function(object,
 }
 
 
-#' perform `oomglm` prediction
-#'
-#' @param object `oomglm` model object
-#' @param new_data covariates for prediction
-#' @param type type of prediction, link or response
-#' @param std_error if TRUE calculate standard error
+#' Internal. Perform `oomglm` prediction
 #' 
+#' @param object An `oomglm` model object.
+#' @param new_data Observations for prediction.
+#' @param type The type of prediction for `oomglm` models, "response" or "link".
+#' @param std_error Indicates if the standard error of predicted means should
+#'   be returned.
+#'   
 #' @keywords internal
 predict_oomglm_x <- function(object, new_data,
                              type = "response",
@@ -243,4 +251,3 @@ predict_oomglm_x <- function(object, new_data,
   }
   
 }
-

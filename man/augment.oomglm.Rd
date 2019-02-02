@@ -8,9 +8,9 @@
   ...)
 }
 \arguments{
-\item{x}{\code{oomlm()} model}
+\item{x}{\code{oomlm} model}
 
-\item{data}{\code{tibble()} or other data source}
+\item{data}{\code{tibble} or other data source}
 
 \item{type}{link or response}
 
@@ -22,5 +22,5 @@
 augment data with prediction, std error, and residuals
 }
 \seealso{
-\code{\link[=augment]{augment()}}, \code{\link[stats:predict.lm]{stats::predict.lm()}}
+\code{\link[=augment]{augment()}}
 }

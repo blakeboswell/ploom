@@ -1,29 +1,25 @@
-
-#' calculate residuals for oomglm
+#' Calculate residuals for `oomlm` and `oomglm` models
 #'
-#' @param object `oomlm` or `oomglm` model
-#' @param data data to calculate residuals
-#' @param type residual calculation method
-#' @param as_function if TRUE a function with only a `data` argument is returned
-#'   for subsequent residual calculations
-#' @param ... ignored  
+#' Returns the difference between actual and predicted values.
+#' Since `oomlm` models do not store data while fitting, `data`
+#' must be supplied to calculate residuals.
+#'
+#' @param object An object inheriting from class `oomlm`
+#' @param data Observations for residual calculation.
+#' @param type Residual calculation method for `oomglm` models.
+#' @param as_function If `TRUE`, a function requiring only `data` is
+#'   returned for subsequent residual calculations.
+#' @param ... Ignored.
 #' 
+#' @seealso [oomlm()], [oomglm()] 
 #' @name residuals
 NULL
 
 
 #' @rdname residuals
-#' @method resid oomglm
 #' @export
-resid.oomlm <- function(object, data,
-                        as_function = FALSE, ...) {
-  residuals.oomlm(object, data, as_function = FALSE, ...)
-}
-
-#' @rdname residuals
-#' @method residuals oomlm
-#' @export
-residuals.oomlm <- function(object, data,
+residuals.oomlm <- function(object,
+                            data        = NULL,
                             as_function = FALSE, ...) {
   
   if(!as_function && is.null(data)){
@@ -40,57 +36,15 @@ residuals.oomlm <- function(object, data,
 }
 
 
-#' internal wrapper for unpacking data and calculating residuals
-#' 
-#' @param object `oomlm` object
-#' 
-#' @keywords internal
-residuals_oomlm <- function(object) {
-  function(data) {
-    chunk <- unpack_oomchunk(object, data)
-    r <- residuals_oomlm_x(object, chunk)
-    tibble::tibble(.resid = drop(r))
-  }
-}
-
-
-#' internal `oomlm` residual calculation
-#' 
-#' @param x `list` of artifacts returned by `unpack_oomchunk()`
-#' 
-#' @keywords internal
-residuals_oomlm_x <- function(object, x) {
-  y    <- x$response - x$offset
-  yhat <- x$data %*% coef(object)
-  y - yhat
-}
-
-
 #' @rdname residuals
-#' @method resid oomglm
 #' @export
-resid.oomglm <- function(object, data,
-                         type = c("deviance"
-                                  , "pearson"
-                                  , "response"
-                                  , "working"),
-                         as_function = FALSE, ...) {
-  
-  residuals.oomglm(object, data, type, as_function)
-  
-}
-
-
-
-#' @rdname residuals
-#' @method residuals oomglm
-#' @export
-residuals.oomglm <- function(object, data,
+residuals.oomglm <- function(object,
+                             data = NULL,
                              type = c("deviance"
                                       , "pearson"
                                       , "response"
                                       , "working"),
-                         as_function = FALSE, ...) {
+                             as_function = FALSE, ...) {
   
   if(!as_function && is.null(data)){
     stop("`data` must be provided if `as_function` is FALSE")
@@ -106,10 +60,37 @@ residuals.oomglm <- function(object, data,
 }
 
 
-#' internal wrapper for unpacking data and calculating residuals
+#' Internal. Wrapper for unpacking data and calculating residuals
 #' 
-#' @param object `oomglm` object
-#' @param type residual calculation method
+#' @param object An `oomlm` model.
+#' 
+#' @keywords internal
+residuals_oomlm <- function(object) {
+  function(data) {
+    chunk <- unpack_oomchunk(object, data)
+    r <- residuals_oomlm_x(object, chunk)
+    tibble::tibble(.resid = drop(r))
+  }
+}
+
+
+#' Internal.  Calculate residuals of `oomlm` model
+#' 
+#' @param object An `oomlm` model.
+#' @param x The `list` of artifacts returned by `unpack_oomchunk()`.
+#' 
+#' @keywords internal
+residuals_oomlm_x <- function(object, x) {
+  y    <- x$response - x$offset
+  yhat <- x$data %*% coef(object)
+  y - yhat
+}
+
+
+#' Internal. Wrapper for unpacking data and calculating residuals
+#'
+#' @param object An `oomglm` model.
+#' @param `type` Residual calculation method.
 #' 
 #' @keywords internal
 residuals_oomglm <- function(object,
@@ -129,9 +110,11 @@ residuals_oomglm <- function(object,
 }
 
 
-#' internal `oomglm` residual calculation
+#' Internal.  Calculate residuals of `oomglm` model.
 #' 
-#' @param x `list` of artifacts returned by `unpack_oomchunk()`
+#' @param object An `oomglm` model.
+#' @param x The `list` of artifacts returned by `unpack_oomchunk()`.
+#' @param `type` Residual calculation method.
 #' 
 #' @keywords internal
 residuals_oomglm_x <- function(object, x, type) {

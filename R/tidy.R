@@ -16,15 +16,15 @@ generics::glance
 generics::augment
 
 
-#' Fit `oomlm()` model to additonal observations
+#' Fit `oomlm` model to additional observations
 #' 
 #' @md
 #' @description
 #' Update ploom model fit with new data. 
 #' 
-#' @param object [oomlm()] model to be updated
-#' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
-#'   [tibble()], [data.frame()], or [list()] of observations to fit
+#' @param object `oomlm` model to be updated
+#' @param data an optional `oomdata_tbl`, `oomdata_dbi`, `oomdata_con`,
+#'   `tibble`, `data.frame`, or `list` of observations to fit
 #' @param ... ignored
 #' 
 #' @method fit oomlm
@@ -36,19 +36,19 @@ fit.oomlm <- function(object, data, ...) {
 }
 
 
-#' Fit [oomglm()] model via Iteratively Reweighted Least Squares (IRLS).
+#' Fit `oomglm` model via Iteratively Reweighted Least Squares (IRLS).
 #' 
 #' @md
-#' @param object [oomglm()] model.
-#' @param data [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
-#'   [tibble()], [data.frame()], or [list()] of observations to fit
+#' @param object `oomglm` model.
+#' @param data an optional `oomdata_tbl`, `oomdata_dbi`, `oomdata_con`,
+#'   `tibble`, `data.frame`, or `list` of observations to fit
 #' @param times Maximum number of IRLS iterations to perform. Will 
 #'   stop iterating if model converges before `times` iterations.
 #' @param tolerance Tolerance used to determine convergence. Represents
 #'  change in coefficient as a multiple of standard error.
 #' @param ... ignored
 #' 
-#' @return [oomglm()] object after performing `times` IRLS iterations on
+#' @return `oomglm` object after performing `times` IRLS iterations on
 #'  `data`.
 #' 
 #' @method fit oomglm
@@ -66,7 +66,7 @@ fit.oomglm <- function(object, data, times = 2L, tolerance = 1e-8, ...) {
 #' errors, confidence intervals, p-values, degrees of freedom, and the
 #' name of the outcome variable
 #'
-#' @param x [oomlm()] model
+#' @param x `oomlm` model
 #' @param ... ignored
 #' 
 #' @method tidy oomlm
@@ -103,7 +103,7 @@ tidy.oomlm <- function(x, ...) {
 #' @param x `oomlm` model object
 #' @param ... ignored.
 #'
-#' @return A one-row [tibble::tibble] with columns:
+#' @return A one-row [tibble] with columns:
 #' 
 #'   \item{r.squared}{The percent of variance explained by the model}
 #'   \item{adj.r.squared}{r.squared adjusted based on the degrees of freedom}
@@ -168,8 +168,8 @@ glance.oomglm <- function(x, ...) {
 
 #' augment data with prediction, std error, and residuals
 #' 
-#' @param x `oomlm()` model
-#' @param data `tibble()` or other data source
+#' @param x `oomlm` model
+#' @param data `tibble` or other data source
 #' @param std_error calculate standard error of prediction
 #' @param interval interval type to return
 #' @param ... ignored
@@ -209,15 +209,15 @@ augment.oomlm <- function(x, data,
 
 #' augment data with prediction, std error, and residuals
 #' 
-#' @param x `oomlm()` model
-#' @param data `tibble()` or other data source
+#' @param x `oomlm` model
+#' @param data `tibble` or other data source
 #' @param type link or response
 #' @param std_error calculate standard error of prediction
 #' @param ... ignored
 #' 
 #' @method augment oomglm
 #' @export
-#' @seealso [augment()], [stats::predict.lm()]
+#' @seealso [augment()]
 augment.oomglm <- function(x, data,
                            type = "response",
                            std_error = FALSE,

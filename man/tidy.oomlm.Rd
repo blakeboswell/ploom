@@ -7,7 +7,7 @@
 \method{tidy}{oomlm}(x, ...)
 }
 \arguments{
-\item{x}{\code{\link[=oomlm]{oomlm()}} model}
+\item{x}{\code{oomlm} model}
 
 \item{...}{ignored}
 }

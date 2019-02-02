@@ -8,9 +8,9 @@
   interval = "confidence", ...)
 }
 \arguments{
-\item{x}{\code{oomlm()} model}
+\item{x}{\code{oomlm} model}
 
-\item{data}{\code{tibble()} or other data source}
+\item{data}{\code{tibble} or other data source}
 
 \item{std_error}{calculate standard error of prediction}
 

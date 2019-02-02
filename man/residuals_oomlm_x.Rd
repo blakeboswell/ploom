@@ -2,14 +2,16 @@
 % Please edit documentation in R/residuals.R
 \name{residuals_oomlm_x}
 \alias{residuals_oomlm_x}
-\title{internal \code{oomlm} residual calculation}
+\title{Internal.  Calculate residuals of \code{oomlm} model}
 \usage{
 residuals_oomlm_x(object, x)
 }
 \arguments{
-\item{x}{\code{list} of artifacts returned by \code{unpack_oomchunk()}}
+\item{object}{An \code{oomlm} model.}
+
+\item{x}{The \code{list} of artifacts returned by \code{unpack_oomchunk()}.}
 }
 \description{
-internal \code{oomlm} residual calculation
+Internal.  Calculate residuals of \code{oomlm} model
 }
 \keyword{internal}

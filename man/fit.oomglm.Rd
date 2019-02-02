@@ -2,15 +2,15 @@
 % Please edit documentation in R/tidy.R
 \name{fit.oomglm}
 \alias{fit.oomglm}
-\title{Fit \code{\link[=oomglm]{oomglm()}} model via Iteratively Reweighted Least Squares (IRLS).}
+\title{Fit \code{oomglm} model via Iteratively Reweighted Least Squares (IRLS).}
 \usage{
 \method{fit}{oomglm}(object, data, times = 2L, tolerance = 1e-08, ...)
 }
 \arguments{
-\item{object}{\code{\link[=oomglm]{oomglm()}} model.}
+\item{object}{\code{oomglm} model.}
 
-\item{data}{\code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
-\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
+\item{data}{an optional \code{oomdata_tbl}, \code{oomdata_dbi}, \code{oomdata_con},
+\code{tibble}, \code{data.frame}, or \code{list} of observations to fit}
 
 \item{times}{Maximum number of IRLS iterations to perform. Will
 stop iterating if model converges before \code{times} iterations.}
@@ -21,11 +21,11 @@ change in coefficient as a multiple of standard error.}
 \item{...}{ignored}
 }
 \value{
-\code{\link[=oomglm]{oomglm()}} object after performing \code{times} IRLS iterations on
+\code{oomglm} object after performing \code{times} IRLS iterations on
 \code{data}.
 }
 \description{
-Fit \code{\link[=oomglm]{oomglm()}} model via Iteratively Reweighted Least Squares (IRLS).
+Fit \code{oomglm} model via Iteratively Reweighted Least Squares (IRLS).
 }
 \seealso{
 \code{\link[=oomglm]{oomglm()}}

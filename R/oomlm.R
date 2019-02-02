@@ -102,7 +102,6 @@ oomlm <- function(formula,
 
 #' @export
 #' @rdname fit.oomlm
-#' @noRd
 update.oomlm <- function(object, data, ...) {
   
   updater <- function(object, data, ...) {

@@ -2,10 +2,27 @@
 #' @importFrom Rcpp evalCpp
 #' @useDynLib ploom
 #' @exportPattern "^[[:alpha:]]+"
-#' @importFrom stats AIC coef deviance formula gaussian
-#'   pf printCoefmat pt symnum terms family as.formula
-#'   makepredictcall na.fail model.frame model.matrix
-#'   contrasts<- confint confint.lm BIC logLik qt
+#' @importFrom stats
+#'  AIC
+#'  as.formula
+#'  BIC 
+#'  coef
+#'  confint
+#'  confint.lm 
+#'  contrasts<- 
+#'  deviance
+#'  family
+#'  formula
+#'  gaussian
+#'  logLik
+#'  makepredictcall
+#'  .MFclass
+#'  na.fail
+#'  pf
+#'  printCoefmat
+#'  pt
+#'  qt
+#'  symnum
+#'  terms 
 #' @importFrom utils head read.table tail getFromNamespace
-#' @importFrom stats .MFclass
 NULL

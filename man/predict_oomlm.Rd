@@ -2,21 +2,23 @@
 % Please edit documentation in R/predict.R
 \name{predict_oomlm}
 \alias{predict_oomlm}
-\title{return function that will predict and format output}
+\title{Internal. Return function that will predict and format output}
 \usage{
 predict_oomlm(object, std_error = FALSE, interval = NULL,
   level = 0.95)
 }
 \arguments{
-\item{object}{\code{oomlm} model object}
+\item{object}{An \code{oomlm} model object.}
 
-\item{std_error}{if TRUE calculate standard error}
+\item{std_error}{Indicates if the standard error of predicted means should
+be returned.}
 
-\item{interval}{interval type}
+\item{interval}{Type of interval calculation, "confidence" or "prediction.
+Is ignored if \code{std_error} is FALSE.}
 
-\item{level}{the confidence/tolerence for interval calculation}
+\item{level}{Confidence level for interval calculation.}
 }
 \description{
-return function that will predict and format output
+Internal. Return function that will predict and format output
 }
 \keyword{internal}

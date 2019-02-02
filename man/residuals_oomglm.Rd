@@ -2,17 +2,17 @@
 % Please edit documentation in R/residuals.R
 \name{residuals_oomglm}
 \alias{residuals_oomglm}
-\title{internal wrapper for unpacking data and calculating residuals}
+\title{Internal. Wrapper for unpacking data and calculating residuals}
 \usage{
 residuals_oomglm(object, type = c("deviance", "pearson", "response",
   "working"))
 }
 \arguments{
-\item{object}{\code{oomglm} object}
+\item{object}{An \code{oomglm} model.}
 
-\item{type}{residual calculation method}
+\item{`type`}{Residual calculation method.}
 }
 \description{
-internal wrapper for unpacking data and calculating residuals
+Internal. Wrapper for unpacking data and calculating residuals
 }
 \keyword{internal}

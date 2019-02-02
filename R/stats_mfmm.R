@@ -93,7 +93,7 @@ model_matrix <- function(terms, data) {
                    names(data))
   
   if (anyNA(reorder)) {
-    stop("model frame and formula mismatch in model.matrix()")
+    stop("model frame and formula mismatch in model_matrix()")
   }
   
   if(!identical(reorder, seq_len(ncol(data)))) {
@@ -124,7 +124,7 @@ model_matrix <- function(terms, data) {
       }
     }
 
-  } else { #  no rhs terms ('~1', or '~0'): internal model.matrix needs some variable
+  } else { #  no rhs terms ('~1', or '~0'): internal model_matrix needs some variable
     isF         <- FALSE
     data[["x"]] <- raw(nrow(data))
   }

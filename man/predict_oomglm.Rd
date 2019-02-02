@@ -2,18 +2,19 @@
 % Please edit documentation in R/predict.R
 \name{predict_oomglm}
 \alias{predict_oomglm}
-\title{return function that will predict and format output}
+\title{Internal. Return function that will predict and format output}
 \usage{
 predict_oomglm(object, type = "response", std_error = FALSE)
 }
 \arguments{
-\item{object}{\code{oomglm} model object}
+\item{object}{An \code{oomglm} model object.}
 
-\item{type}{type of prediction, link or response}
+\item{type}{The type of prediction for \code{oomglm} models, "response" or "link".}
 
-\item{std_error}{if TRUE calculate standard error}
+\item{std_error}{Indicates if the standard error of predicted means should
+be returned.}
 }
 \description{
-return function that will predict and format output
+Internal. Return function that will predict and format output
 }
 \keyword{internal}

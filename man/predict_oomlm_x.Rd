@@ -2,23 +2,25 @@
 % Please edit documentation in R/predict.R
 \name{predict_oomlm_x}
 \alias{predict_oomlm_x}
-\title{perform \code{oomlm} prediction}
+\title{Internal. Perform \code{oomlm} prediction}
 \usage{
 predict_oomlm_x(object, new_data, std_error = FALSE, interval = NULL,
   level = 0.95)
 }
 \arguments{
-\item{object}{\code{oomlm} model object}
+\item{object}{An \code{oomlm} model object.}
 
-\item{new_data}{covariates for prediction}
+\item{new_data}{Observations for prediction.}
 
-\item{std_error}{if TRUE calculate standard error}
+\item{std_error}{Indicates if the standard error of predicted means should
+be returned.}
 
-\item{interval}{interval type}
+\item{interval}{Type of interval calculation, "confidence" or "prediction.
+Is ignored if \code{std_error} is FALSE.}
 
-\item{level}{the confidence/tolerence for interval calculation}
+\item{level}{Confidence level for interval calculation.}
 }
 \description{
-perform \code{oomlm} prediction
+Internal. Perform \code{oomlm} prediction
 }
 \keyword{internal}

@@ -2,14 +2,14 @@
 % Please edit documentation in R/residuals.R
 \name{residuals_oomlm}
 \alias{residuals_oomlm}
-\title{internal wrapper for unpacking data and calculating residuals}
+\title{Internal. Wrapper for unpacking data and calculating residuals}
 \usage{
 residuals_oomlm(object)
 }
 \arguments{
-\item{object}{\code{oomlm} object}
+\item{object}{An \code{oomlm} model.}
 }
 \description{
-internal wrapper for unpacking data and calculating residuals
+Internal. Wrapper for unpacking data and calculating residuals
 }
 \keyword{internal}

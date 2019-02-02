@@ -61,8 +61,6 @@ expect_attr_equal <- function(x, y, df) {
   yy <- as.vector(residuals(y))
   xy <- residuals(x, df)$.resid
   expect_equal(yy, xy)
-  xy <- resid(x, df)$.resid
-  expect_equal(yy, xy)
   
   yy <- tryCatch({hbroom::glance(y)}, error = function(e) { NULL })
   xy <- glance(x)

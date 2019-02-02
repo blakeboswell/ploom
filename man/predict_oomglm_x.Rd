@@ -2,21 +2,22 @@
 % Please edit documentation in R/predict.R
 \name{predict_oomglm_x}
 \alias{predict_oomglm_x}
-\title{perform \code{oomglm} prediction}
+\title{Internal. Perform \code{oomglm} prediction}
 \usage{
 predict_oomglm_x(object, new_data, type = "response",
   std_error = FALSE)
 }
 \arguments{
-\item{object}{\code{oomglm} model object}
+\item{object}{An \code{oomglm} model object.}
 
-\item{new_data}{covariates for prediction}
+\item{new_data}{Observations for prediction.}
 
-\item{type}{type of prediction, link or response}
+\item{type}{The type of prediction for \code{oomglm} models, "response" or "link".}
 
-\item{std_error}{if TRUE calculate standard error}
+\item{std_error}{Indicates if the standard error of predicted means should
+be returned.}
 }
 \description{
-perform \code{oomglm} prediction
+Internal. Perform \code{oomglm} prediction
 }
 \keyword{internal}
