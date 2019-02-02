@@ -2,7 +2,17 @@
 % Please edit documentation in R/oomglm.R
 \name{init_oomglm}
 \alias{init_oomglm}
-\title{Initialize Out of memory Generalized Linear Regression Model}
+\title{#' return true if model is gaussian family with identity link
+#'
+#' not currently in use
+#'
+#' @param object  \code{oomglm} model
+#' @keywords internal
+ols_model <- function(object) {
+fam <- object$family
+fam$family == "gaussian" & fam$link == "identity"
+}
+Initialize Out of memory Generalized Linear Regression Model}
 \usage{
 init_oomglm(formula, family, weights, start)
 }
@@ -16,6 +26,16 @@ init_oomglm(formula, family, weights, start)
 \item{start}{starting values for the parameters in the linear predictor.}
 }
 \description{
+#' return true if model is gaussian family with identity link
+#'
+#' not currently in use
+#'
+#' @param object  \code{oomglm} model
+#' @keywords internal
+ols_model <- function(object) {
+fam <- object$family
+fam$family == "gaussian" & fam$link == "identity"
+}
 Initialize Out of memory Generalized Linear Regression Model
 }
 \keyword{internal}

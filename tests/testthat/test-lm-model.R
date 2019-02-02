@@ -12,6 +12,8 @@ iter_model <- function(df, eqn, weights = NULL) {
 
 expect_attr_equal <- function(x, y, df) {
   
+  expect_equal(family(y), family(x))
+  
   sy <- summary(y, correlation = TRUE)
   sx <- summary(x, correlation = TRUE)
   
@@ -56,23 +58,20 @@ expect_attr_equal <- function(x, y, df) {
   xy <- predict(x, mtcars, std_error = TRUE, interval = "prediction")
   xy <- cbind(xy$.pred, xy$.pred_lower, xy$.pred_upper)
 
-  # 
-  # yy <- predict(y, df, se.fit = TRUE, interval = "confidence")
-  # xy <- predict(x, df, se_fit = TRUE, interval = "confidence")
-  # colnames(xy$fit) <- colnames(yy$fit)
-  # expect_equal(yy, xy)
-  # 
-  # yy <- predict(y, df, se.fit = TRUE, interval = "prediction")
-  # xy <- predict(x, df, se_fit = TRUE, interval = "prediction")
-  # colnames(xy$fit) <- colnames(yy$fit)
-  # expect_equal(yy, xy)
-  # 
-  
   yy <- as.vector(residuals(y))
   xy <- residuals(x, df)$.resid
   expect_equal(yy, xy)
   xy <- resid(x, df)$.resid
   expect_equal(yy, xy)
+  
+  yy <- tryCatch({hbroom::glance(y)}, error = function(e) { NULL })
+  xy <- glance(x)
+  if(!is.null(yy)) {
+    expect_equal(
+      as.matrix(unclass(yy[names(xy)])),
+      as.matrix(unclass(xy))
+    )  
+  }
   
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),

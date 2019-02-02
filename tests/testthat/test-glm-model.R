@@ -55,7 +55,16 @@ expect_attr_equal <- function(x, y, df) {
   expect_equal(yy, xy)
   xy <- resid(x, df)$.resid
   expect_equal(yy, xy)
-
+  
+  yy <- tryCatch({hbroom::glance(y)}, error = function(e) { NULL })
+  xy <- glance(x)
+  if(!is.null(yy)) {
+    expect_equal(
+      as.matrix(unclass(yy[names(xy)])),
+      as.matrix(unclass(xy))
+    )  
+  }
+  
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),
     as.matrix(tidy(x)[2:5])
