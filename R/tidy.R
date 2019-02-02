@@ -36,6 +36,18 @@ tidy.oomlm <- function(x, ...) {
 }
 
 
+#' Tidy an `oomdata` function
+#' 
+#' @param x A `oomdata` function.
+#' @param ... Ignored.
+#' @method tidy oomdata
+#' @export
+#' @md
+tidy.oomdata <- function(x, ...) {
+  tibble::as_tibble(get_oomdata(x))
+}
+
+
 #' Returns a tibble with exactly one row of goodness of fitness measures
 #' and related statistics.
 #' 
