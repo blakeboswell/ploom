@@ -2,19 +2,18 @@
 % Please edit documentation in R/oomglm.R
 \name{update_oomglm}
 \alias{update_oomglm}
-\title{Update \code{\link[=oomglm]{oomglm()}} object with additional observations}
+\title{Internal. Update \code{oomglm} object with additional observations}
 \usage{
 update_oomglm(object, data, ...)
 }
 \arguments{
-\item{object}{\code{\link[=oomglm]{oomglm()}} model}
+\item{object}{An \code{oomglm} model.}
 
-\item{data}{observations to fit}
+\item{data}{Observations to fit.}
 
-\item{...}{ignored}
+\item{...}{Ignored.}
 }
 \description{
-This function is typically called via \code{\link[=iter_weight]{iter_weight()}} or \code{\link[=weight]{weight()}}.
-It is exposed for potential non-typical situations.
+This function is typically called via \code{\link[=fit]{fit()}} or \code{\link[=weight]{weight()}}.
 }
 \keyword{internal}

@@ -1,10 +1,11 @@
 
-#' Initialize Updating Linear Model
+#' Internal. Initialize Updating Linear Model
 #' 
 #' @md
-#' @param formula a symbolic description of the model to be fitted
+#' @param formula A symbolic description of the model to be fitted
 #'  of class `formula`.
 #' @param weights A one-sided, single term `formula` specifying weights.
+#'
 #' @keywords internal
 init_oomlm <- function(formula, weights = NULL) {
   
@@ -32,47 +33,46 @@ init_oomlm <- function(formula, weights = NULL) {
 
 #' Out of memory Linear model
 #' 
-#' Perform linear regression via Alan Miller's bounded memory QR
-#' factorization algorithm which enables models with `p` variables
-#' to be fit in `p^2` memory.
+#' Perform memory-efficient linear regression using 
+#' the AS274 bounded memory QR factorization algorithm.
 #' 
 #' @md
-#' @param formula a symbolic description of the model to be fitted of class
-#'  [formula()].
-#' @param weights a one-sided, single term [formula()] specifying weights.
-#' @param ... ignored.
+#' @param formula A symbolic description of the model to be fitted of class
+#'  `formula`.
+#' @param weights A one-sided, single term `formula` specifying weights.
+#' @param ... Ignored.
 #' @details
-#'  The provided [formula()] must not contain any data-dependent terms to ensure
-#'  consistency across calls to [fit()]. Factors are permitted, but the
+#'  The provided `formula` must not contain any data-dependent terms to ensure
+#'  consistency across calls to `fit()`. Factors are permitted, but the
 #'  levels of the factor must be the same across all data chunks. Empty factor
 #'  levels are accepted.
 #'
-#' @return A [oomlm()] model is perpetually in an _in-progress_ state. It is up
+#' @return An `oomlm` model is perpetually in an _in-progress_ state. It is up
 #'  to the user to know when fitting is complete. Therefore, only basic
 #'  model characteristics are provided as values. Statistics are available on 
-#'  demand via `summary` and `extractor` functions.
+#'  demand via summary and extractor functions.
 #'
-#' \item{n}{the number of observations processed.}
-#' \item{df.residual}{the residual degrees of freedom.}
-#' \item{formula}{the [formula()] object specifying the linear model.}
-#' \item{terms}{the [terms()] object specifying the terms of the linear model.}
-#' \item{weights}{a one-sided, single term [formula()] specifying weights.}
-#' \item{call}{the matched call.}
-#' @seealso [oomglm()], [oomdata_tbl()]
+#' \item{n}{The number of observations processed.}
+#' \item{df.residual}{The residual degrees of freedom.}
+#' \item{formula}{The `formula` object specifying the linear model.}
+#' \item{terms}{The `terms` object specifying the terms of the linear model.}
+#' \item{weights}{A one-sided, single term `formula` specifying weights.}
+#' \item{call}{The matched call.}
+#' @seealso [oomglm()]
 #' @aliases AIC.oomlm coef.oomlm confint.oomlm deviance.oomlm family.oomlm 
 #'  formula.oomlm print.oomlm print.summary.oomlm summary.oomlm logLik.oomlm
 #'  vcov.oomlm BIC.oomlm
 #' @export
 #' @name oomlm
 #' @examples \donttest{
-#' # `oomglm()` are defined with a call to `oomlm()` and fit to data
+#' # `oomlm` are defined with a call to `oomlm()` and fit to data
 #' # with a call to `fit()`
 #' x <- oomlm(mpg ~ cyl + disp)
 #' x <- fit(x, mtcars)
 #' print(x)
 #' 
 #' 
-#' # `oomlm()` models can be fit with more data via subsequent calls
+#' # `oomlm` models can be fit with more data via subsequent calls
 #' # to the `fit()` function
 #' chunks <- purrr::pmap(mtcars, list)
 #' 
@@ -87,8 +87,8 @@ init_oomlm <- function(formula, weights = NULL) {
 #' # `oomdata_tbl()` facilitates iterating through data rows in chunks
 #' chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 #' 
-#' # `fit()` will automatically fit over all chunks in an `oomdata()`
-#' # function
+#' # `fit()` will automatically fit over all chunks in an `oomdata`
+#' # object
 #' z <- oomlm(mpg ~ cyl + disp)
 #' z <- fit(z, data = chunks)
 #' summary(z)
@@ -100,9 +100,24 @@ oomlm <- function(formula,
 }
 
 
+#' Fit `oomlm` model to additional observations
+#' 
+#' @md
+#' @description
+#' Update ploom model with new data.
+#' 
+#' @param object `oomlm` model to be updated.
+#' @param data An optional `oomdata_tbl`, `oomdata_dbi`, `oomdata_con`,
+#'   `tibble`, `data.frame`, or `list` of observations to fit.
+#' @param ... Ignored.
+#' 
+#' @return `oomlm` object after fitting to `data`.
+#'
+#' @method fit oomlm
+#' @seealso [oomlm()]
 #' @export
-#' @rdname fit.oomlm
-update.oomlm <- function(object, data, ...) {
+#' @name fit.oomlm
+fit.oomlm <- function(object, data, ...) {
   
   updater <- function(object, data, ...) {
     

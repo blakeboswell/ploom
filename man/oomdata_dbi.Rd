@@ -4,7 +4,7 @@
 \alias{oomdata_dbi}
 \alias{oomdata_tbl}
 \alias{oomdata_con}
-\title{Iterate over \code{tibble()}, \code{DBIResult} or \code{connection()} in chunks.}
+\title{Iterate over \code{tibble}, \code{DBIResult} or \code{connection} in chunks.}
 \usage{
 oomdata_tbl(data, chunk_size, ...)
 
@@ -13,18 +13,18 @@ oomdata_dbi(data, chunk_size, ...)
 oomdata_con(data, chunk_size, header = TRUE, col_names = NULL, ...)
 }
 \arguments{
-\item{data}{\code{\link[=tibble]{tibble()}}, \code{DBIResult}, or \code{\link[=connection]{connection()}} object}
+\item{data}{A \code{tibble}, \code{DBIResult}, or \code{connection} object.}
 
-\item{chunk_size}{number of chunks to return with each iteration}
+\item{chunk_size}{The number of chunks to return with each iteration.}
 
-\item{...}{ignored}
+\item{...}{Ignored.}
 
-\item{header}{logical, when TRUE colnames are determined from first row
-of connection. if FALSE \code{col_names} must be provided.}
+\item{header}{When \code{TRUE}, colnames are determined from first row
+of a \code{connection}. If \code{FALSE}, \code{col_names} must be provided.}
 
-\item{col_names}{character vector. override \code{col_names} in first
-row of connection when \code{header}is TRUE, or provide colnames
-if \code{header} is FALSE.}
+\item{col_names}{A character vector to use as column names.
+Overrides column names determined from first row of connection
+when \code{header} is \code{TRUE}.}
 }
 \description{
 Returns a function that repeats the following cycle:
@@ -32,21 +32,21 @@ iteratively return \code{chunk_size} number of rows from \code{data} until data 
 then return \code{NULL} once.
 }
 \details{
-\code{oomdata_*} functions are closures that return functions that
-iteratively return \code{chunk_size} number of rows from \code{data} until all
+\code{oomdata_*} functions create functions that iteratively
+return \code{chunk_size} number of rows from \code{data} until all
 rows have been returned. They will then return \code{NULL} once. They repeat
 this cycle ad-infinitum.
 }
 \examples{
 \donttest{
-# `oomdata_tbl()` returns a function that when called will
-# return `chunk_size` rows from a `tbl_df()`
+# `oomdata_tbl()` returns an `oomdata` function that when called will
+# return `chunk_size` rows from a `tbl_df`
 chunks <- oomdata_tbl(mtcars, chunk_size = 16)
 
 nrow(chunks())
 nrow(chunks())
 
-# when the data is exhausted the `oomdata_tbl()` function
+# when the data is exhausted the `oomdata` function
 # will return NULL once.
 chunks()
 
@@ -56,7 +56,7 @@ nrow(chunks())
 chunks()
 
 # `while` loops are useful for iterating over 
-# `oomfeed` functions
+# `oomdata` functions
 while(!is.null(chunk <- chunks())){
   print(nrow(chunk))
 }
@@ -74,8 +74,8 @@ while(!is.null(chunk <- chunks())){
 }
 
 # ploom model functions automatically iterate over `oomdata` until 
-# the source is exhausted (`oomlm()`, `oomlm_robust()`) or until 
-# IRLS convergence (`oomglm()``)
+# the source is exhausted (`oomlm`, `oomlm_robust`) or until 
+# IRLS convergence (`oomglm``)
 x <- fit(oomlm(mpg ~ cyl + disp), chunks)
 y <- fit(oomglm(mpg ~ cyl + disp), chunks)
 

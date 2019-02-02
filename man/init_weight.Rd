@@ -13,29 +13,30 @@ weight(object, data)
 end_weight(object, tolerance = 1e-08)
 }
 \arguments{
-\item{object}{\code{\link[=oomglm]{oomglm()}} model.}
+\item{object}{\code{oomglm} model.}
 
-\item{data}{an optional \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}},
-\code{\link[=tibble]{tibble()}}, \code{\link[=data.frame]{data.frame()}}, or \code{\link[=list]{list()}} of observations to fit}
+\item{data}{an optional \code{oomdata_tbl}, \code{oomdata_dbi}, \code{oomdata_con},
+\code{tibble}, \code{data.frame}, or \code{list} of observations to fit}
 
 \item{tolerance}{Tolerance used to determine convergence. Represents
 change in coefficient as a multiple of standard error.}
 }
 \value{
-\code{\link[=oomglm]{oomglm()}} model
+\code{oomglm} model
 }
 \description{
 Reweighting functions that comprise an IRLS iteration
 }
 \details{
-The IRLS process comprises iterative calls to \code{\link[=init_weight]{init_weight()}}, \code{\link[=weight]{weight()}}
-and \code{\link[=end_weight]{end_weight()}} which can be managed via a single call to \code{\link[=iter_weight]{iter_weight()}}.
+The IRLS process comprises iterative calls to \code{init_weight()}, \code{weight()}
+and \code{end_weight()} which can be managed via a single call to \code{fit()}.
+
 These comprising functions are exposed for lower level control of the
 fitting process.
 }
 \examples{
 \donttest{
-# initiate `oomglm()` model and `oomdata_tbl()`
+# initiate `oomglm` model and `oomdata_tbl`
 x <- oomglm(mpg ~ cyl + disp)
 chunks <- oomdata_tbl(mtcars, chunk_size = 10)
 
@@ -55,7 +56,7 @@ x <- end_weight(x)
 print(x$converged)
 print(coef(x))
 
-# the IRLS process as implemented by `iter_weight()`
+# the IRLS process as implemented by `fit()`
 # is similar to the following
 x <- oomglm(mpg ~ cyl + disp)
 chunks <- oomdata_tbl(mtcars, chunk_size = 10)
@@ -73,5 +74,5 @@ tidy(x)
 }
 }
 \seealso{
-\code{\link[=iter_weight]{iter_weight()}}, \code{\link[=oomglm]{oomglm()}}
+\code{\link[=fit]{fit()}}, \code{\link[=oomglm]{oomglm()}}
 }

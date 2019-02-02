@@ -19,47 +19,46 @@
 oomlm(formula, weights = NULL, ...)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted of class
-\code{\link[=formula]{formula()}}.}
+\item{formula}{A symbolic description of the model to be fitted of class
+\code{formula}.}
 
-\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
+\item{weights}{A one-sided, single term \code{formula} specifying weights.}
 
-\item{...}{ignored.}
+\item{...}{Ignored.}
 }
 \value{
-A \code{\link[=oomlm]{oomlm()}} model is perpetually in an \emph{in-progress} state. It is up
+An \code{oomlm} model is perpetually in an \emph{in-progress} state. It is up
 to the user to know when fitting is complete. Therefore, only basic
 model characteristics are provided as values. Statistics are available on
-demand via \code{summary} and \code{extractor} functions.
+demand via summary and extractor functions.
 
-\item{n}{the number of observations processed.}
-\item{df.residual}{the residual degrees of freedom.}
-\item{formula}{the \code{\link[=formula]{formula()}} object specifying the linear model.}
-\item{terms}{the \code{\link[=terms]{terms()}} object specifying the terms of the linear model.}
-\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
-\item{call}{the matched call.}
+\item{n}{The number of observations processed.}
+\item{df.residual}{The residual degrees of freedom.}
+\item{formula}{The \code{formula} object specifying the linear model.}
+\item{terms}{The \code{terms} object specifying the terms of the linear model.}
+\item{weights}{A one-sided, single term \code{formula} specifying weights.}
+\item{call}{The matched call.}
 }
 \description{
-Perform linear regression via Alan Miller's bounded memory QR
-factorization algorithm which enables models with \code{p} variables
-to be fit in \code{p^2} memory.
+Perform memory-efficient linear regression using
+the AS274 bounded memory QR factorization algorithm.
 }
 \details{
-The provided \code{\link[=formula]{formula()}} must not contain any data-dependent terms to ensure
-consistency across calls to \code{\link[=fit]{fit()}}. Factors are permitted, but the
+The provided \code{formula} must not contain any data-dependent terms to ensure
+consistency across calls to \code{fit()}. Factors are permitted, but the
 levels of the factor must be the same across all data chunks. Empty factor
 levels are accepted.
 }
 \examples{
 \donttest{
-# `oomglm()` are defined with a call to `oomlm()` and fit to data
+# `oomlm` are defined with a call to `oomlm()` and fit to data
 # with a call to `fit()`
 x <- oomlm(mpg ~ cyl + disp)
 x <- fit(x, mtcars)
 print(x)
 
 
-# `oomlm()` models can be fit with more data via subsequent calls
+# `oomlm` models can be fit with more data via subsequent calls
 # to the `fit()` function
 chunks <- purrr::pmap(mtcars, list)
 
@@ -74,8 +73,8 @@ tidy(x)
 # `oomdata_tbl()` facilitates iterating through data rows in chunks
 chunks  <- oomdata_tbl(mtcars, chunk_size = 1)
 
-# `fit()` will automatically fit over all chunks in an `oomdata()`
-# function
+# `fit()` will automatically fit over all chunks in an `oomdata`
+# object
 z <- oomlm(mpg ~ cyl + disp)
 z <- fit(z, data = chunks)
 summary(z)
@@ -83,5 +82,5 @@ summary(z)
 }
 }
 \seealso{
-\code{\link[=oomglm]{oomglm()}}, \code{\link[=oomdata_tbl]{oomdata_tbl()}}
+\code{\link[=oomglm]{oomglm()}}
 }

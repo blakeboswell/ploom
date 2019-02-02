@@ -1,12 +1,13 @@
 
 
-#' Initialize generalized linear model with robust standard errors
+#' Internal. Initialize generalized linear model with robust standard errors
 #' 
 #' @md
-#' @param formula a symbolic description of the model to be fitted
+#' @param formula A symbolic description of the model to be fitted
 #'  of class `formula`.
 #' @param weights A one-sided, single term `formula` specifying weights.
-#' @param se_type method for robust standard error estimation
+#' @param se_type Method for robust standard error estimation.
+#' 
 #' @keywords internal
 init_oomlm_robust <- function(formula, weights, se_type) {
   
@@ -24,33 +25,34 @@ init_oomlm_robust <- function(formula, weights, se_type) {
 
 #' Out of memory Linear model with robust standard errors
 #' 
-#' Perform linear regression via Alan Miller's bounded memory QR
-#' factorization algorithm and estimate robust standard errors.
+#' Perform memory-efficient generalized linear regression using 
+#' the AS274 bounded memory QR factorization algorithm and estimate
+#' robust standard errors.
 #' 
 #' @md
-#' @param formula a symbolic description of the model to be fitted of class
-#'  [formula()].
-#' @param weights a one-sided, single term [formula()] specifying weights.
-#' @param se_type string indicating what `se` type to use: "HC0", "HC1"
-#'  "stata", or "classical"
-#' @param ... ignored.
+#' @param formula A symbolic description of the model to be fitted of class
+#'  `formula`.
+#' @param weights A one-sided, single term `formula` specifying weights.
+#' @param se_type Indicates what Standard Error method to use: "HC0", "HC1"
+#'  "stata", or "classical".
+#' @param ... Ignored.
 #' @details
-#'  The provided [formula()] must not contain any data-dependent terms to ensure
-#'  consistency across calls to [update()]. Factors are permitted, but the
+#'  The provided `formula` must not contain any data-dependent terms to ensure
+#'  consistency across calls to `fit()`. Factors are permitted, but the
 #'  levels of the factor must be the same across all data chunks. Empty factor
 #'  levels are accepted.
 #'   
-#' @return A [oomlm_robust()] model is perpetually in an _in-progress_ state. It is up
+#' @return A `oomlm_robust` model is perpetually in an _in-progress_ state. It is up
 #'  to the user to know when fitting is complete. Therefore, only basic
 #'  model characteristics are provided as values. Statistics are available on 
-#'  demand via `summary` and `extractor` functions.
+#'  demand via summary and extractor functions.
 #'
-#' \item{n}{the number of observations processed.}
-#' \item{df.residual}{the residual degrees of freedom.}
-#' \item{formula}{the [formula()] object specifying the linear model.}
-#' \item{terms}{the [terms()] object specifying the terms of the linear model.}
-#' \item{weights}{a one-sided, single term [formula()] specifying weights.}
-#' \item{call}{the matched call.}
+#' \item{n}{The number of observations processed.}
+#' \item{df.residual}{The residual degrees of freedom.}
+#' \item{formula}{The `formula` object specifying the linear model.}
+#' \item{terms}{The `terms` object specifying the terms of the linear model.}
+#' \item{weights}{a one-sided, single term `formula` specifying weights.}
+#' \item{call}{The matched call.}
 #' @seealso [oomlm()]
 #' @aliases vcov.oomlm_robust
 #' @name oomlm_robust

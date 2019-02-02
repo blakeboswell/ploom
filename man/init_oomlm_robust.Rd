@@ -2,19 +2,19 @@
 % Please edit documentation in R/oomlm_robust.R
 \name{init_oomlm_robust}
 \alias{init_oomlm_robust}
-\title{Initialize generalized linear model with robust standard errors}
+\title{Internal. Initialize generalized linear model with robust standard errors}
 \usage{
 init_oomlm_robust(formula, weights, se_type)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted
+\item{formula}{A symbolic description of the model to be fitted
 of class \code{formula}.}
 
 \item{weights}{A one-sided, single term \code{formula} specifying weights.}
 
-\item{se_type}{method for robust standard error estimation}
+\item{se_type}{Method for robust standard error estimation.}
 }
 \description{
-Initialize generalized linear model with robust standard errors
+Internal. Initialize generalized linear model with robust standard errors
 }
 \keyword{internal}

@@ -2,40 +2,20 @@
 % Please edit documentation in R/oomglm.R
 \name{init_oomglm}
 \alias{init_oomglm}
-\title{#' return true if model is gaussian family with identity link
-#'
-#' not currently in use
-#'
-#' @param object  \code{oomglm} model
-#' @keywords internal
-ols_model <- function(object) {
-fam <- object$family
-fam$family == "gaussian" & fam$link == "identity"
-}
-Initialize Out of memory Generalized Linear Regression Model}
+\title{Internal. Initialize Out of memory Generalized Linear Regression Model}
 \usage{
 init_oomglm(formula, family, weights, start)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted of class \code{\link[=formula]{formula()}}.}
+\item{formula}{A symbolic description of the model to be fitted of class \code{formula}.}
 
-\item{family}{a \code{\link[=family]{family()}} object.}
+\item{family}{A \code{family} object.}
 
-\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
+\item{weights}{A one-sided, single term \code{formula} specifying weights.}
 
-\item{start}{starting values for the parameters in the linear predictor.}
+\item{start}{Starting values for the parameters in the linear predictor.}
 }
 \description{
-#' return true if model is gaussian family with identity link
-#'
-#' not currently in use
-#'
-#' @param object  \code{oomglm} model
-#' @keywords internal
-ols_model <- function(object) {
-fam <- object$family
-fam$family == "gaussian" & fam$link == "identity"
-}
-Initialize Out of memory Generalized Linear Regression Model
+Internal. Initialize Out of memory Generalized Linear Regression Model
 }
 \keyword{internal}

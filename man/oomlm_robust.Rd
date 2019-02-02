@@ -8,36 +8,37 @@
 oomlm_robust(formula, weights = NULL, se_type = "HC1", ...)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted of class
-\code{\link[=formula]{formula()}}.}
+\item{formula}{A symbolic description of the model to be fitted of class
+\code{formula}.}
 
-\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
+\item{weights}{A one-sided, single term \code{formula} specifying weights.}
 
-\item{se_type}{string indicating what \code{se} type to use: "HC0", "HC1"
-"stata", or "classical"}
+\item{se_type}{Indicates what Standard Error method to use: "HC0", "HC1"
+"stata", or "classical".}
 
-\item{...}{ignored.}
+\item{...}{Ignored.}
 }
 \value{
-A \code{\link[=oomlm_robust]{oomlm_robust()}} model is perpetually in an \emph{in-progress} state. It is up
+A \code{oomlm_robust} model is perpetually in an \emph{in-progress} state. It is up
 to the user to know when fitting is complete. Therefore, only basic
 model characteristics are provided as values. Statistics are available on
-demand via \code{summary} and \code{extractor} functions.
+demand via summary and extractor functions.
 
-\item{n}{the number of observations processed.}
-\item{df.residual}{the residual degrees of freedom.}
-\item{formula}{the \code{\link[=formula]{formula()}} object specifying the linear model.}
-\item{terms}{the \code{\link[=terms]{terms()}} object specifying the terms of the linear model.}
-\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
-\item{call}{the matched call.}
+\item{n}{The number of observations processed.}
+\item{df.residual}{The residual degrees of freedom.}
+\item{formula}{The \code{formula} object specifying the linear model.}
+\item{terms}{The \code{terms} object specifying the terms of the linear model.}
+\item{weights}{a one-sided, single term \code{formula} specifying weights.}
+\item{call}{The matched call.}
 }
 \description{
-Perform linear regression via Alan Miller's bounded memory QR
-factorization algorithm and estimate robust standard errors.
+Perform memory-efficient generalized linear regression using
+the AS274 bounded memory QR factorization algorithm and estimate
+robust standard errors.
 }
 \details{
-The provided \code{\link[=formula]{formula()}} must not contain any data-dependent terms to ensure
-consistency across calls to \code{\link[=update]{update()}}. Factors are permitted, but the
+The provided \code{formula} must not contain any data-dependent terms to ensure
+consistency across calls to \code{fit()}. Factors are permitted, but the
 levels of the factor must be the same across all data chunks. Empty factor
 levels are accepted.
 }

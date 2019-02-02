@@ -12,16 +12,16 @@ oomglm(formula, family = gaussian(), weights = NULL, start = NULL,
   ...)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted of class
-\code{\link[=formula]{formula()}}.}
+\item{formula}{A symbolic description of the model to be fitted of class
+\code{formula}.}
 
-\item{family}{a \code{\link[=family]{family()}} object.}
+\item{family}{A \code{family} object.}
 
-\item{weights}{a one-sided, single term \code{\link[=formula]{formula()}} specifying weights.}
+\item{weights}{A one-sided, single term \code{formula} specifying weights.}
 
-\item{start}{starting values for the parameters in the linear predictor.}
+\item{start}{Starting values for the parameters in the linear predictor.}
 
-\item{...}{ignored.}
+\item{...}{Ignored.}
 }
 \value{
 It is up to the user to know when fitting is complete.
@@ -33,20 +33,19 @@ Statistics are available on demand via summary and extractor functions.
 \item{n}{The number observations processed per round of IRLS.}
 \item{df.residual}{The residual degrees of freedom.}
 \item{df.null}{The residual degrees of freedom.}
-\item{formula}{the \code{\link[=formula]{formula()}} object specifying the linear model.}
-\item{family}{a \code{\link[=family]{family()}} object describing the error distribution
+\item{formula}{the \code{formula} object specifying the linear model.}
+\item{family}{a \code{family} object describing the error distribution
 and link function used in the model.}
-\item{terms}{The \code{\link[=terms]{terms()}} object used.}
-\item{weights}{The weights \code{\link[=formula]{formula()}} provided to the model.}
+\item{terms}{The \code{terms} object used.}
+\item{weights}{The weights \code{formula} provided to the model.}
 \item{call}{The matched call.}
 }
 \description{
-Perform  generalized linear regression using Alan Miller's bounded memory QR
-factorization algorithm which enables models with \code{p} variables
-to be fit in \code{p^2} memory.
+Perform memory-efficient generalized linear regression using
+the AS274 bounded memory QR factorization algorithm.
 }
 \details{
-An \code{\link[=oomglm]{oomglm()}} model can be in various states of fit depending on the number
+An \code{oomglm} model can be in various states of fit depending on the number
 of seen observations and rounds of IRLS that have been performed.
 It is important to view the model within the context of:
 the number of observations processed per round of IRLS (\code{n});
@@ -56,8 +55,8 @@ and if the IRLS algorithm has converged (\code{converged}).
 \examples{
 \donttest{
 # The `oomglm()` function employs Iteratively Weighted Least Squares (IWLS).
-# The IWLS iterations are performed by the function `iter_weight()` which
-# makes passes over the data until estimate convergence.
+# The IWLS iterations are performed by the function `fit()` which
+# makes passes over the data until convergence.
 
 # reweight 4 times or until convergence
 x <- oomglm(mpg ~ cyl + disp)
@@ -76,5 +75,5 @@ tidy(y)
 }
 }
 \seealso{
-\code{\link[=iter_weight]{iter_weight()}}, \code{\link[=oomdata_tbl]{oomdata_tbl()}}, \code{\link[=oomdata_dbi]{oomdata_dbi()}}, \code{\link[=oomdata_con]{oomdata_con()}}
+\code{\link[=oomlm]{oomlm()}}
 }

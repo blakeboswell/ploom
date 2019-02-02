@@ -2,17 +2,17 @@
 % Please edit documentation in R/oomlm.R
 \name{init_oomlm}
 \alias{init_oomlm}
-\title{Initialize Updating Linear Model}
+\title{Internal. Initialize Updating Linear Model}
 \usage{
 init_oomlm(formula, weights = NULL)
 }
 \arguments{
-\item{formula}{a symbolic description of the model to be fitted
+\item{formula}{A symbolic description of the model to be fitted
 of class \code{formula}.}
 
 \item{weights}{A one-sided, single term \code{formula} specifying weights.}
 }
 \description{
-Initialize Updating Linear Model
+Internal. Initialize Updating Linear Model
 }
 \keyword{internal}

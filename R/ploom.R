@@ -26,3 +26,20 @@
 #'  terms 
 #' @importFrom utils head read.table tail getFromNamespace
 NULL
+
+
+#' @importFrom generics tidy
+#' @export
+generics::tidy
+
+#' @importFrom generics fit
+#' @export
+generics::fit
+
+#' @importFrom generics glance
+#' @export
+generics::glance
+
+#' @importFrom generics augment
+#' @export
+generics::augment

@@ -2,23 +2,24 @@
 #' Reweighting functions that comprise an IRLS iteration
 #' 
 #' @details
-#' The IRLS process comprises iterative calls to [init_weight()], [weight()]
-#' and [end_weight()] which can be managed via a single call to [iter_weight()].
+#' The IRLS process comprises iterative calls to `init_weight()`, `weight()`
+#' and `end_weight()` which can be managed via a single call to `fit()`.
+#' 
 #' These comprising functions are exposed for lower level control of the 
 #' fitting process.
 #'
 #' @md
-#' @param object [oomglm()] model.
-#' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
-#'   [tibble()], [data.frame()], or [list()] of observations to fit
+#' @param object `oomglm` model.
+#' @param data an optional `oomdata_tbl`, `oomdata_dbi`, `oomdata_con`,
+#'   `tibble`, `data.frame`, or `list` of observations to fit
 #' @param tolerance Tolerance used to determine convergence. Represents
 #'  change in coefficient as a multiple of standard error. 
-#' @return [oomglm()] model
+#' @return `oomglm` model
 #' 
-#' @seealso  [iter_weight()], [oomglm()]
+#' @seealso  [fit()], [oomglm()]
 #' @export
 #' @examples \donttest{
-#' # initiate `oomglm()` model and `oomdata_tbl()`
+#' # initiate `oomglm` model and `oomdata_tbl`
 #' x <- oomglm(mpg ~ cyl + disp)
 #' chunks <- oomdata_tbl(mtcars, chunk_size = 10)
 #' 
@@ -38,7 +39,7 @@
 #' print(x$converged)
 #' print(coef(x))
 #' 
-#' # the IRLS process as implemented by `iter_weight()`
+#' # the IRLS process as implemented by `fit()`
 #' # is similar to the following
 #' x <- oomglm(mpg ~ cyl + disp)
 #' chunks <- oomdata_tbl(mtcars, chunk_size = 10)
