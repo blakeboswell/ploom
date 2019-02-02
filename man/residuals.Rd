@@ -8,11 +8,11 @@
 \alias{residuals.oomglm}
 \title{calculate residuals for oomglm}
 \usage{
-\method{residuals}{oomlm}(object, data, as_function = FALSE, ...)
+\method{resid}{oomglm}(object, data, as_function = FALSE, ...)
 
 \method{residuals}{oomlm}(object, data, as_function = FALSE, ...)
 
-\method{residuals}{oomglm}(object, data, type = c("deviance", "pearson",
+\method{resid}{oomglm}(object, data, type = c("deviance", "pearson",
   "response", "working"), as_function = FALSE, ...)
 
 \method{residuals}{oomglm}(object, data, type = c("deviance", "pearson",

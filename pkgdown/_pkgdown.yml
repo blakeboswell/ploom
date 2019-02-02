@@ -30,8 +30,8 @@ reference:
   - title: Predict
     contents:
     - predict
+    - residuals
   
-
 navbar:
   type: default
   structure:  

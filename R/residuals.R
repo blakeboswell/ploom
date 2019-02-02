@@ -13,7 +13,7 @@ NULL
 
 
 #' @rdname residuals
-#' @method residuals oomlm
+#' @method resid oomglm
 #' @export
 resid.oomlm <- function(object, data,
                         as_function = FALSE, ...) {
@@ -67,7 +67,7 @@ residuals_oomlm_x <- function(object, x) {
 
 
 #' @rdname residuals
-#' @method residuals oomglm
+#' @method resid oomglm
 #' @export
 resid.oomglm <- function(object, data,
                          type = c("deviance"
