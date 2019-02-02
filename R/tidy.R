@@ -16,6 +16,11 @@ generics::glance
 generics::augment
 
 
+broom_names <- function(col_names) {
+  
+}
+
+
 #' Fit `oomlm()` model to additonal observations
 #' 
 #' @md
@@ -26,6 +31,8 @@ generics::augment
 #' @param data an optional [oomdata_tbl()], [oomdata_dbi()], [oomdata_con()],
 #'   [tibble()], [data.frame()], or [list()] of observations to fit
 #' @param ... ignored
+#' 
+#' @method fit oomlm
 #' @seealso [oomlm()]
 #' @export
 #' @rdname fit.oomlm
@@ -49,6 +56,7 @@ fit.oomlm <- function(object, data, ...) {
 #' @return [oomglm()] object after performing `times` IRLS iterations on
 #'  `data`.
 #' 
+#' @method fit oomglm
 #' @seealso [oomglm()]
 #' @export
 #' @rdname fit.oomglm
@@ -65,6 +73,8 @@ fit.oomglm <- function(object, data, times = 2L, tolerance = 1e-8, ...) {
 #'
 #' @param x [oomlm()] model
 #' @param ... ignored
+#' 
+#' @method tidy oomlm
 #' @export
 #' @md
 tidy.oomlm <- function(x, ...) {
@@ -113,6 +123,7 @@ tidy.oomlm <- function(x, ...) {
 #'   \item{deviance}{deviance}
 #'   \item{df.residual}{residual degrees of freedom}
 #'
+#' @method glance oomlm
 #' @export
 #' @seealso [glance()]
 glance.oomlm <- function(x, ...) {
@@ -127,6 +138,7 @@ glance.oomlm <- function(x, ...) {
 }
 
 
+#' @method glance summary.oomlm
 #' @rdname glance.oomlm
 #' @export
 glance.summary.oomlm <- function(x, ...) {
@@ -144,6 +156,7 @@ glance.summary.oomlm <- function(x, ...) {
 }
 
 
+#' @method glance oomglm
 #' @rdname glance.oomlm
 #' @export
 glance.oomglm <- function(x, ...) {
@@ -166,6 +179,7 @@ glance.oomglm <- function(x, ...) {
 #' @param interval interval type to return
 #' @param ... ignored
 #' 
+#' @method augment oomlm
 #' @export
 #' @seealso [augment()], [stats::predict.lm()]
 augment.oomlm <- function(x, data,
@@ -173,24 +187,26 @@ augment.oomlm <- function(x, data,
                           interval  = "confidence",
                           ...) {
   
-  df    <- model_frame_tibble(x, data)
+  df        <- model_frame_tibble(x, data)
+  names(df) <- gsub("([._])|[[:punct:]]", ".", names(df))
+  
   chunk <- unpack_oomchunk(x, data)
   u <- residuals_oomlm_x(x, chunk)
   y <- predict_oomlm_x(x, chunk, std_error = std_error, interval = interval)
-  
+
   if(std_error) {
-    df[[".pred"]]      <- y$fit[, 1]
+    df[[".fitted"]]    <- y$fit[, 1]
     df[[".std_error"]] <- y$std_error
-    df[[".resid"]]     <- u$.resid
+    df[[".resid"]]     <- u[, 1]
     if(!is.null(interval)) {
       df[[".pred_lower"]] <- y$fit[, 2]
       df[[".pred_upper"]] <- y$fit[, 3]
     }
   } else {
-    df[[".pred"]]  <- y[, 1]
-    df[[".resid"]] <- u[, 1]
+    df[[".fitted"]] <- y[, 1]
+    df[[".resid"]]  <- u[, 1]
   }
-  
+
   df
   
 }
@@ -204,6 +220,7 @@ augment.oomlm <- function(x, data,
 #' @param std_error calculate standard error of prediction
 #' @param ... ignored
 #' 
+#' @method augment oomglm
 #' @export
 #' @seealso [augment()], [stats::predict.lm()]
 augment.oomglm <- function(x, data,
@@ -211,11 +228,23 @@ augment.oomglm <- function(x, data,
                            std_error = FALSE,
                            ...) {
 
-  df    <- model_frame_tibble(x, data)
+  df        <- model_frame_tibble(x, data)
+  names(df) <- gsub("([._])|[[:punct:]]", ".", names(df))
+  
   chunk <- unpack_oomchunk(x, data)
-  pred  <- predict_oomglm_x(x, chunk, type, std_error)
-  res   <- residuals_oomglm_x(x, chunk, type)
-  tibble::as_tibble(cbind(df, pred, res))
+  u     <- residuals_oomglm_x(x, chunk, type)
+  y     <- predict_oomglm_x(x, chunk, type, std_error)
+  
+  if(std_error) {
+    df[[".fitted"]]    <- y$fit[, 1]
+    df[[".std_error"]] <- y$std_error
+    df[[".resid"]]     <- u[, 1]
+  } else {
+    df[[".fitted"]] <- y[, 1]
+    df[[".resid"]]  <- u[, 1]
+  }
 
+  df
+  
 }
 

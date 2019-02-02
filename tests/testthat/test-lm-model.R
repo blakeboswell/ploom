@@ -10,8 +10,11 @@ iter_model <- function(df, eqn, weights = NULL) {
 }
 
 
-expect_summary_equal <- function(sy, sx) {
-
+expect_attr_equal <- function(x, y, df) {
+  
+  sy <- summary(y, correlation = TRUE)
+  sx <- summary(x, correlation = TRUE)
+  
   expect_equal(sy$adj.r.squared, sx$adj.r.squared)
   expect_equal(sy$aliased, sx$aliased)
   expect_equal(sy$coefficients, sx$coefficients)
@@ -22,27 +25,37 @@ expect_summary_equal <- function(sy, sx) {
   expect_equal(sy$r.squared, sx$r.squared)
   expect_equal(sy$sigma, sx$sigma)
   expect_equal(sy$terms, sx$terms)
-
-}
-
-
-expect_attr_equal <- function(x, y, df) {
-  
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
-  
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
   
-  # yy        <- predict(y, df)
-  # xy        <- predict(x, df)
-  # expect_equal(yy, xy)
-  # 
-  # yy        <- predict(y, df, se.fit = TRUE)
-  # xy        <- predict(x, df, se_fit = TRUE)
-  # expect_equal(yy, xy)
+  yy        <- as.vector(predict(y, df))
+  xy        <- predict(x, df)$.pred
+  expect_equal(yy, xy)
+  
+  yy <- tryCatch({hbroom::augment(y, df)}, error = function(e) { NULL })
+  xy <- augment(x, df)
+  if(!is.null(yy)) {
+    expect_equal(yy$.fitted, xy$.fitted)
+    expect_equal(yy$.resid, xy$.resid)
+  }
+  
+  yy <- tryCatch({hbroom::augment(y, df)}, error = function(e) { NULL })
+  xy <- augment(x, df, std_error = TRUE)
+  if(!is.null(yy)) {
+    expect_equal(yy$.fitted, xy$.fitted)
+    expect_equal(yy$.resid, xy$.resid)
+    expect_equal(yy$.se.fit, xy$.st_error)
+  }
+  
+  yy <- predict(y, mtcars, se.fit = TRUE, interval = "confidence")
+  yy <- matrix(yy$fit, ncol = 3)
+  xy <- predict(x, mtcars, std_error = TRUE, interval = "confidence")
+  xy <- cbind(xy$.pred, xy$.pred_lower, xy$.pred_upper)
+  yy <- predict(y, mtcars, se.fit = TRUE, interval = "prediction")
+  yy <- matrix(yy$fit, ncol = 3)
+  xy <- predict(x, mtcars, std_error = TRUE, interval = "prediction")
+  xy <- cbind(xy$.pred, xy$.pred_lower, xy$.pred_upper)
+
   # 
   # yy <- predict(y, df, se.fit = TRUE, interval = "confidence")
   # xy <- predict(x, df, se_fit = TRUE, interval = "confidence")
@@ -54,7 +67,8 @@ expect_attr_equal <- function(x, y, df) {
   # colnames(xy$fit) <- colnames(yy$fit)
   # expect_equal(yy, xy)
   # 
-  yy <- tibble::tibble(.resid = residuals(y))$.resid
+  
+  yy <- as.vector(residuals(y))
   xy <- residuals(x, df)$.resid
   expect_equal(yy, xy)
   xy <- resid(x, df)$.resid
@@ -140,6 +154,7 @@ test_that("weighted updating oomlm without intercept", {
 
 
 test_that("oomlm", {
+  
   df <- mtcars
   f  <- mpg ~ cyl + disp + hp + wt
   y  <- lm(f, data = df)

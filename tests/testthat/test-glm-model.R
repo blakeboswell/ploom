@@ -7,11 +7,17 @@ iter_model <- function(df, eqn, weights = NULL) {
 }
 
 
-expect_summary_equal <- function(sy, sx) {
+expect_attr_equal <- function(x, y, df) {
 
+  expect_equal(family(y), family(x))
+  expect_equal(coef(x), coef(y))
+  expect_equal(vcov(x), vcov(y))
+  
+  sy <- summary(y, correlation = TRUE)
+  sx <- summary(x, correlation = TRUE)
+  
   expect_equal(sy$terms, sx$terms)
-  expect_equal(sy$family, sx$family)
-  expect_equal(sy$deviance, sx$deviance)
+  expect_equal(deviance(sy), deviance(sx))
   expect_equal(sy$df.residual, sx$df.residual)
   expect_equal(sy$df.null, sx$df.null)
   expect_equal(sy$iter, sx$iter)
@@ -21,32 +27,30 @@ expect_summary_equal <- function(sy, sx) {
   expect_equal(sy$correlation, sx$correlation)
   expect_equal(sy$cov.unscaled, sx$cov.unscaled)
 
-  # not impl
-  # expect_equal(sy$null.deviance, sx$null.deviance)
-  # expect_equal(sy$dispersion, sx$dispersion)
-}
+  yy        <- as.vector(predict(y, df, type = "response"))
+  xy        <- predict(x, df, type = "response")$.pred
+  expect_equal(yy, xy)
+  
+  yy        <- as.vector(predict(y, df, type = "link"))
+  xy        <- predict(x, df, type = "link")$.pred
+  expect_equal(yy, xy)
 
+  yy <- tryCatch({hbroom::augment(y, df)}, error = function(e) { NULL })
+  xy <- augment(x, df)
+  if(!is.null(yy)) {
+    expect_equal(yy$.fitted, xy$.fitted)
+    expect_equal(yy$.resid, xy$.resid)
+  }
+  
+  yy <- tryCatch({hbroom::augment(y, df)}, error = function(e) { NULL })
+  xy <- augment(x, df, std_error = TRUE)
+  if(!is.null(yy)) {
+    expect_equal(yy$.fitted, xy$.fitted)
+    expect_equal(yy$.resid, xy$.resid)
+    expect_equal(yy$.se.fit, xy$.st_error)
+  }
 
-expect_attr_equal <- function(x, y, df) {
-
-  expect_summary_equal(
-    summary(y, correlation = TRUE),
-    summary(x, correlation = TRUE)
-  )
-
-  expect_equal(coef(x), coef(y))
-  expect_equal(vcov(x), vcov(y))
-
-  # yy        <- predict(y, df)
-  # xy        <- predict(x, df)
-  # expect_equal(yy, xy)
-  #
-  # yy        <- predict(y, df, se.fit = TRUE)
-  # xy        <- predict(x, df, se_fit = TRUE)
-  # names(xy) <- names(yy)
-  # expect_equal(yy, xy)
-
-  yy <- tibble::tibble(.resid = residuals(y))$.resid
+  yy <- as.vector(residuals(y))
   xy <- residuals(x, df)$.resid
   expect_equal(yy, xy)
   xy <- resid(x, df)$.resid
@@ -123,3 +127,19 @@ test_that("weighted updating oomglm without intercept", {
   expect_attr_equal(x, y, df)
 
 })
+
+
+# test_that("weighted oomglm with zero weight", {
+#   
+#   df      <- mtcars
+#   w       <- runif(nrow(mtcars))
+#   w[4:7]  <- 0.0
+#   df['w'] <- w / sum(w)
+#   
+#   f <- mpg ~ cyl + disp + hp + wt
+#   y <- glm(f, data = df, weights = w)
+#   x <- fit(oomglm(f, weights = ~w),
+#            oomdata_tbl(df, chunk_size = 2))
+#   
+#   expect_attr_equal(x, y, df)
+# })
