@@ -1,14 +1,14 @@
 
-#' return true if model is gaussian family with identity link
-#' 
-#' not currently in use
-#' 
-#' @param object  `oomglm` model
-#' @keywords internal
-ols_model <- function(object) {
-  fam <- object$family
-  fam$family == "gaussian" & fam$link == "identity"
-} 
+#' #' return true if model is gaussian family with identity link
+#' #' 
+#' #' not currently in use
+#' #' 
+#' #' @param object  `oomglm` model
+#' #' @keywords internal
+#' ols_model <- function(object) {
+#'   fam <- object$family
+#'   fam$family == "gaussian" & fam$link == "identity"
+#' } 
 
 
 #' Initialize Out of memory Generalized Linear Regression Model
@@ -317,16 +317,16 @@ update_oomglm <- function(object, data, ...) {
                         trans$z - chunk$offset,
                         trans$w)
     
-    if(!is.null(object$sandwich)) {
-      object$sandwich$xy <-
-        update_sandwich(object$sandwich$xy,
-                        chunk$data,
-                        chunk$n,
-                        chunk$p,
-                        trans$z,
-                        chunk$offset,
-                        trans$w)
-    }
+    # if(!is.null(object$sandwich)) {
+    #   object$sandwich$xy <-
+    #     update_sandwich(object$sandwich$xy,
+    #                     chunk$data,
+    #                     chunk$n,
+    #                     chunk$p,
+    #                     trans$z,
+    #                     chunk$offset,
+    #                     trans$w)
+    # }
     
     intercept <- attr(object$terms, "intercept") > 0L
     
