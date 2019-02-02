@@ -20,7 +20,7 @@ expect_summary_equal <- function(sy, sx) {
   expect_equal(sy$df, sx$df)
   expect_equal(sy$correlation, sx$correlation)
   expect_equal(sy$cov.unscaled, sx$cov.unscaled)
-  
+
   # not impl
   # expect_equal(sy$null.deviance, sx$null.deviance)
   # expect_equal(sy$dispersion, sx$dispersion)
@@ -33,41 +33,43 @@ expect_attr_equal <- function(x, y, df) {
     summary(y, correlation = TRUE),
     summary(x, correlation = TRUE)
   )
-  
+
   expect_equal(coef(x), coef(y))
   expect_equal(vcov(x), vcov(y))
 
   # yy        <- predict(y, df)
   # xy        <- predict(x, df)
   # expect_equal(yy, xy)
-  # 
+  #
   # yy        <- predict(y, df, se.fit = TRUE)
   # xy        <- predict(x, df, se_fit = TRUE)
   # names(xy) <- names(yy)
   # expect_equal(yy, xy)
-  # 
-  # yy <- residuals(y)
-  # xy <- oomglm_residuals(x, df, type = "deviance")
-  # expect_equal(yy, xy)
+
+  yy <- tibble::tibble(.resid = residuals(y))$.resid
+  xy <- residuals(x, df)$.resid
+  expect_equal(yy, xy)
+  xy <- resid(x, df)$.resid
+  expect_equal(yy, xy)
 
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),
     as.matrix(tidy(x)[2:5])
   )
 
-  quiet <- function(x) { 
-    sink(tempfile()) 
-    on.exit(sink()) 
-    invisible(force(x)) 
-  } 
-  
+  quiet <- function(x) {
+    sink(tempfile())
+    on.exit(sink())
+    invisible(force(x))
+  }
+
   expect_equal(quiet(print(x)), x)
   expect_equal(quiet(print(summary(x))), summary(x))
   expect_equal(
     quiet(print(summary(x, correlation = TRUE))),
     summary(x, correlation = TRUE)
   )
-  
+
 }
 
 

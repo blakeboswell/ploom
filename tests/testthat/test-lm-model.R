@@ -54,9 +54,11 @@ expect_attr_equal <- function(x, y, df) {
   # colnames(xy$fit) <- colnames(yy$fit)
   # expect_equal(yy, xy)
   # 
-  # yy <- residuals(y)
-  # xy <- oomlm_residuals(x, df)
-  # expect_equal(yy, xy)
+  yy <- tibble::tibble(.resid = residuals(y))$.resid
+  xy <- residuals(x, df)$.resid
+  expect_equal(yy, xy)
+  xy <- resid(x, df)$.resid
+  expect_equal(yy, xy)
   
   expect_equal(
     as.matrix(broom::tidy(y)[2:5]),
