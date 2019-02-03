@@ -60,3 +60,33 @@ update_oomdata <- function(obj, chunk_size, complete_iteration) {
 get_oomdata <- function(obj) {
   get("record", environment(obj))
 }
+
+
+
+#' @export
+#' @method print oomdata
+print.oomdata <- function(x, ...) {
+  
+  x <- tidy(x)
+  
+  cat("\n# oomdata function\n")
+  
+  cat("\n  ",
+      paste(x$completed_iter, sep = "\n", collapse = "\n"),
+      "completed iterations having",
+      x$chunk_per_iter,
+      "chunks and",
+      x$obs_per_iter,
+      "observations.",
+      sep = " ")
+  
+  cat("\n  ",
+      paste(x$obs_seen, sep = "\n", collapse = "\n"),
+      "observations seen over",
+      x$completed_chunk,
+      "completed chunks in current iteration.",
+      sep = " ")
+  
+  cat("\n\n")
+  
+}

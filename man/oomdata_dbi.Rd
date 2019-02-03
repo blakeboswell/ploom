@@ -2,6 +2,7 @@
 % Please edit documentation in R/oomdata_funs.R
 \name{oomdata_dbi}
 \alias{oomdata_dbi}
+\alias{print.oomdata}
 \alias{oomdata_tbl}
 \alias{oomdata_con}
 \title{Iterate over \code{tibble}, \code{DBIResult} or \code{connection} in chunks.}
@@ -60,6 +61,9 @@ chunks()
 while(!is.null(chunk <- chunks())){
   print(nrow(chunk))
 }
+
+# use `tidy()` to get information about `oomdata` status
+tidy(chunks)
 
 # `oomdata_dbi()` returns a function that when called will
 # return `chunk_size` rows from a query result set.

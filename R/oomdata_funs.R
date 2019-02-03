@@ -18,8 +18,8 @@
 #' @details `oomdata_*` functions create functions that iteratively 
 #'   return `chunk_size` number of rows from `data` until all
 #'   rows have been returned. They will then return `NULL` once. They repeat
-#'   this cycle ad-infinitum. 
-#'   
+#'   this cycle ad-infinitum.
+#' @aliases print.oomdata
 #' @export
 #' @name oomdata_dbi
 #' @examples \donttest{
@@ -45,6 +45,9 @@
 #'   print(nrow(chunk))
 #' }
 #' 
+#' # use `tidy()` to get information about `oomdata` status
+#' tidy(chunks)
+#'
 #' # `oomdata_dbi()` returns a function that when called will
 #' # return `chunk_size` rows from a query result set.
 #' con <- DBI::dbConnect(RSQLite::SQLite(), path = ":dbname:")
