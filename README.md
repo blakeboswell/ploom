@@ -66,7 +66,10 @@ Each call to `fit()` only needs to allocate memory for the provided
 chunk, thereby bounding the required memory.
 
 ``` r
+# create model
 y <- oomlm(mpg ~ wt + qsec + factor(am))
+
+# fit data in two chunks
 y <- fit(y, mtcars[1:16, ])
 y <- fit(y, mtcars[17:32, ])
 

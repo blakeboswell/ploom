@@ -77,7 +77,7 @@ main <- function(table_prefix, num_obs) {
   # speedlm requires that the formula be in the global environment
   assign("lm_formula", lm_formula, envir = globalenv())
   
-  res  <- map_df(divs, benchmark_lm, df = df)
+  res  <- map(divs, benchmark_lm, df = df)
 
   rm(lm_formula, pos = 1)
   

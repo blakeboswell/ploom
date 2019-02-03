@@ -1,6 +1,4 @@
 
-
-
 #' make a and B for y = a + BX + e
 #'
 #' @param p number of columns in X.  will be forced to the nearest
