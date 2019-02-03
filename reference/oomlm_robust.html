@@ -34,8 +34,9 @@
   
 <meta property="og:title" content="Out of memory Linear model with robust standard errors — oomlm_robust" />
 
-<meta property="og:description" content="Perform linear regression via Alan Miller's bounded memory QR
-factorization algorithm and estimate robust standard errors." />
+<meta property="og:description" content="Perform memory-efficient generalized linear regression using
+the AS274 bounded memory QR factorization algorithm and estimate
+robust standard errors." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -55,7 +56,7 @@ factorization algorithm and estimate robust standard errors." />
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-pellucid navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -127,8 +128,9 @@ factorization algorithm and estimate robust standard errors." />
 
     <div class="ref-description">
     
-    <p>Perform linear regression via Alan Miller's bounded memory QR
-factorization algorithm and estimate robust standard errors.</p>
+    <p>Perform memory-efficient generalized linear regression using
+the AS274 bounded memory QR factorization algorithm and estimate
+robust standard errors.</p>
     
     </div>
 
@@ -139,42 +141,42 @@ factorization algorithm and estimate robust standard errors.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>formula</th>
-      <td><p>a symbolic description of the model to be fitted of class
-<code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code>.</p></td>
+      <td><p>A symbolic description of the model to be fitted of class
+<code>formula</code>.</p></td>
     </tr>
     <tr>
       <th>weights</th>
-      <td><p>a one-sided, single term <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> specifying weights.</p></td>
+      <td><p>A one-sided, single term <code>formula</code> specifying weights.</p></td>
     </tr>
     <tr>
       <th>se_type</th>
-      <td><p>string indicating what <code>se</code> type to use: "HC0", "HC1"
-"stata", or "classical"</p></td>
+      <td><p>Indicates what Standard Error method to use: "HC0", "HC1"
+"stata", or "classical".</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>ignored.</p></td>
+      <td><p>Ignored.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <code>oomlm_robust()</code> model is perpetually in an <em>in-progress</em> state. It is up
+    <p>A <code>oomlm_robust</code> model is perpetually in an <em>in-progress</em> state. It is up
 to the user to know when fitting is complete. Therefore, only basic
 model characteristics are provided as values. Statistics are available on
-demand via <code>summary</code> and <code>extractor</code> functions.</p>
-<dt>n</dt><dd><p>the number of observations processed.</p></dd>
-<dt>df.residual</dt><dd><p>the residual degrees of freedom.</p></dd>
-<dt>formula</dt><dd><p>the <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> object specifying the linear model.</p></dd>
-<dt>terms</dt><dd><p>the <code><a href='https://www.rdocumentation.org/packages/stats/topics/terms'>terms()</a></code> object specifying the terms of the linear model.</p></dd>
-<dt>weights</dt><dd><p>a one-sided, single term <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> specifying weights.</p></dd>
-<dt>call</dt><dd><p>the matched call.</p></dd>
+demand via summary and extractor functions.</p>
+<dt>n</dt><dd><p>The number of observations processed.</p></dd>
+<dt>df.residual</dt><dd><p>The residual degrees of freedom.</p></dd>
+<dt>formula</dt><dd><p>The <code>formula</code> object specifying the linear model.</p></dd>
+<dt>terms</dt><dd><p>The <code>terms</code> object specifying the terms of the linear model.</p></dd>
+<dt>weights</dt><dd><p>a one-sided, single term <code>formula</code> specifying weights.</p></dd>
+<dt>call</dt><dd><p>The matched call.</p></dd>
 
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The provided <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> must not contain any data-dependent terms to ensure
-consistency across calls to <code><a href='update.html'>update()</a></code>. Factors are permitted, but the
+    <p>The provided <code>formula</code> must not contain any data-dependent terms to ensure
+consistency across calls to <code><a href='https://www.rdocumentation.org/packages/generics/topics/fit'>fit()</a></code>. Factors are permitted, but the
 levels of the factor must be the same across all data chunks. Empty factor
 levels are accepted.</p>
     

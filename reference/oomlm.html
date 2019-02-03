@@ -34,9 +34,8 @@
   
 <meta property="og:title" content="Out of memory Linear model — oomlm" />
 
-<meta property="og:description" content="Perform linear regression via Alan Miller's bounded memory QR
-factorization algorithm which enables models with p variables
-to be fit in p^2 memory." />
+<meta property="og:description" content="Perform memory-efficient linear regression using
+the AS274 bounded memory QR factorization algorithm." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -56,7 +55,7 @@ to be fit in p^2 memory." />
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-pellucid navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -128,9 +127,8 @@ to be fit in p^2 memory." />
 
     <div class="ref-description">
     
-    <p>Perform linear regression via Alan Miller's bounded memory QR
-factorization algorithm which enables models with <code>p</code> variables
-to be fit in <code>p^2</code> memory.</p>
+    <p>Perform memory-efficient linear regression using
+the AS274 bounded memory QR factorization algorithm.</p>
     
     </div>
 
@@ -141,50 +139,50 @@ to be fit in <code>p^2</code> memory.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>formula</th>
-      <td><p>a symbolic description of the model to be fitted of class
-<code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code>.</p></td>
+      <td><p>A symbolic description of the model to be fitted of class
+<code>formula</code>.</p></td>
     </tr>
     <tr>
       <th>weights</th>
-      <td><p>a one-sided, single term <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> specifying weights.</p></td>
+      <td><p>A one-sided, single term <code>formula</code> specifying weights.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>ignored.</p></td>
+      <td><p>Ignored.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <code>oomlm()</code> model is perpetually in an <em>in-progress</em> state. It is up
+    <p>An <code>oomlm</code> model is perpetually in an <em>in-progress</em> state. It is up
 to the user to know when fitting is complete. Therefore, only basic
 model characteristics are provided as values. Statistics are available on
-demand via <code>summary</code> and <code>extractor</code> functions.</p>
-<dt>n</dt><dd><p>the number of observations processed.</p></dd>
-<dt>df.residual</dt><dd><p>the residual degrees of freedom.</p></dd>
-<dt>formula</dt><dd><p>the <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> object specifying the linear model.</p></dd>
-<dt>terms</dt><dd><p>the <code><a href='https://www.rdocumentation.org/packages/stats/topics/terms'>terms()</a></code> object specifying the terms of the linear model.</p></dd>
-<dt>weights</dt><dd><p>a one-sided, single term <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> specifying weights.</p></dd>
-<dt>call</dt><dd><p>the matched call.</p></dd>
+demand via summary and extractor functions.</p>
+<dt>n</dt><dd><p>The number of observations processed.</p></dd>
+<dt>df.residual</dt><dd><p>The residual degrees of freedom.</p></dd>
+<dt>formula</dt><dd><p>The <code>formula</code> object specifying the linear model.</p></dd>
+<dt>terms</dt><dd><p>The <code>terms</code> object specifying the terms of the linear model.</p></dd>
+<dt>weights</dt><dd><p>A one-sided, single term <code>formula</code> specifying weights.</p></dd>
+<dt>call</dt><dd><p>The matched call.</p></dd>
 
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The provided <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> must not contain any data-dependent terms to ensure
-consistency across calls to <code><a href='update.html'>update()</a></code>. Factors are permitted, but the
+    <p>The provided <code>formula</code> must not contain any data-dependent terms to ensure
+consistency across calls to <code><a href='https://www.rdocumentation.org/packages/generics/topics/fit'>fit()</a></code>. Factors are permitted, but the
 levels of the factor must be the same across all data chunks. Empty factor
 levels are accepted.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='oomglm.html'>oomglm()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_tbl()</a></code></p></div>
+    <div class='dont-index'><p><code><a href='oomglm.html'>oomglm()</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># `oomglm()` are defined with a call to `oomlm()` and fit to data</span>
-<span class='co'># with a call to `update()`</span>
+    <pre class="examples"><div class='input'><span class='co'># `oomlm` are defined with a call to `oomlm()` and fit to data</span>
+<span class='co'># with a call to `fit()`</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>oomlm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>)
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='update.html'>update</a></span>(<span class='no'>x</span>, <span class='no'>mtcars</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/generics/topics/fit'>fit</a></span>(<span class='no'>x</span>, <span class='no'>mtcars</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; 
 #&gt; Call:  oomlm(mpg ~ cyl + disp)
 #&gt; 
@@ -194,14 +192,14 @@ levels are accepted.</p>
 #&gt; 
 #&gt; Observations included:  32 </div><div class='input'>
 
-<span class='co'># `oomlm()` models can be fit with more data via subsequent calls</span>
-<span class='co'># to the `update()` function</span>
+<span class='co'># `oomlm` models can be fit with more data via subsequent calls</span>
+<span class='co'># to the `fit()` function</span>
 <span class='no'>chunks</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>purrr</span><span class='kw ns'>::</span><span class='fu'><a href='https://purrr.tidyverse.org/reference/map2.html'>pmap</a></span>(<span class='no'>mtcars</span>, <span class='no'>list</span>)
 
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'>oomlm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>)
 
 <span class='kw'>for</span>(<span class='no'>chunk</span> <span class='kw'>in</span> <span class='no'>chunks</span>) {
-  <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='update.html'>update</a></span>(<span class='no'>y</span>, <span class='no'>chunk</span>)
+  <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/generics/topics/fit'>fit</a></span>(<span class='no'>y</span>, <span class='no'>chunk</span>)
 }
 
 <span class='fu'><a href='https://www.rdocumentation.org/packages/generics/topics/tidy'>tidy</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 3 x 7</span><span>
@@ -213,10 +211,10 @@ levels are accepted.</p>
 <span class='co'># `oomdata_tbl()` facilitates iterating through data rows in chunks</span>
 <span class='no'>chunks</span>  <span class='kw'>&lt;-</span> <span class='fu'><a href='oomdata_dbi.html'>oomdata_tbl</a></span>(<span class='no'>mtcars</span>, <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>1</span>)
 
-<span class='co'># `update()` will automatically fit over all chunks in an `oomdata()`</span>
-<span class='co'># function</span>
+<span class='co'># `fit()` will automatically fit over all chunks in an `oomdata`</span>
+<span class='co'># object</span>
 <span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'>oomlm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>)
-<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='update.html'>update</a></span>(<span class='no'>z</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
+<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/generics/topics/fit'>fit</a></span>(<span class='no'>z</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>chunks</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/summary'>summary</a></span>(<span class='no'>z</span>)</div><div class='output co'>#&gt; 
 #&gt; Call:  oomlm(mpg ~ cyl + disp)
 #&gt; 

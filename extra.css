@@ -34,57 +34,79 @@ a:hover {
   color: #1D55EA;
   text-decoration: none;
 }
+body p a {
+  font-weight: 500;
+}
+code a {
+  font-weight: normal;
+}
 
 
-/* enlarge brand label */
+
+.navbar-default .navbar-link {
+  color: #182125;
+}
+.navbar-default .navbar-link:hover {
+  color: #1D55EA;
+  text-decoration: none;
+}
+
+
+/* brand label */
 .navbar-brand {
   font-size: 24px;
   line-height:26px;
 }
 
-/* remove version label */
+/* version label */
 .label {
-  display: none;
+  background-color: transparent;
+  color: #182125;
+  font-size: 10px;
+  font-weight: lighter;
 }
+
 
 /* remove home button when on homepage */
 #navbar .active {
   display: none;
 }
 
-/* change navbar colors
-   a nonsense type is used in them pkdown.yml
-   which produces a desired side effect
-*/
+/* change navbar colors */
 .navbar { 
-  background-color: #FFF;
-  border-color: #FFF;
+  background-color:#FFF;
+  border-color: #eee;
   color: #182125;
 }
 .navbar-brand a {
   color: #182125; 
 }
 
-/* change hover behavior of pills */
-.nav-pills>li.active>a, 
-.nav-pills>li.active>a:hover,
-.nav-pills>li.active>a:focus {
-  color: #1D55EA;
-  background-color: #FFF;
-}
-
 /* change hover behavior navbar drop downs */
 .dropdown-menu > li > a:hover,
-.dropdown-menu > li > a:focus {
+.dropdown-menu > li > a:focus,
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus,
+.navbar-default .navbar-nav>.open>a, 
+.navbar-default .navbar-nav>.open>a:hover, 
+.navbar-default .navbar-nav>.open>a:focus {
   color: #1D55EA;
   background-color: #eeeeee;
 }
 
-/* change copy to clipboard button */
-.btn-primary {
-  background-color: #1D55EA;
-  border-color: #1D55EA;
+
+/* change hover behavior of pills */
+.nav-pills > li.active > a, 
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  color: #1D55EA;
+  background-color: #FFF;
 }
 
-
-
+/* change copy to clipboard button */
+.btn-primary,
+.btn-primary:hover {
+  color:#1D55EA;
+  background-color: #eeeeee;
+  border-color: #eeeeee;
+}

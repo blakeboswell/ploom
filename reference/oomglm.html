@@ -34,9 +34,8 @@
   
 <meta property="og:title" content="Out of memory Generalized Linear model — oomglm" />
 
-<meta property="og:description" content="Perform  generalized linear regression using Alan Miller's bounded memory QR
-factorization algorithm which enables models with p variables
-to be fit in p^2 memory." />
+<meta property="og:description" content="Perform memory-efficient generalized linear regression using
+the AS274 bounded memory QR factorization algorithm." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -56,7 +55,7 @@ to be fit in p^2 memory." />
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-pellucid navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -128,9 +127,8 @@ to be fit in p^2 memory." />
 
     <div class="ref-description">
     
-    <p>Perform  generalized linear regression using Alan Miller's bounded memory QR
-factorization algorithm which enables models with <code>p</code> variables
-to be fit in <code>p^2</code> memory.</p>
+    <p>Perform memory-efficient generalized linear regression using
+the AS274 bounded memory QR factorization algorithm.</p>
     
     </div>
 
@@ -142,24 +140,24 @@ to be fit in <code>p^2</code> memory.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>formula</th>
-      <td><p>a symbolic description of the model to be fitted of class
-<code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code>.</p></td>
+      <td><p>A symbolic description of the model to be fitted of class
+<code>formula</code>.</p></td>
     </tr>
     <tr>
       <th>family</th>
-      <td><p>a <code><a href='https://www.rdocumentation.org/packages/stats/topics/family'>family()</a></code> object.</p></td>
+      <td><p>A <code>family</code> object.</p></td>
     </tr>
     <tr>
       <th>weights</th>
-      <td><p>a one-sided, single term <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> specifying weights.</p></td>
+      <td><p>A one-sided, single term <code>formula</code> specifying weights.</p></td>
     </tr>
     <tr>
       <th>start</th>
-      <td><p>starting values for the parameters in the linear predictor.</p></td>
+      <td><p>Starting values for the parameters in the linear predictor.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>ignored.</p></td>
+      <td><p>Ignored.</p></td>
     </tr>
     </table>
     
@@ -173,17 +171,17 @@ Statistics are available on demand via summary and extractor functions.</p>
 <dt>n</dt><dd><p>The number observations processed per round of IRLS.</p></dd>
 <dt>df.residual</dt><dd><p>The residual degrees of freedom.</p></dd>
 <dt>df.null</dt><dd><p>The residual degrees of freedom.</p></dd>
-<dt>formula</dt><dd><p>the <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> object specifying the linear model.</p></dd>
-<dt>family</dt><dd><p>a <code><a href='https://www.rdocumentation.org/packages/stats/topics/family'>family()</a></code> object describing the error distribution
+<dt>formula</dt><dd><p>the <code>formula</code> object specifying the linear model.</p></dd>
+<dt>family</dt><dd><p>a <code>family</code> object describing the error distribution
 and link function used in the model.</p></dd>
-<dt>terms</dt><dd><p>The <code><a href='https://www.rdocumentation.org/packages/stats/topics/terms'>terms()</a></code> object used.</p></dd>
-<dt>weights</dt><dd><p>The weights <code><a href='https://www.rdocumentation.org/packages/stats/topics/formula'>formula()</a></code> provided to the model.</p></dd>
+<dt>terms</dt><dd><p>The <code>terms</code> object used.</p></dd>
+<dt>weights</dt><dd><p>The weights <code>formula</code> provided to the model.</p></dd>
 <dt>call</dt><dd><p>The matched call.</p></dd>
 
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>An <code>oomglm()</code> model can be in various states of fit depending on the number
+    <p>An <code>oomglm</code> model can be in various states of fit depending on the number
 of seen observations and rounds of IRLS that have been performed.
 It is important to view the model within the context of:
 the number of observations processed per round of IRLS (<code>n</code>);
@@ -192,17 +190,17 @@ and if the IRLS algorithm has converged (<code>converged</code>).</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='iter_weight.html'>iter_weight()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_tbl()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_dbi()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_con()</a></code></p></div>
+    <div class='dont-index'><p><code><a href='oomlm.html'>oomlm()</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># The `oomglm()` function employs Iteratively Weighted Least Squares (IWLS).</span>
-<span class='co'># The IWLS iterations are performed by the function `iter_weight()` which</span>
-<span class='co'># makes passes over the data until estimate convergence.</span>
+<span class='co'># The IWLS iterations are performed by the function `fit()` which</span>
+<span class='co'># makes passes over the data until convergence.</span>
 
 <span class='co'># reweight 4 times or until convergence</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>oomglm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>)
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='iter_weight.html'>iter_weight</a></span>(<span class='no'>x</span>, <span class='no'>mtcars</span>, <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>4</span>)
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/generics/topics/fit'>fit</a></span>(<span class='no'>x</span>, <span class='no'>mtcars</span>, <span class='kw'>times</span> <span class='kw'>=</span> <span class='fl'>4</span>)
 
 <span class='fu'><a href='https://www.rdocumentation.org/packages/generics/topics/tidy'>tidy</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 3 x 7</span><span>
 #&gt;   term        estimate std.error statistic  p.value conf.low  conf.high
@@ -214,7 +212,7 @@ and if the IRLS algorithm has converged (<code>converged</code>).</p>
 
 <span class='no'>y</span>      <span class='kw'>&lt;-</span> <span class='fu'>oomglm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>disp</span>)
 <span class='no'>chunks</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='oomdata_dbi.html'>oomdata_tbl</a></span>(<span class='no'>mtcars</span>, <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>10</span>)
-<span class='no'>y</span>      <span class='kw'>&lt;-</span> <span class='fu'><a href='iter_weight.html'>iter_weight</a></span>(<span class='no'>y</span>, <span class='no'>chunks</span>, <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>4</span>)
+<span class='no'>y</span>      <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/generics/topics/fit'>fit</a></span>(<span class='no'>y</span>, <span class='no'>chunks</span>, <span class='kw'>times</span> <span class='kw'>=</span> <span class='fl'>4</span>)
 
 <span class='fu'><a href='https://www.rdocumentation.org/packages/generics/topics/tidy'>tidy</a></span>(<span class='no'>y</span>)</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 3 x 7</span><span>
 #&gt;   term        estimate std.error statistic  p.value conf.low  conf.high

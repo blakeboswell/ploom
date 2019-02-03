@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit <code><a href='oomglm.html'>oomglm()</a></code> model via Iteratively Reweighted Least Squares (IRLS). — iter_weight • ploom</title>
+<title>Fit <code>oomglm</code> model via Iteratively Reweighted Least Squares (IRLS). — iter_weight • ploom</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Fit <code><a href='oomglm.html'>oomglm()</a></code> model via Iteratively Reweighted Least Squares (IRLS). — iter_weight" />
+<meta property="og:title" content="Fit <code>oomglm</code> model via Iteratively Reweighted Least Squares (IRLS). — iter_weight" />
 
-<meta property="og:description" content="Fit oomglm() model via Iteratively Reweighted Least Squares (IRLS)." />
+<meta property="og:description" content="Fit oomglm model via Iteratively Reweighted Least Squares (IRLS)." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -54,7 +54,7 @@
   <body>
     <div class="container template-reference-topic">
       <header>
-      <div class="navbar navbar-pellucid navbar-fixed-top" role="navigation">
+      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -119,51 +119,55 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit <code><a href='oomglm.html'>oomglm()</a></code> model via Iteratively Reweighted Least Squares (IRLS).</h1>
+    <h1>Fit <code>oomglm</code> model via Iteratively Reweighted Least Squares (IRLS).</h1>
     
     <div class="hidden name"><code>iter_weight.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Fit <code><a href='oomglm.html'>oomglm()</a></code> model via Iteratively Reweighted Least Squares (IRLS).</p>
+    <p>Fit <code>oomglm</code> model via Iteratively Reweighted Least Squares (IRLS).</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>iter_weight</span>(<span class='no'>object</span>, <span class='no'>data</span>, <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>4L</span>, <span class='kw'>tolerance</span> <span class='kw'>=</span> <span class='fl'>1e-08</span>)</pre>
+    <pre class="usage"><span class='fu'>iter_weight</span>(<span class='no'>object</span>, <span class='no'>data</span>, <span class='kw'>times</span> <span class='kw'>=</span> <span class='fl'>2L</span>, <span class='kw'>tolerance</span> <span class='kw'>=</span> <span class='fl'>1e-08</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p><code><a href='oomglm.html'>oomglm()</a></code> model.</p></td>
+      <td><p><code>oomglm</code> model.</p></td>
     </tr>
     <tr>
       <th>data</th>
-      <td><p><code><a href='oomdata_dbi.html'>oomdata_tbl()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_dbi()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_con()</a></code>,
-<code>tibble()</code>, <code><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame()</a></code>, or <code><a href='https://www.rdocumentation.org/packages/base/topics/list'>list()</a></code> of observations to fit</p></td>
+      <td><p>an optional <code>oomdata_tbl</code>, <code>oomdata_dbi</code>, <code>oomdata_con</code>,
+<code>tibble</code>, <code>data.frame</code>, or <code>list</code> of observations to fit</p></td>
     </tr>
     <tr>
-      <th>max_iter</th>
+      <th>times</th>
       <td><p>Maximum number of IRLS iterations to perform. Will
-stop iterating if model converges before <code>max_iter</code> iterations.</p></td>
+stop iterating if model converges before <code>times</code> iterations.</p></td>
     </tr>
     <tr>
       <th>tolerance</th>
       <td><p>Tolerance used to determine convergence. Represents
 change in coefficient as a multiple of standard error.</p></td>
     </tr>
+    <tr>
+      <th>...</th>
+      <td><p>ignored</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code><a href='oomglm.html'>oomglm()</a></code> object after performing <code>max_iter</code> IRLS iterations on
+    <p><code>oomglm</code> object after performing <code>times</code> IRLS iterations on
 <code>data</code>.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='oomglm.html'>oomglm()</a></code></p></div>
+    <div class='dont-index'><p><code><a href='https://www.rdocumentation.org/packages/generics/topics/fit'>fit()</a></code></p></div>
     
 
   </div>

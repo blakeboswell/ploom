@@ -10,19 +10,37 @@
     <loc>https://github.com/blakeboswell/ploom/reference/Rcpp_BoundedQr-class.html</loc>
   </url>
   <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/augment.oomglm.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/augment.oomlm.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/blakeboswell/ploom/reference/coef.Rcpp_BoundedQr.html</loc>
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/deparse2.html</loc>
   </url>
   <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/fit.oomglm.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/fit.oomlm.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/get_oomdata.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/glance.oomlm.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/blakeboswell/ploom/reference/glm_adjust.html</loc>
   </url>
   <url>
-    <loc>https://github.com/blakeboswell/ploom/reference/init_oomglm.html</loc>
+    <loc>https://github.com/blakeboswell/ploom/reference/init_oomdata.html</loc>
   </url>
   <url>
-    <loc>https://github.com/blakeboswell/ploom/reference/init_oomglm_robust.html</loc>
+    <loc>https://github.com/blakeboswell/ploom/reference/init_oomglm.html</loc>
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/init_oomlm.html</loc>
@@ -38,6 +56,9 @@
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/model_frame.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/model_frame_tibble.html</loc>
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/model_matrix.html</loc>
@@ -58,9 +79,6 @@
     <loc>https://github.com/blakeboswell/ploom/reference/oomglm.html</loc>
   </url>
   <url>
-    <loc>https://github.com/blakeboswell/ploom/reference/oomglm_robust.html</loc>
-  </url>
-  <url>
     <loc>https://github.com/blakeboswell/ploom/reference/oomlm.html</loc>
   </url>
   <url>
@@ -70,10 +88,40 @@
     <loc>https://github.com/blakeboswell/ploom/reference/predict.html</loc>
   </url>
   <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/predict_oomglm.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/predict_oomglm_x.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/predict_oomlm.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/predict_oomlm_x.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/blakeboswell/ploom/reference/reexports.html</loc>
   </url>
   <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/residuals.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/residuals_oomglm.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/residuals_oomglm_x.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/residuals_oomlm.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/residuals_oomlm_x.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/blakeboswell/ploom/reference/sandwich_rcov_biglm.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/tidy.oomdata.html</loc>
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/tidy.oomlm.html</loc>
@@ -85,7 +133,7 @@
     <loc>https://github.com/blakeboswell/ploom/reference/update.Rcpp_BoundedQr.html</loc>
   </url>
   <url>
-    <loc>https://github.com/blakeboswell/ploom/reference/update.html</loc>
+    <loc>https://github.com/blakeboswell/ploom/reference/update_oomdata.html</loc>
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/update_oomglm.html</loc>
