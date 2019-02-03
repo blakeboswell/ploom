@@ -91,13 +91,15 @@ See the articles [NA]() and [NA]() for more on interfacing with databases.
 
 ### Prediction & Residuals
 
-Prediction with `ploom` models is performed with the `predict()` function.  `predict()` provides options for confidence intervals, prediction intervals, and standard error in addition to fit.  Because ploom models do not store any data while fitting, we must also provide data. 
+Prediction with ploom models is performed with the `predict()` function. `predict()` provides options for confidence intervals, prediction intervals, and standard error in addition to fit.
+
+Because ploom models do not store any data while fitting, we must also provide data. 
 
 ```{r, eval = TRUE, message=FALSE}
 predict(y, new_data = mtcars, std_error = TRUE, interval = "prediction")
 ```
 
-`ploom` models do not store the residuals during fitting.  Residuals are accessible on demand with `residuals()`:
+Similarly, residuals are accessible on demand with `residuals()`:
 
 ```{r, eval = TRUE, message=FALSE}
 sum(residuals(y, data = mtcars)^2)
