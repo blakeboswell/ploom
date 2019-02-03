@@ -68,19 +68,6 @@ expect_attr_equal <- function(x, y, df) {
     as.matrix(tidy(x)[2:5])
   )
 
-  quiet <- function(x) {
-    sink(tempfile())
-    on.exit(sink())
-    invisible(force(x))
-  }
-
-  expect_equal(quiet(print(x)), x)
-  expect_equal(quiet(print(summary(x))), summary(x))
-  expect_equal(
-    quiet(print(summary(x, correlation = TRUE))),
-    summary(x, correlation = TRUE)
-  )
-
 }
 
 
@@ -93,6 +80,7 @@ test_that("updating oomglm", {
   expect_attr_equal(x, y, mtcars)
 
 })
+
 
 test_that("weighted updating oomglm", {
 
@@ -108,6 +96,7 @@ test_that("weighted updating oomglm", {
 
 })
 
+
 test_that("updating oomglm without intercept", {
 
   df <- mtcars
@@ -119,6 +108,7 @@ test_that("updating oomglm without intercept", {
   expect_attr_equal(x, y, df)
 
 })
+
 
 test_that("weighted updating oomglm without intercept", {
 

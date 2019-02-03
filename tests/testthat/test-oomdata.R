@@ -22,6 +22,13 @@ test_connection <- function(con, data_frame) {
     }
   }
   
+  print(tidy(tmp))
+  
+  expect_equal(
+    c(3., 0., 0., 7., 32.),
+    as.vector(t(tidy(tmp)))
+  )
+
 }
 
 
@@ -40,6 +47,12 @@ test_that("data.frame", {
       expect_equal(x, df[start:cursor, ])
     }
   }
+
+  expect_equal(
+    c(3., 0., 0., 7., 32.),
+    as.vector(t(tidy(tmp)))
+  )
+
 })
 
 

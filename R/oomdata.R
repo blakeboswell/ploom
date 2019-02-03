@@ -89,4 +89,6 @@ print.oomdata <- function(x, ...) {
   
   cat("\n\n")
   
+  invisible(x)
+  
 }
