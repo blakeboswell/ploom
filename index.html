@@ -68,7 +68,7 @@
   </ul>
 </li>
 <li>
-  <a href="articles/benchmark.html">Benchmarking</a>
+  <a href="articles/benchmark.html">Benchmark</a>
 </li>
 <li>
   <a href="https://github.com/blakeboswell/ploom">
@@ -95,23 +95,19 @@
 
 
 <!-- [AppVeyor Build Status]() -->
-<div id="overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h2>
-<p>ploom provides tools for <strong>memory efficient</strong> fitting of Linear and Generalized Linear models. Inspired by biglm, ploom fits models using a bounded memory <a href="#acknowledgements">algorithm</a> that enables:</p>
-<ul>
-<li>Out-of-memory (OOM) processing capable of fitting <strong>billions</strong> of observations</li>
-<li>
-<em>Fast</em> in-memory processing requiring less resources than <code><a href="https://www.rdocumentation.org/packages/stats/topics/lm">lm()</a></code> and <code><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm()</a></code>
-</li>
-</ul>
-<p>ploom models are</p>
-<ul>
-<li>Compatible with <code><a href="https://www.rdocumentation.org/packages/generics/topics/tidy">tidy()</a></code>, <code><a href="https://www.rdocumentation.org/packages/generics/topics/glance">glance()</a></code>, <code><a href="https://www.rdocumentation.org/packages/generics/topics/augment">augment()</a></code> and many <code>stats</code> functions such as <code><a href="reference/predict.html">predict()</a></code> and <code><a href="reference/residuals.html">residuals()</a></code>
-</li>
-<li>Capable of iteratively processing data stored in-memory, in a database or on disk</li>
-</ul>
 </div>
+<div id="overview" class="section level1">
+<h1 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h1>
+<p>ploom provides tools for <em>fast</em> and <strong>memory efficient</strong> fitting of Linear and Generalized Linear models.</p>
+<p>Features of ploom include:</p>
+<ul>
+<li>Out-of-memory processing capable of fitting <strong>billions</strong> of observations.</li>
+<li>
+<em>Fast</em> in-memory processing requiring less resources than <code><a href="https://www.rdocumentation.org/packages/stats/topics/lm">lm()</a></code> and <code><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm()</a></code>.</li>
+<li>Compatible with <code><a href="https://www.rdocumentation.org/packages/generics/topics/tidy">tidy()</a></code>, <code><a href="https://www.rdocumentation.org/packages/generics/topics/glance">glance()</a></code>, <code><a href="https://www.rdocumentation.org/packages/generics/topics/augment">augment()</a></code> and many stats functions such as <code><a href="reference/predict.html">predict()</a></code> and <code><a href="reference/residuals.html">residuals()</a></code>.</li>
+<li>Provides functions for iteratively processing data stored in-memory, in a database or on disk.</li>
+</ul>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -151,10 +147,10 @@
 <pre><code>## (Intercept)          wt        qsec factor(am)1 
 ##    9.617781   -3.916504    1.225886    2.935837</code></pre>
 </div>
-<div id="fitting-over-chunks" class="section level3">
+<div id="iterative-fitting" class="section level3">
 <h3 class="hasAnchor">
-<a href="#fitting-over-chunks" class="anchor"></a>Fitting over Chunks</h3>
-<p>The function <code><a href="reference/oomdata_dbi.html">oomdata_tbl()</a></code> enables iteration over an in-memory <code>tibble</code> or <code>data.frame</code>. When an <code><a href="reference/oomdata_dbi.html">oomdata_tbl()</a></code> is provided as the data argument to <code><a href="https://www.rdocumentation.org/packages/generics/topics/fit">fit()</a></code>, all chunks are automatically iterated over.</p>
+<a href="#iterative-fitting" class="anchor"></a>Iterative Fitting</h3>
+<p>The function <code><a href="reference/oomdata_dbi.html">oomdata_tbl()</a></code> enables iteration over an in-memory <code>tibble</code>. When an <code><a href="reference/oomdata_dbi.html">oomdata_tbl()</a></code> is provided as the data argument to <code><a href="https://www.rdocumentation.org/packages/generics/topics/fit">fit()</a></code>, all chunks are automatically iterated over.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">chunks &lt;-<span class="st"> </span><span class="kw"><a href="reference/oomdata_dbi.html">oomdata_tbl</a></span>(mtcars, <span class="dt">chunk_size =</span> <span class="dv">16</span>)</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/generics/topics/fit">fit</a></span>(<span class="kw"><a href="reference/oomlm.html">oomlm</a></span>(mpg <span class="op">~</span><span class="st"> </span>wt <span class="op">+</span><span class="st"> </span>qsec <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/factor">factor</a></span>(am)), chunks)</a></code></pre></div>
 <pre><code>## 
@@ -190,8 +186,7 @@
 <div id="prediction-residuals" class="section level3">
 <h3 class="hasAnchor">
 <a href="#prediction-residuals" class="anchor"></a>Prediction &amp; Residuals</h3>
-<p>Prediction with ploom models is performed with the <code><a href="reference/predict.html">predict()</a></code> function. <code><a href="reference/predict.html">predict()</a></code> provides options for confidence intervals, prediction intervals, and standard error in addition to fit.</p>
-<p>Because ploom models do not store any data while fitting, we must also provide data.</p>
+<p>Prediction with ploom models is performed with the <code><a href="reference/predict.html">predict()</a></code> function. Because ploom models do not store any data while fitting, we must also provide data.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="reference/predict.html">predict</a></span>(y, <span class="dt">new_data =</span> mtcars, <span class="dt">std_error =</span> <span class="ot">TRUE</span>, <span class="dt">interval =</span> <span class="st">"prediction"</span>)</a></code></pre></div>
 <pre><code>## # A tibble: 32 x 4
 ##    .pred .std_error .pred_lower .pred_upper
