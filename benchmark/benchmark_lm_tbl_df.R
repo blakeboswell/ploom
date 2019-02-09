@@ -38,11 +38,13 @@ benchmark_lm <- function(num_obs, df) {
       coef(u)
     },
     "oomlm" = {
-      x <- fit(oomlm(formula = lm_formula), data = df[1:num_obs, ])
+      fn <- oomdata_tbl(df, chunk_size = 10^5)
+      x  <- fit(oomlm(formula = lm_formula), data = fn)
       coef(x)
     },
     "oomlm + resid" = {
-      x <- fit(oomlm(formula = lm_formula), data = df[1:num_obs, ])
+      fn <- oomdata_tbl(df, chunk_size = 10^5)
+      x <- fit(oomlm(formula = lm_formula), data = fn)
       y <- predict(x, new_data = df[1:num_obs, ])
       u <- df[1:num_obs, 1] - y
       coef(x)
@@ -50,6 +52,12 @@ benchmark_lm <- function(num_obs, df) {
     "biglm" = {
       y <- biglm(formula = lm_formula, data = df[1:num_obs, ])
       coef(y)
+    },
+    "biglm + resid" = {
+      z <- biglm(formula = lm_formula, data = df[1:num_obs, ])
+      y <- predict(z,  df[1:num_obs, ])
+      u <- df[1:num_obs, 1] - y
+      coef(z)
     },
     "speedlm" = {
       z <- speedlm(formula = lm_formula, data = df[1:num_obs, ])
