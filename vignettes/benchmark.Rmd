@@ -87,7 +87,7 @@ The functions  `oomlm()`, `biglm()` and `speedlm()` do not calculate predictions
 
 ### Results
 
-Although the runtimes are comparable, `oomlm()` is slightly faster than `lm()`.  This indicates that there is no runtime penalty for using the scalable fitting of `oomlm()` even when working with `lm()` scale data.
+Although the runtimes are comparable, `oomlm()` is slightly faster than `lm()`.  This indicates that there is no runtime penalty for using the bounded memory fitting of `oomlm()` even when working with `lm()` scale data.
 
 <br>
 

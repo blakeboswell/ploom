@@ -10,23 +10,21 @@ status](https://codecov.io/gh/blakeboswell/ploom/branch/develop/graph/badge.svg)
 
 <!-- [AppVeyor Build Status]() -->
 
-## Overview
+# Overview
 
-ploom provides tools for **memory efficient** fitting of Linear and
-Generalized Linear models. Inspired by biglm, ploom fits models using a
-bounded memory [algorithm](#acknowledgements) that enables:
+ploom provides tools for *fast* and **memory efficient** fitting of
+Linear and Generalized Linear models.
 
-  - Out-of-memory (OOM) processing capable of fitting **billions** of
-    observations
+Features of ploom include:
+
+  - Out-of-memory processing capable of fitting **billions** of
+    observations.
   - *Fast* in-memory processing requiring less resources than `lm()` and
-    `glm()`
-
-ploom models are
-
-  - Compatible with `tidy()`, `glance()`, `augment()` and many `stats`
-    functions such as `predict()` and `residuals()`
-  - Capable of iteratively processing data stored in-memory, in a
-    database or on disk
+    `glm()`.
+  - Compatible with `tidy()`, `glance()`, `augment()` and many stats
+    functions such as `predict()` and `residuals()`.
+  - Provides functions for iteratively processing data stored in-memory,
+    in a database or on disk.
 
 ## Installation
 
@@ -79,11 +77,11 @@ coef(y)
     ## (Intercept)          wt        qsec factor(am)1 
     ##    9.617781   -3.916504    1.225886    2.935837
 
-### Fitting over Chunks
+### Iterative Fitting
 
 The function `oomdata_tbl()` enables iteration over an in-memory
-`tibble` or `data.frame`. When an `oomdata_tbl()` is provided as the
-data argument to `fit()`, all chunks are automatically iterated over.
+`tibble`. When an `oomdata_tbl()` is provided as the data argument to
+`fit()`, all chunks are automatically iterated over.
 
 ``` r
 chunks <- oomdata_tbl(mtcars, chunk_size = 16)
@@ -129,9 +127,6 @@ databases.
 ### Prediction & Residuals
 
 Prediction with ploom models is performed with the `predict()` function.
-`predict()` provides options for confidence intervals, prediction
-intervals, and standard error in addition to fit.
-
 Because ploom models do not store any data while fitting, we must also
 provide data.
 

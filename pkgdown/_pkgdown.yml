@@ -46,7 +46,7 @@ navbar:
       href: articles/oomlm.html
     - text: Generalized Linear Model
       href: articles/oomlm.html
-  - text: Benchmarking
+  - text: Benchmark
     href: articles/benchmark.html
   - icon: fa-github fa-lg
     href: https://github.com/blakeboswell/ploom

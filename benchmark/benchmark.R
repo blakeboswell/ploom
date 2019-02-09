@@ -15,7 +15,6 @@ library(glue)
 library(broom)
 library(dplyr)
 
-
 ## connections ----------------------------------------------------------
 
 psql_con <- function() {
@@ -51,7 +50,6 @@ psql_con <- function() {
 #   seed         = 2001
 # )
 
-
 ## in-memory lm benchmark -----------------------------------------------
 
 benchmark_env <- new.env()
@@ -68,7 +66,6 @@ result %>%
   saveRDS("benchmark/results/lm_tbl_df.Rds")
 
 
-
 ## in-memory glm benchmark ----------------------------------------------
 
 benchmark_env <- new.env()
@@ -83,7 +80,6 @@ result <- benchmark_env$main(table_prefix = "linear", num_obs = 10^6)
 
 result %>%
   saveRDS("benchmark/results/glm_tbl_df.Rds")
-
 
 
 # psql lm benchmark -----------------------------------------------------
