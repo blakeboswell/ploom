@@ -23,34 +23,40 @@ library(dplyr)
 
 ```{r, eval = TRUE, echo = FALSE}
 
-result <- readRDS("../benchmark/results/lm_tbl_df.Rds")
+result <- readRDS("../benchmark/results/lm_tbl_df_new.Rds")
 
 N <- 10^7
 
-colors <- scale_color_viridis_d(option = "A")$palette(5)
-colors <- c(colors[1], colors[1], colors[2], colors[2], colors[3:4])
-names(colors) <- c("oomlm"
-                   , "oomlm + resid"
-                   , "speedlm"
-                   , "speedlm + resid"
-                   , "lm" 
-                   , "biglm")
-
-nonresid_andlm <- c(T, F, T, F, T, T)
-includes_resid <- c(F, T, F, T, T, F)
+colors <- scale_color_viridis_d(option = "D")$palette(5)
+colors <- c(colors[1], colors[rep(2:4, each = 2)])
+names(colors) <- c(
+  "lm"
+  , "oomlm"
+  , "oomlm + resid"
+  , "speedlm"
+  , "speedlm + resid"
+  , "biglm"
+  , "biglm + resid"
+)
+colors[c("oomlm", "oomlm + resid")] <- "#EC8612" #"#DC4749"
+nonresid_andlm <- c(T, T, F, T, F, T, F)
+includes_resid <- c(T, F, T, F, T, F, T)
 
 df <- result %>% 
-  dplyr::select(expression, mean, mem_alloc, num_obs) %>%
+  select(expression, min, mean, max, mem_alloc, num_obs) %>%
   dplyr::mutate(
-    mem_alloc  = mem_alloc / 10^9,
+    num_obs       = num_obs / 10^6,
+    mem_alloc     = mem_alloc / 10^9,
     nonresid_fit  = (expression %in% (names(colors)[nonresid_andlm])),
     resid_fit     = (expression %in% (names(colors)[includes_resid]))
   )
 
+
 plot_theme <- theme_minimal() +
   theme(
     plot.title = element_text(size = 18),
-    legend.position = "none",
+    # legend.position = "none",
+    legend.title = element_blank(),
     axis.title.y = element_blank(),
     axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)),
     axis.ticks = element_blank(),
@@ -66,132 +72,70 @@ x_format <- function(n) {
 ```
 
 
-This benchmark consists of fitting a linear model with 50 total covariates over `N` observations where `N` ranges from 2M to 10M.  The code is available [here](https://github.com/blakeboswell/ploom/tree/master/benchmark).
 
-The functions benchared against are `lm()`, `biglm()` from the package [biglm](), and `speedlm()` from the package [speedglm]().
+We fit a linear model with 50 features over 2,4,6,8, and 10 million observations.  The code is available [here](https://github.com/blakeboswell/ploom/tree/master/benchmark).
 
-## Ubounded In-Memory
+The following functions were included:
 
-In this scenario each function fits an in-memory `tibble` having `N` observations.
+- stats `lm()`
+- speedglm `speedlm()`
+- biglm `biglm()`
+- ploom `oomlm()`
+
+
+## In-Memory
+
+Unlike `lm()`, the functions `speedlm()` `biglm()` and `oomlm()` do not calculate predictions and residuals while the fitting. For greater parity with `lm()`, the benchmark includes a call to `predict()` and a residual calculation for these functions.  
 
 ### Runtime
 
-```{r, eval = TRUE, echo = FALSE, fig.width=7, fig.height=4.5}
+```{r, eval = TRUE, echo = FALSE, fig.width=7, fig.height=3.5}
 
 x <- df %>%
-  filter(nonresid_fit) 
+  filter(resid_fit) %>%
+  rename(
+    lower = min
+    , upper = max
+  )
 
 x %>%
   arrange(expression) %>%
-  ggplot(aes(x = num_obs, y = mean, color = expression)) +
-  geom_point(size = 3) +
-  scale_x_continuous(
-    breaks = tail(seq(0, N, by = N / 5), 5),
-    label  = x_format,
-    limits = c(N/5, N * 1.15)
+  ggplot(aes(x = as.factor(num_obs), y = mean, color = expression)) +
+  geom_pointrange(aes(ymin = lower, ymax = upper),
+                  position = position_dodge(width = 0.25)) +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(10)
   ) +
   plot_theme +
   labs(
     x        = "Number of Observations (Million)",
-    subtitle = "Mean Time (Seconds)"
+    subtitle = "Mean Runtime (Seconds)"
   ) +
-  geom_text(
-    data = x %>% filter(num_obs == max(num_obs)),
-    aes(label = expression, x = num_obs*1.01, y = mean),
-    hjust = 0
-  ) +
-  scale_color_manual(values = colors[nonresid_andlm])
+  scale_color_manual(values = colors[includes_resid]) 
 
 ```
 
 ### Memory Allocated
 
-```{r, eval = TRUE, echo = FALSE, fig.width=7, fig.height=4.5}
+```{r, eval = TRUE, echo = FALSE, fig.width=7, fig.height=3.5}
 
 x <- df %>%
-  filter(nonresid_fit) 
+  filter(resid_fit)
 
 x %>%
-  ggplot(aes(x = num_obs, y = mem_alloc, color = expression)) +
-  geom_point(size = 3) +
-  scale_x_continuous(
-    breaks = tail(seq(0, N, by = N / 5), 5),
-    label  = x_format,
-    limits = c(N/5, N * 1.15)
+  ggplot(aes(x = as.factor(num_obs), y = mem_alloc, color = expression)) +
+  geom_point(size = 3, position = position_dodge(width = 0.25)) +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(10)
   ) +
   plot_theme +
   labs(
     x        = "Number of Observations (Million)",
-    subtitle = "Memory Allocated (GB)"
-  ) +
-  geom_text(
-    data = x %>% filter(num_obs == max(num_obs)),
-    aes(label = expression, x = num_obs*1.01, y = mem_alloc),
-    hjust = 0
-  ) +
-  scale_color_manual(values = colors[nonresid_andlm])
-
-```
-
-`oomlm()` is consistently twice as fast as `lm()` while using half the memory.  The reson for this is that `lm()` front loads calculations of predicted values and residuals.  When including prediction and residual calculations the memory and speed improvements of `oomlm()` are less dramatic.
-
-### Runtime
-
-```{r, eval = TRUE, echo = FALSE, fig.width=7, fig.height=4.5}
-
-x <- df %>%
-  filter(resid_fit) 
-
-x %>%
-  arrange(expression) %>%
-  ggplot(aes(x = num_obs, y = mean, color = expression)) +
-  geom_point(size = 3) +
-  scale_x_continuous(
-    breaks = tail(seq(0, N, by = N / 5), 5),
-    label  = x_format,
-    limits = c(N/5, N * 1.15)
-  ) +
-  plot_theme +
-  labs(
-    x        = "Number of Observations (Million)",
-    subtitle = "Mean Time (Seconds)"
-  ) +
-  geom_text(
-    data = x %>% filter(num_obs == max(num_obs)),
-    aes(label = expression, x = num_obs*1.01, y = mean),
-    hjust = 0
+    subtitle = "Mean Memory Allocated (gb)"
   ) +
   scale_color_manual(values = colors[includes_resid])
 
 ```
 
-### Memory Allocated
-
-```{r, eval = TRUE, echo = FALSE, fig.width=7, fig.height=4.5}
-
-x <- df %>%
-  filter(resid_fit) 
-
-x %>%
-  ggplot(aes(x = num_obs, y = mem_alloc, color = expression)) +
-  geom_point(size = 3) +
-  scale_x_continuous(
-    breaks = tail(seq(0, N, by = N / 5), 5),
-    label  = x_format,
-    limits = c(N/5, N * 1.15)
-  ) +
-  plot_theme +
-  labs(
-    x        = "Number of Observations (Million)",
-    subtitle = "Memory Allocated (GB)"
-  ) +
-  geom_text(
-    data = x %>% filter(num_obs == max(num_obs)),
-    aes(label = expression, x = num_obs*1.01, y = mem_alloc),
-    hjust = 0
-  ) +
-  scale_color_manual(values = colors[includes_resid])
-
-```
 
 
