@@ -38,13 +38,13 @@ benchmark_lm <- function(num_obs, df) {
       coef(u)
     },
     "oomlm" = {
-      fn <- oomdata_tbl(df, chunk_size = 10^5)
-      x  <- fit(oomlm(formula = lm_formula), data = fn)
+      # fn <- oomdata_tbl(df, chunk_size = 10^5)
+      x  <- fit(oomlm(formula = lm_formula), data = df[1:num_obs, ])
       coef(x)
     },
     "oomlm + resid" = {
-      fn <- oomdata_tbl(df, chunk_size = 10^5)
-      x <- fit(oomlm(formula = lm_formula), data = fn)
+      # fn <- oomdata_tbl(df, chunk_size = 10^5)
+      x <- fit(oomlm(formula = lm_formula), data = df[1:num_obs, ])
       y <- predict(x, new_data = df[1:num_obs, ])
       u <- df[1:num_obs, 1] - y
       coef(x)
