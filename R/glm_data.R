@@ -23,7 +23,8 @@ linear_params <- function(p,
   X <- mapply(function(x, y) rnorm(1, x, y), x = betas_mu, y = betas_sd)
   
   col_names <- c(
-    paste("real", 1:(p/2 + 1), sep = "_"),
+    "real_intercept",
+    paste("real", 1:(p/2), sep = "_"),
     paste("int", 1:(p/2), sep = "_")
   )
   
@@ -87,15 +88,16 @@ generate_data <- function(betas, nrows) {
   X       <- cbind(A, X1, X2)
   
   Y       <- X %*% betas
-  Y_gauss <- rnorm(nrows, Y, 1)
-  Y_bin   <- rbinom(nrows, 1, 1 / (1 + exp(-Y)))
+  Ygauss <- rnorm(nrows, Y, 1)
+  Ybin   <- rbinom(nrows, 1, 1 / (1 + exp(-Y)))
   
   Y       <- X[, 1:(p + 1)] %*% betas[1:(p + 1)]
-  Y_pois  <- rpois(nrows, exp(Y))
-  Y_gamma <- rgamma(nrows, rate = 10 / exp(Y), shape = 10)
+  Ypois  <- rpois(nrows, exp(Y))
+  Ygamma <- rgamma(nrows, rate = 10 / exp(Y), shape = 10)
   
-  Y_all <- cbind(Y, Y_gauss, Y_bin, Y_pois, Y_gamma)
-  colnames(Y_all) <- c("Y", "Y_gauss", "Y_bin", "Y_pois", "Y_gamma")
+  Y_all <- cbind(Y, Ygauss, Ybin, Ypois, Ygamma)
+  colnames(Y_all) <- paste(
+    "real", c("y", "ygauss", "ybin", "ypois", "ygamma"), sep = "_")
   
   df <- tibble::as_tibble(cbind(Y_all, X))
   colnames(df) <- tolower(colnames(df))

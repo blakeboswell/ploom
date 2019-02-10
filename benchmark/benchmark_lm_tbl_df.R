@@ -7,7 +7,8 @@ select_data <- function(table_prefix, num_obs) {
     RPostgres::dbSendQuery(con, glue("select * from {table_prefix}_data")) %>%
     RPostgres::dbColumnInfo() %>%
     pull(name) %>%
-    discard(function(x) x %in% c("index", "real_alpha"))
+    discard(function(x) x %in% c("index")) %>%
+    discard(function(x) str_detect(x, "y") & x != "real_ygauss")
   
   query   <- glue(
     "select {str_c(vars, collapse = '\n, ')}
@@ -21,9 +22,10 @@ select_data <- function(table_prefix, num_obs) {
   
 }
 
-make_formula <- function(var_names) {
-  y <- head(var_names, 1)
-  X <- tail(var_names, -1)
+make_formula <- function(var_names, yval) {
+  y <- yval
+  X <- var_names %>% 
+    discard(function(x) str_detect(x, "y"))
   str_c(y, "~", str_c(X, collapse = "+")) %>% as.formula()
 }
 
@@ -38,12 +40,10 @@ benchmark_lm <- function(num_obs, df) {
       coef(u)
     },
     "oomlm" = {
-      # fn <- oomdata_tbl(df, chunk_size = 10^5)
       x  <- fit(oomlm(formula = lm_formula), data = df[1:num_obs, ])
       coef(x)
     },
     "oomlm + resid" = {
-      # fn <- oomdata_tbl(df, chunk_size = 10^5)
       x <- fit(oomlm(formula = lm_formula), data = df[1:num_obs, ])
       y <- predict(x, new_data = df[1:num_obs, ])
       u <- df[1:num_obs, 1] - y
@@ -81,13 +81,23 @@ benchmark_lm <- function(num_obs, df) {
 }
 
 
+# table_prefix <- "linear"
+# num_obs      <- 5000
+# 
+# df <- select_data(table_prefix, num_obs)
+# 
+# lm_formula <- df %>% 
+#   colnames() %>% 
+#   make_formula(yval = "real_ygauss")
+
+
 main <- function(table_prefix, num_obs) {
   
   num_div <- 5
   divs    <- 1:num_div*(num_obs/num_div)
   
   df         <- select_data(table_prefix, num_obs)
-  lm_formula <- df %>% colnames() %>% make_formula()
+  lm_formula <- df %>% colnames() %>% make_formula(yval = "real_ygauss")
   
   # speedlm requires that the formula be in the global environment
   assign("lm_formula", lm_formula, envir = globalenv())

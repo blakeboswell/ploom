@@ -1,111 +1,4 @@
 
-#' make a and B for y = a + BX + e
-#'
-#' @param p number of columns in X.  will be forced to the nearest
-#'   number divisible by two
-#' @param alpha_lim alpha will be randomly picked in
-#'   range between `-alpha_lim` and `alpha_lim`
-#' @param betas_mu_lim mean of beta normal distributions
-#'   range between `-betas_mu_lim` and `betas_mu_lim`
-#' @param betas_sd_lim standard deviation of beta normal distributions
-#'   range between 1 and `betas_sd_lim`
-linear_params <- function(p, 
-                          alpha_lim     = 10,
-                          betas_mu_lim  = 10,
-                          betas_sd_lim  = 1) {
-  
-  p <- 2 * ceiling(p / 2)
-  
-  betas_mu  <- runif(p, -betas_mu_lim, betas_mu_lim)
-  betas_sd  <- runif(p, 1, betas_sd_lim)
-  
-  X <- map2_dbl(betas_mu, betas_sd, function(x, y) rnorm(1, x, y))
-  
-  col_names <- c(
-    "real_alpha",
-    str_c("real", 1:(p/2), sep = "_"),
-    str_c("int", 1:(p/2), sep = "_")
-  )
-  
-  list(
-    alpha = runif(1, -alpha_lim, alpha_lim),
-    betas = matrix(X, ncol = 1),
-    names = col_names
-  )
-}
-
-
-#' transform param list into single row table
-#' with alpha and B having names corresponding to data
-#'
-#' @param params
-#' @param col_names
-#' @keywords internal
-params_as_tibble <- function(params) {
-  
-  matrix(c(params$alpha, params$betas), nrow = 1) %>%
-    as_tibble() %>%
-    set_names(params$names)
-  
-} 
-
-
-#' create data with linear relationship between y and x
-#'
-#' @param alpha
-#' @param betas
-#' @param nrows
-#' @param sigma
-#' 
-#' @keywords internal
-generate_data <- function(alpha, betas, nrows, sigma = 10) {
-  
-  p <- length(betas) / 2
-  
-  X1 <- matrix(
-    runif(nrows * p, min = 0, max = 100),
-    nrow = nrows,
-    ncol = p
-  ) 
-  
-  colnames(X1) <- str_c("real", 1:p, sep = "_")
-  
-  X2 <- mapply(
-    function(num_cat, n) {
-      sample(1:num_cat, n, replace = TRUE)
-    },
-    num_cat = 2:(p+1),
-    n = nrows
-  )
-  colnames(X2) <- str_c("int", 1:p, sep = "_")
-  
-  # eventually add categorical values
-  #
-  # X3 <- mapply(
-  #   function(num_cat, n) {
-  #     as.factor(sample(letters[1:num_cat], n, replace = TRUE))
-  #   },
-  #   num_cat = 2:(p+1),
-  #   n = nrows
-  # )
-  # colnames(X3) <- str_c("text", 1:p, sep = "_")
-  
-  X <- cbind(X1, X2)
-  Y <- alpha + X %*% betas + rnorm(nrows, 0, sigma)
-  
-  cbind(Y, X) %>%
-    as_tibble() %>%
-    rename_all(tolower) %>%
-    rename(real_y = v1)
-  
-}
-
-
-
-# -----------------------------------------------------------------------
-
-
-
 #' create comma delimited "name type" list for sql statements
 #' based on column names (expected to be of the form "name_type")
 #'
@@ -172,7 +65,7 @@ create_load_covariate_psql <- function(con, seed, params, table_prefix) {
   RPostgres::dbWriteTable(
     con,
     table_name,
-    params_as_tibble(params),
+    params_df,
     append = TRUE, row.names = FALSE
   )
   
@@ -185,6 +78,8 @@ create_load_covariate_psql <- function(con, seed, params, table_prefix) {
 #' @param table_name
 #' @keywords internal
 data_ddl <- function(col_names, table_name) {
+  
+  col_names <- col_names[col_names != "real_intercept"]
   
   glue(
     "create table {table_name} (
@@ -199,12 +94,16 @@ data_ddl <- function(col_names, table_name) {
 #' create data table
 #'
 #' @param con
-#' @param p
+#' @param params
 #' @param table_prefix
+#' 
 #' @keywords internal
 create_data_psql <- function(con, params, table_prefix) {
   
-  col_names <- c("real_y", params$names)
+  resp_names <- paste(
+    "real", c("y", "ygauss", "ybin", "ypois", "ygamma"),  sep = "_")
+  
+  col_names  <- c(resp_names, params$names)
   table_name <- str_c(table_prefix, "_data")
   
   RPostgres::dbExecute(
@@ -220,12 +119,11 @@ create_data_psql <- function(con, params, table_prefix) {
 #' 
 #' @param seed seed for the rng used in this load process
 #' @param N number of rows to insert
-#' @param p number of column in X
 #' @param chunk_size number of rows to insert per loop
 #' @param table_name name of table to insert rows
 #'
 #' @keywords internal
-load_data_psql <- function(seed, N, p, params, chunk_size, table_prefix) {
+load_data_psql <- function(seed, N, params, chunk_size, table_prefix) {
   
   con <- psql_con()
   
@@ -234,7 +132,7 @@ load_data_psql <- function(seed, N, p, params, chunk_size, table_prefix) {
   
   while(count < N) {
     
-    df <- generate_data(params$alpha, params$betas, chunk_size)
+    df <- generate_data(params$betas, chunk_size)
     
     RPostgres::dbWriteTable(
       con,
@@ -296,7 +194,6 @@ main <- function(N            = 10^6,
       load_data_psql(
         seed,
         N = N / nprocs,
-        p = p,
         params       = params,
         chunk_size   = chunk_size,
         table_prefix = table_prefix

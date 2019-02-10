@@ -16,17 +16,13 @@ knitr::opts_chunk$set(
 
 ```{r, eval = TRUE, warning = FALSE, message = FALSE,  echo = FALSE}
 library(ggplot2)
-library(stringr)
 library(dplyr)
 ```
 
 
 ```{r, eval = TRUE, echo = FALSE}
 
-# font family needs to available on system
-# font_family <- "UbuntuMonoDerivativePowerline-Regular"
-
-result <- readRDS("../benchmark/results/lm_tbl_df.Rds")
+result <- readRDS(system.file("extdata", "lm_benchmark.Rds", package = "ploom"))
 
 N <- max(result$num_obs) / 10^6
 
@@ -45,7 +41,7 @@ colors[c("oomlm", "oomlm + resid")] <- "#E00F2E" #"#EC8612" #"#DC4749"
 nonresid_andlm <- c(T, T, F, T, F, T, F)
 includes_resid <- c(T, F, T, F, T, F, T)
 
-df <- result %>% 
+df <- result %>%
   select(expression, min, mean, max, mem_alloc, num_obs) %>%
   dplyr::mutate(
     num_obs       = num_obs / 10^6,
@@ -58,7 +54,6 @@ y_axis_limits <- c(min(result$mean), max(result$mean))
 
 plot_theme <- theme_minimal() +
   theme(
-    # text = element_text(family = font_family),
     plot.title = element_text(size = 18),
     legend.position = "none",
     legend.title = element_blank(),
@@ -106,9 +101,8 @@ x %>%
   arrange(expression) %>%
   ggplot(aes(x = num_obs, y = mean, color = expression)) +
   geom_point(size = 3) +
-  # geom_line(size = 0.25) +
   scale_y_continuous(
-    breaks = scales::pretty_breaks(10),
+    breaks = seq(2, 100, 6),
     limits = y_axis_limits
   ) +
   scale_x_continuous(
@@ -127,7 +121,7 @@ x %>%
     subtitle = "Seconds (mean)",
     x        = "Number of Observations (Million)"
   ) +
-  scale_color_manual(values = colors[includes_resid]) 
+  scale_color_manual(values = colors[includes_resid])
 
 ```
 
