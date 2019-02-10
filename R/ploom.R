@@ -22,6 +22,11 @@
 #'  printCoefmat
 #'  pt
 #'  qt
+#'  rbinom
+#'  rgamma
+#'  rnorm
+#'  rpois
+#'  runif
 #'  symnum
 #'  terms 
 #' @importFrom utils head read.table tail getFromNamespace

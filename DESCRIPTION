@@ -34,7 +34,7 @@ Suggests:
     rmarkdown,
     purrr (>= 0.2.5),
     covr,
-    broom,
+    ggplot2,
     dplyr
 BugReports: https://github.com/bboswell/ploom/issues
 RoxygenNote: 6.1.1
