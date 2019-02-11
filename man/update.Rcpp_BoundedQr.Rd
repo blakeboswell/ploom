@@ -4,7 +4,7 @@
 \alias{update.Rcpp_BoundedQr}
 \title{Wrapper for \code{BoundedQr} method \code{update}}
 \usage{
-\method{update}{Rcpp_BoundedQr}(object, X, y, weights, ...)
+update.Rcpp_BoundedQr(object, X, y, weights, ...)
 }
 \arguments{
 \item{object}{BoundedQr object to update}

@@ -16,8 +16,6 @@ knitr::opts_chunk$set(
 
 ```{r, eval = TRUE, warning = FALSE, message = FALSE,  echo = FALSE}
 library(ggplot2)
-library(ggrepel)
-library(stringr)
 library(dplyr)
 ```
 
