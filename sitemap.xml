@@ -28,6 +28,9 @@
     <loc>https://github.com/blakeboswell/ploom/reference/fit.oomlm.html</loc>
   </url>
   <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/generate_data.html</loc>
+  </url>
+  <url>
     <loc>https://github.com/blakeboswell/ploom/reference/get_oomdata.html</loc>
   </url>
   <url>
@@ -53,6 +56,9 @@
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/iter_weight.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/linear_params.html</loc>
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/model_frame.html</loc>
@@ -83,6 +89,9 @@
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/oomlm_robust.html</loc>
+  </url>
+  <url>
+    <loc>https://github.com/blakeboswell/ploom/reference/params_as_tibble.html</loc>
   </url>
   <url>
     <loc>https://github.com/blakeboswell/ploom/reference/predict.html</loc>

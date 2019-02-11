@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit <code>oomlm()</code> model to additonal observations — update • ploom</title>
+<title>Intenal. For generating GLM data used in tests and vignettes. — generate_data • ploom</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Fit <code>oomlm()</code> model to additonal observations — update" />
+<meta property="og:title" content="Intenal. For generating GLM data used in tests and vignettes. — generate_data" />
 
-<meta property="og:description" content="Update ploom model fit with new data." />
+<meta property="og:description" content="Create data with generalized linear relationship." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -99,7 +99,7 @@
   </ul>
 </li>
 <li>
-  <a href="../articles/benchmark.html">Benchmarking</a>
+  <a href="../articles/benchmark.html">Benchmark</a>
 </li>
 <li>
   <a href="https://github.com/blakeboswell/ploom">
@@ -119,45 +119,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit <code>oomlm()</code> model to additonal observations</h1>
+    <h1>Intenal. For generating GLM data used in tests and vignettes.</h1>
     
-    <div class="hidden name"><code>update.Rd</code></div>
+    <div class="hidden name"><code>generate_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Update ploom model fit with new data.</p>
+    <p>Create data with generalized linear relationship.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for oomlm</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/generics/topics/fit'>fit</a></span>(<span class='no'>object</span>, <span class='no'>data</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for oomlm</span>
-<span class='fu'>update</span>(<span class='no'>object</span>, <span class='no'>data</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>generate_data</span>(<span class='no'>betas</span>, <span class='no'>nrows</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p><code><a href='oomlm.html'>oomlm()</a></code> model to be updated</p></td>
+      <th>betas</th>
+      <td><p>coefficients</p></td>
     </tr>
     <tr>
-      <th>data</th>
-      <td><p>an optional <code><a href='oomdata_dbi.html'>oomdata_tbl()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_dbi()</a></code>, <code><a href='oomdata_dbi.html'>oomdata_con()</a></code>,
-<code>tibble()</code>, <code><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame()</a></code>, or <code><a href='https://www.rdocumentation.org/packages/base/topics/list'>list()</a></code> of observations to fit</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>ignored</p></td>
+      <th>nrows</th>
+      <td><p>number of observations to generate</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='oomlm.html'>oomlm()</a></code></p>
-<p><code><a href='oomlm.html'>oomlm()</a></code></p></div>
     
 
   </div>
@@ -165,9 +151,7 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#see-also">See also</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

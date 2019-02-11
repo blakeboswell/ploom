@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>return true if model is gaussian family with identity link — ols_model • ploom</title>
+<title>Intenal. For generating GLM data used in tests and vignettes. — linear_params • ploom</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,9 @@
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="return true if model is gaussian family with identity link — ols_model" />
+<meta property="og:title" content="Intenal. For generating GLM data used in tests and vignettes. — linear_params" />
 
-<meta property="og:description" content="not currently in use" />
+<meta property="og:description" content="Make a and B for y = a + BX + e." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -99,7 +99,7 @@
   </ul>
 </li>
 <li>
-  <a href="../articles/benchmark.html">Benchmarking</a>
+  <a href="../articles/benchmark.html">Benchmark</a>
 </li>
 <li>
   <a href="https://github.com/blakeboswell/ploom">
@@ -119,25 +119,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>return true if model is gaussian family with identity link</h1>
+    <h1>Intenal. For generating GLM data used in tests and vignettes.</h1>
     
-    <div class="hidden name"><code>ols_model.Rd</code></div>
+    <div class="hidden name"><code>linear_params.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>not currently in use</p>
+    <p>Make a and B for y = a + BX + e.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>ols_model</span>(<span class='no'>object</span>)</pre>
+    <pre class="usage"><span class='fu'>linear_params</span>(<span class='no'>p</span>, <span class='kw'>betas_mu_lim</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>betas_sd_lim</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p><code>oomglm</code> model</p></td>
+      <th>p</th>
+      <td><p>number of columns in X.  will be forced to the nearest
+number divisible by two</p></td>
+    </tr>
+    <tr>
+      <th>betas_mu_lim</th>
+      <td><p>mean of beta normal distributions
+range between <code>-betas_mu_lim</code> and <code>betas_mu_lim</code></p></td>
+    </tr>
+    <tr>
+      <th>betas_sd_lim</th>
+      <td><p>standard deviation of beta normal distributions
+range between 1 and <code>betas_sd_lim</code></p></td>
     </tr>
     </table>
     

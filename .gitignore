@@ -1,2 +1,14 @@
-.DS_Store
+*.DS_Store
+*.so
+*.o
+docs/
+.Rproj.user/
 .Rproj.user
+scratch.R
+logo/
+benchmark/results/
+benchmark/archive/
+*.txt
+*.txt.gz
+*.Rds
+inst/doc

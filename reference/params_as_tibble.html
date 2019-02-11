@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Initialize Generalized Linear Regression Model
-with robust standard errors — init_oomglm_robust • ploom</title>
+<title>Intenal. For generating GLM data used in tests and vignettes. — params_as_tibble • ploom</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -33,11 +32,10 @@ with robust standard errors — init_oomglm_robust • ploom</title>
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="Initialize Generalized Linear Regression Model
-with robust standard errors — init_oomglm_robust" />
+<meta property="og:title" content="Intenal. For generating GLM data used in tests and vignettes. — params_as_tibble" />
 
-<meta property="og:description" content="Initialize Generalized Linear Regression Model
-with robust standard errors" />
+<meta property="og:description" content="Transform param list into single row table
+with alpha and B having names corresponding to data" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -102,7 +100,7 @@ with robust standard errors" />
   </ul>
 </li>
 <li>
-  <a href="../articles/benchmark.html">Benchmarking</a>
+  <a href="../articles/benchmark.html">Benchmark</a>
 </li>
 <li>
   <a href="https://github.com/blakeboswell/ploom">
@@ -122,44 +120,30 @@ with robust standard errors" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Initialize Generalized Linear Regression Model
-with robust standard errors</h1>
+    <h1>Intenal. For generating GLM data used in tests and vignettes.</h1>
     
-    <div class="hidden name"><code>init_oomglm_robust.Rd</code></div>
+    <div class="hidden name"><code>params_as_tibble.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Initialize Generalized Linear Regression Model
-with robust standard errors</p>
+    <p>Transform param list into single row table
+with alpha and B having names corresponding to data</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>init_oomglm_robust</span>(<span class='no'>formula</span>, <span class='no'>family</span>, <span class='no'>weights</span>, <span class='no'>start</span>, <span class='no'>se_type</span>)</pre>
+    <pre class="usage"><span class='fu'>params_as_tibble</span>(<span class='no'>params</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>formula</th>
-      <td><p>a symbolic description of the model to be fitted of class
-<code>formula</code>.</p></td>
+      <th>params</th>
+      <td><p>coefficient values</p></td>
     </tr>
     <tr>
-      <th>family</th>
-      <td><p>a <code><a href='https://www.rdocumentation.org/packages/stats/topics/family'>family()</a></code> object.</p></td>
-    </tr>
-    <tr>
-      <th>weights</th>
-      <td><p>a one-sided, single term <code>formula</code> specifying weights.</p></td>
-    </tr>
-    <tr>
-      <th>start</th>
-      <td><p>starting values for the parameters in the linear predictor.</p></td>
-    </tr>
-    <tr>
-      <th>se_type</th>
-      <td><p>type of robust standard errors</p></td>
+      <th>col_names</th>
+      <td><p>names of the coefficients</p></td>
     </tr>
     </table>
     
