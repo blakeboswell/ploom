@@ -43,7 +43,7 @@ psql_con <- function() {
 # 
 # benchmark_env$main(
 #   N            = 5 * 10^6,
-#   p            = 50,
+#   p            = 20,
 #   chunk_size   = 10^5,
 #   table_prefix = "linear",
 #   nprocs       = 4,
@@ -76,10 +76,10 @@ sys.source(
   toplevel.env = benchmark_env
 )
 
-result <- benchmark_env$main(table_prefix = "linear", num_obs = 10^6)
+result <- benchmark_env$main(table_prefix = "linear", num_obs = 5 * 10^6)
 
 result %>%
-  saveRDS("benchmark/results/glm_tbl_df.Rds")
+  saveRDS("inst/extdata/glm_benchmark.Rds")
 
 
 # # psql lm benchmark -----------------------------------------------------

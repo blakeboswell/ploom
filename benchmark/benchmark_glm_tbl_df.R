@@ -7,7 +7,8 @@ select_data <- function(table_prefix, num_obs) {
     RPostgres::dbSendQuery(con, glue("select * from {table_prefix}_data")) %>%
     RPostgres::dbColumnInfo() %>%
     pull(name) %>%
-    discard(function(x) x %in% c("index", "real_alpha"))
+    discard(function(x) x %in% c("index")) %>%
+    discard(function(x) str_detect(x, "y") & x != "real_ybin")
   
   query   <- glue(
     "select {str_c(vars, collapse = '\n, ')}
@@ -21,9 +22,11 @@ select_data <- function(table_prefix, num_obs) {
   
 }
 
-make_formula <- function(var_names) {
-  y <- head(var_names, 1)
-  X <- tail(var_names, -1)
+
+make_formula <- function(var_names, yval) {
+  y <- yval
+  X <- var_names %>% 
+    discard(function(x) str_detect(x, "y"))
   str_c(y, "~", str_c(X, collapse = "+")) %>% as.formula()
 }
 
@@ -41,16 +44,38 @@ benchmark_lm <- function(num_obs, df) {
       x  <- iter_weight(
         oomglm(formula = lm_formula),
         data = df[1:num_obs, ],
-        times = 8
+        times = 100
       )
+      coef(x)
+    },
+    "oomglm*" = {
+      x  <- iter_weight(
+        oomglm(formula = lm_formula),
+        data = df[1:num_obs, ],
+        times = 100
+      )
+      y <- predict(x, new_data = df[1:num_obs, ])
+      u <- df[1:num_obs, 1] - y
       coef(x)
     },
     "bigglm" = {
       y <- bigglm(formula = lm_formula, data = df[1:num_obs, ])
       coef(y)
     },
+    "bigglm*" = {
+      z <- bigglm(formula = lm_formula, data = df[1:num_obs, ])
+      y <- predict(z,  df[1:num_obs, ])
+      u <- df[1:num_obs, 1] - y
+      coef(z)
+    },
     "speedglm" = {
       z <- speedglm(formula = lm_formula, data = df[1:num_obs, ])
+      coef(z)
+    },
+    "speedglm*" = {
+      z <- speedglm(formula = lm_formula, data = df[1:num_obs, ])
+      y <- predict(z,  df[1:num_obs, ])
+      u <- df[1:num_obs, 1] - y
       coef(z)
     },
     min_time   = Inf,
@@ -59,7 +84,7 @@ benchmark_lm <- function(num_obs, df) {
   ) %>%
     summary()   %>%
     mutate(num_obs = num_obs) %>%
-    select(-gc)
+    select(-memory, -time, -gc)
   
   bm
   
@@ -72,12 +97,12 @@ main <- function(table_prefix, num_obs) {
   divs    <- 1:num_div*(num_obs/num_div)
   
   df          <- select_data(table_prefix, num_obs)
-  lm_formula  <- df %>% colnames() %>% make_formula()
+  lm_formula  <- df %>% colnames() %>% make_formula(yval = "real_ybin")
   
   # speedlm requires that the formula be in the global environment
   assign("lm_formula", lm_formula, envir = globalenv())
   
-  res  <- map(divs, benchmark_lm, df = df)
+  res  <- map_df(divs, benchmark_lm, df = df)
 
   rm(lm_formula, pos = 1)
   

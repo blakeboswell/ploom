@@ -43,7 +43,7 @@ benchmark_lm <- function(num_obs, df) {
       x  <- fit(oomlm(formula = lm_formula), data = df[1:num_obs, ])
       coef(x)
     },
-    "oomlm + resid" = {
+    "oomlm*" = {
       x <- fit(oomlm(formula = lm_formula), data = df[1:num_obs, ])
       y <- predict(x, new_data = df[1:num_obs, ])
       u <- df[1:num_obs, 1] - y
@@ -53,7 +53,7 @@ benchmark_lm <- function(num_obs, df) {
       y <- biglm(formula = lm_formula, data = df[1:num_obs, ])
       coef(y)
     },
-    "biglm + resid" = {
+    "biglm*" = {
       z <- biglm(formula = lm_formula, data = df[1:num_obs, ])
       y <- predict(z,  df[1:num_obs, ])
       u <- df[1:num_obs, 1] - y
@@ -63,7 +63,7 @@ benchmark_lm <- function(num_obs, df) {
       z <- speedlm(formula = lm_formula, data = df[1:num_obs, ])
       coef(z)
     },
-    "speedlm + resid" = {
+    "speedlm*" = {
       z <- speedlm(formula = lm_formula, data = df[1:num_obs, ])
       y <- predict(z,  df[1:num_obs, ])
       u <- df[1:num_obs, 1] - y
@@ -79,16 +79,6 @@ benchmark_lm <- function(num_obs, df) {
   bm
   
 }
-
-
-# table_prefix <- "linear"
-# num_obs      <- 5000
-# 
-# df <- select_data(table_prefix, num_obs)
-# 
-# lm_formula <- df %>% 
-#   colnames() %>% 
-#   make_formula(yval = "real_ygauss")
 
 
 main <- function(table_prefix, num_obs) {
