@@ -4,15 +4,17 @@
 \alias{augment.oomglm}
 \title{augment data with prediction, std error, and residuals}
 \usage{
-\method{augment}{oomglm}(x, data, type = "response", std_error = FALSE,
-  ...)
+\method{augment}{oomglm}(x, data, type_predict = "link",
+  type_residuals = "deviance", std_error = FALSE, ...)
 }
 \arguments{
 \item{x}{\code{oomlm} model}
 
 \item{data}{\code{tibble} or other data source}
 
-\item{type}{link or response}
+\item{type_predict}{type argument for \code{predict()}}
+
+\item{type_residuals}{type argument for \code{residuals()}}
 
 \item{std_error}{calculate standard error of prediction}
 

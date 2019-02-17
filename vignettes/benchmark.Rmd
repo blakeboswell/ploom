@@ -1,3 +1,4 @@
+
 ---
 title: "Benchmarking"
 output: rmarkdown::html_vignette
@@ -106,26 +107,26 @@ The benchmark represents typical `lm()` and `glm()` fitting tasks.  The model be
 
 ```{r, eval = TRUE, echo = FALSE, fig.width=7, fig.height=4.2, fig.align='center'}
 
-result <- readRDS(system.file("extdata", "lm_benchmark.Rds", package = "ploom"))
-
-names(colors) <- c(
-  "lm"
-  , "oomlm"
-  , "oomlm*"
-  , "speedlm"
-  , "speedlm*"
-  , "biglm"
-  , "biglm*"
-)
-colors[c("oomlm", "oomlm*")] <- "#E00F2E"
-includes_resid <- c(T, F, T, F, T, F, T)
-
-make_plot(
-  result,
-  colors,
-  includes_resid,
-  "Linear Model Runtime"
-)
+# result <- readRDS(system.file("extdata", "lm_benchmark.Rds", package = "ploom"))
+# 
+# names(colors) <- c(
+#   "lm"
+#   , "oomlm"
+#   , "oomlm*"
+#   , "speedlm"
+#   , "speedlm*"
+#   , "biglm"
+#   , "biglm*"
+# )
+# colors[c("oomlm", "oomlm*")] <- "#E00F2E"
+# includes_resid <- c(T, F, T, F, T, F, T)
+# 
+# make_plot(
+#   result,
+#   colors,
+#   includes_resid,
+#   "Linear Model Runtime"
+# )
 
 ```
 
@@ -133,26 +134,26 @@ make_plot(
 
 ```{r, eval = TRUE, echo = FALSE, fig.width=7, fig.height=4.2, fig.align='center'}
 
-result <- readRDS(system.file("extdata", "glm_benchmark.Rds", package = "ploom"))
-
-names(colors) <- c(
-  "glm"
-  , "oomglm"
-  , "oomglm*"
-  , "speedglm"
-  , "speedglm*"
-  , "bigglm"
-  , "bigglm*"
-)
-colors[c("oomglm", "oomglm*")] <- "#E00F2E"
-includes_resid <- c(T, F, T, F, T, F, T)
-
-make_plot(
-  result,
-  colors,
-  includes_resid,
-  "Generalized Linear Model Runtime (Binomial Family)"
-)
+# result <- readRDS(system.file("extdata", "glm_benchmark.Rds", package = "ploom"))
+# 
+# names(colors) <- c(
+#   "glm"
+#   , "oomglm"
+#   , "oomglm*"
+#   , "speedglm"
+#   , "speedglm*"
+#   , "bigglm"
+#   , "bigglm*"
+# )
+# colors[c("oomglm", "oomglm*")] <- "#E00F2E"
+# includes_resid <- c(T, F, T, F, T, F, T)
+# 
+# make_plot(
+#   result,
+#   colors,
+#   includes_resid,
+#   "Generalized Linear Model Runtime (Binomial Family)"
+# )
 
 ```
 
@@ -160,5 +161,5 @@ make_plot(
 
 The benchmark is available for replication [here](https://github.com/blakeboswell/ploom/tree/master/benchmark).
 
-
-<!-- Unlike `lm()` and `glm()`, fit functions from ploom, biglm, and speedglm do not calculate predictions and residuals by default. For parity, the benchmark run of these functions includes a call to `predict()` and a residual calculation. -->
+<!-- Unlike `lm()` and `glm()`, fit functions from ploom, biglm, and speedglm do not calculate predictions and residuals by default. For parity, the benchmark run of these functions includes a call to `predict()` and a residual calculation. 
+-->

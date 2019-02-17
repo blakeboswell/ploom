@@ -4,13 +4,13 @@
 \alias{predict_oomlm_x}
 \title{Internal. Perform \code{oomlm} prediction}
 \usage{
-predict_oomlm_x(object, new_data, std_error = FALSE, interval = NULL,
+predict_oomlm_x(object, chunk, std_error = FALSE, interval = NULL,
   level = 0.95)
 }
 \arguments{
 \item{object}{An \code{oomlm} model object.}
 
-\item{new_data}{Observations for prediction.}
+\item{chunk}{The \code{list} of artifacts returned by \code{unpack_oomchunk()}.}
 
 \item{std_error}{Indicates if the standard error of predicted means should
 be returned.}

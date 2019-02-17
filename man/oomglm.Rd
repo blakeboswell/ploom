@@ -6,6 +6,9 @@
 \alias{print.summary.oomglm}
 \alias{summary.oomglm}
 \alias{logLik.oomglm}
+\alias{family.oomglm}
+\alias{deviance.oomglm}
+\alias{vcov.oomglm}
 \title{Out of memory Generalized Linear model}
 \usage{
 oomglm(formula, family = gaussian(), weights = NULL, start = NULL,
@@ -54,8 +57,8 @@ and if the IRLS algorithm has converged (\code{converged}).
 }
 \examples{
 \donttest{
-# The `oomglm()` function employs Iteratively Weighted Least Squares (IWLS).
-# The IWLS iterations are performed by the function `fit()` which
+# The `oomglm()` function employs Iteratively Weighted Least Squares (IRLS).
+# The IRLS iterations are performed by the function `fit()` which
 # makes passes over the data until convergence.
 
 # reweight 4 times or until convergence

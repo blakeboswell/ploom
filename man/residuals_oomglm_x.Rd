@@ -4,12 +4,14 @@
 \alias{residuals_oomglm_x}
 \title{Internal.  Calculate residuals of \code{oomglm} model.}
 \usage{
-residuals_oomglm_x(object, x, type)
+residuals_oomglm_x(object, x, pred, type)
 }
 \arguments{
 \item{object}{An \code{oomglm} model.}
 
 \item{x}{The \code{list} of artifacts returned by \code{unpack_oomchunk()}.}
+
+\item{pred}{predicted response}
 
 \item{`type`}{Residual calculation method.}
 }

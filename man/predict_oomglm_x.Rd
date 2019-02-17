@@ -4,13 +4,12 @@
 \alias{predict_oomglm_x}
 \title{Internal. Perform \code{oomglm} prediction}
 \usage{
-predict_oomglm_x(object, new_data, type = "response",
-  std_error = FALSE)
+predict_oomglm_x(object, chunk, type = "response", std_error = FALSE)
 }
 \arguments{
 \item{object}{An \code{oomglm} model object.}
 
-\item{new_data}{Observations for prediction.}
+\item{chunk}{The \code{list} of artifacts returned by \code{unpack_oomchunk()}.}
 
 \item{type}{The type of prediction for \code{oomglm} models, "response" or "link".}
 
