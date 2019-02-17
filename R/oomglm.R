@@ -144,7 +144,7 @@ weight <- function(object, data) {
 end_weight <- function(object,
                        tolerance = 1e-8) {
 
-  object$iter <- object$iter + 1L 
+  object$iter <- object$iter + 1L
   beta_old    <- object$irls$beta
   
   if(is.null(beta_old)) {
@@ -202,15 +202,15 @@ fit.oomglm <- function(object, data, times = 2L, tolerance = 1e-8, ...) {
 #' @seealso [fit()]
 #' @export
 iter_weight <- function(object, data,
-                        times = 2L,
+                        times = 25L,
                         tolerance = 1e-8) {
-
+  
   for(i in 1:times) {
-    
+  
     if(object$converged) {
-      break
+      return(object)
     }
-    
+      
     object <- init_weight(object)
     object <- weight(object, data)
     object <- end_weight(object, tolerance)
@@ -259,11 +259,12 @@ iter_weight <- function(object, data,
 #' \item{call}{The matched call.}
 #' @seealso [oomlm()]
 #' @aliases print.oomglm print.summary.oomglm summary.oomglm logLik.oomglm
+#'   family.oomglm deviance.oomglm vcov.oomglm
 #' @export
 #' @name oomglm
 #' @examples \donttest{
-#' # The `oomglm()` function employs Iteratively Weighted Least Squares (IWLS).
-#' # The IWLS iterations are performed by the function `fit()` which
+#' # The `oomglm()` function employs Iteratively Weighted Least Squares (IRLS).
+#' # The IRLS iterations are performed by the function `fit()` which
 #' # makes passes over the data until convergence.
 #' 
 #' # reweight 4 times or until convergence
@@ -340,8 +341,8 @@ update_oomglm <- function(object, data, ...) {
     object$n             <- object$qr$num_obs
     object$df.residual   <- object$n - chunk$p
     object$df.null       <- object$n - as.integer(intercept)
-    object$iwls$rss      <- trans$rss
-    object$iwls$deviance <- trans$deviance
+    object$irls$rss      <- trans$rss
+    object$irls$deviance <- trans$deviance
     
     object
     

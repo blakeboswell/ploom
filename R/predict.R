@@ -69,29 +69,6 @@ predict.oomlm <- function(object,
 }
 
 
-#' @rdname predict
-#' @export
-predict.oomglm <- function(object,
-                           new_data    = NULL,
-                           type        = "response",
-                           std_error   = FALSE,
-                           as_function = FALSE, ...) {
-  
-  if(!as_function && is.null(new_data)){
-    stop("`new_data` must be provided if `as_function` is FALSE")
-  }
-  
-  fn <- predict_oomglm(object, type, std_error)
-  
-  if(as_function) {
-    return(fn)
-  }
-  
-  fn(new_data)
-  
-}
-
-
 #' Internal. Return function that will predict and format output
 #' 
 #' @param object An `oomlm` model object.
@@ -134,7 +111,7 @@ predict_oomlm <- function(object,
 #' Internal. Perform `oomlm` prediction
 #' 
 #' @param object An `oomlm` model object.
-#' @param new_data Observations for prediction.
+#' @param chunk The `list` of artifacts returned by `unpack_oomchunk()`.
 #' @param std_error Indicates if the standard error of predicted means should
 #'   be returned.
 #' @param interval Type of interval calculation, "confidence" or "prediction.
@@ -142,20 +119,23 @@ predict_oomlm <- function(object,
 #' @param level Confidence level for interval calculation.
 #' 
 #' @keywords internal
-predict_oomlm_x <- function(object, new_data,
+predict_oomlm_x <- function(object, chunk,
                             std_error = FALSE,
                             interval  = NULL,
                             level     = 0.95) {
 
-  X   <- new_data$data
+  X   <- chunk$data
   fit <- X %*% coef(object)
   
   if(std_error) {
     
-    rss    <- object$qr$rss_full
+    dispersion <- dispersion_oomlm(object)
+    res_scale  <- as.vector(sqrt(dispersion))
+
+    # rss    <- object$qr$rss_full
     dof    <- object$df.residual
     vcov_y <- vcov(object)
-    res_scale <- rss / dof
+    # res_scale <- rss / dof
     
     var_y <- apply(X, 1, function(x){
       tcrossprod(crossprod(x, vcov_y), x)
@@ -178,6 +158,29 @@ predict_oomlm_x <- function(object, new_data,
 }
 
 
+#' @rdname predict
+#' @export
+predict.oomglm <- function(object,
+                           new_data    = NULL,
+                           type        = "response",
+                           std_error   = FALSE,
+                           as_function = FALSE, ...) {
+  
+  if(!as_function && is.null(new_data)){
+    stop("`new_data` must be provided if `as_function` is FALSE")
+  }
+  
+  fn <- predict_oomglm(object, type, std_error)
+  
+  if(as_function) {
+    return(fn)
+  }
+  
+  fn(new_data)
+  
+}
+
+
 #' Internal. Return function that will predict and format output
 #' 
 #' @param object An `oomglm` model object.
@@ -187,7 +190,7 @@ predict_oomlm_x <- function(object, new_data,
 #'  
 #' @keywords internal
 predict_oomglm <- function(object,
-                           type = "response",
+                           type      = "response",
                            std_error = FALSE) {
   function(new_data) {
     
@@ -196,8 +199,8 @@ predict_oomglm <- function(object,
     
     if(std_error) {
       return(tibble::tibble(
-        .pred      = y$fit[, 1],
-        .std_error = y$std_error
+        .pred      = drop(y$fit),
+        .std_error = drop(y$std_error)
       ))
     }
 
@@ -210,44 +213,42 @@ predict_oomglm <- function(object,
 #' Internal. Perform `oomglm` prediction
 #' 
 #' @param object An `oomglm` model object.
-#' @param new_data Observations for prediction.
+#' @param chunk The `list` of artifacts returned by `unpack_oomchunk()`.
 #' @param type The type of prediction for `oomglm` models, "response" or "link".
 #' @param std_error Indicates if the standard error of predicted means should
 #'   be returned.
 #'   
 #' @keywords internal
-predict_oomglm_x <- function(object, new_data,
+predict_oomglm_x <- function(object, chunk,
                              type = "response",
                              std_error = FALSE) {
   
-  if(type == "link") {
+  if(!std_error) {
     
-    y <- predict_oomlm_x(object, new_data, std_error)
+    pred <- predict_oomlm_x(object, chunk)
     
-    if(std_error) {
-      return(list(fit = y$fit, std_error = y$std_error))
-    }
+    switch(type,
+           response = {pred <- family(object)$linkinv(pred)},
+           link = )
     
-    y
+    pred
     
   } else {
+
+    fam  <- family(object)
+    pred <- predict_oomlm_x(object, chunk, std_error = TRUE)
+    fit  <- pred$fit
+    se   <- pred$std_error
     
-    fam      <- family(object)
-    linkinv  <- fam$linkinv
-    mu_eta   <- fam$mu.eta
-      
-    z <- predict_oomlm_x(object, new_data, std_error)
-      
-    if(std_error) {
-      std_error <- z$std_error * abs(mu_eta(z$fit))
-      y  <- linkinv(z$fit)
-      return(list(fit = y, std_error = std_error))
-    } else {
-      y <- linkinv(z)
-    }
+    switch(type,
+           response = {
+             se  <- se * abs(fam$mu.eta(fit))
+             fit <- fam$linkinv(fit)
+           },
+           link = )
     
-    y
-      
+    list(fit = fit, std_error = se)
+    
   }
-  
+
 }

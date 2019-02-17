@@ -12,11 +12,24 @@ family.oomlm <- function(object, ...) {
   gaussian()
 }
 
+#' @method family oomglm
+#' @export
+family.oomglm <- function(object, ...) {
+  object$family
+}
+
 
 #' @method deviance oomlm
 #' @export
 deviance.oomlm <- function(object, ...) {
   object$qr$rss_full
+}
+
+
+#' @method deviance oomglm
+#' @export
+deviance.oomglm <- function(object, ...) {
+  object$irls$deviance
 }
 
 
@@ -55,11 +68,25 @@ confint.oomlm <- function(object, parm, level = 0.95, ...) {
 #' @export
 vcov.oomlm <- function(object, ...) {
   
-  ## cpp implementation / HC not supported ---------------------------
   V <- vcov(object$qr)
   dimnames(V) <- list(object$names, object$names)
 
   V
+  
+}
+
+
+#' @method vcov oomglm
+#' @export
+vcov.oomglm <- function(object, dispersion = NULL, ...) {
+
+  V  <- object$qr$sdm_inv()
+  dimnames(V) <- list(object$names, object$names)
+
+  if(is.null(dispersion)){
+    dispersion <- dispersion_oomlm(object)
+  }
+  V * dispersion
   
 }
 

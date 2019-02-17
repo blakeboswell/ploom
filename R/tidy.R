@@ -162,7 +162,8 @@ augment.oomlm <- function(x, data,
 #' 
 #' @param x `oomlm` model
 #' @param data `tibble` or other data source
-#' @param type link or response
+#' @param type_predict type argument for `predict()`
+#' @param type_residuals type argument for `residuals()`
 #' @param std_error calculate standard error of prediction
 #' @param ... ignored
 #' 
@@ -170,24 +171,28 @@ augment.oomlm <- function(x, data,
 #' @export
 #' @seealso [augment()]
 augment.oomglm <- function(x, data,
-                           type = "response",
-                           std_error = FALSE,
+                           type_predict   = "link",
+                           type_residuals = "deviance",
+                           std_error      = FALSE,
                            ...) {
 
   df        <- model_frame_tibble(x, data)
-  names(df) <- gsub("([._])|[[:punct:]]", ".", names(df))
+  names(df) <- gsub("[^[:alnum:][:space:]_]", ".", names(df))
   
-  chunk <- unpack_oomchunk(x, data)
-  u     <- residuals_oomglm_x(x, chunk, type)
-  y     <- predict_oomglm_x(x, chunk, type, std_error)
+  X     <- unpack_oomchunk(x, data)
+  pred  <- predict_oomglm_x(x, X, type_predict, std_error)
   
   if(std_error) {
-    df[[".fitted"]]    <- y$fit[, 1]
-    df[[".std_error"]] <- y$std_error
-    df[[".resid"]]     <- u[, 1]
+    df[[".fitted"]]    <- drop(pred$fit)
+    df[[".se.fit"]] <- drop(pred$std_error)
+    pred <- predict_oomglm_x(x, X, "response")
+    u    <- residuals_oomglm_x(x, X, pred, type = type_residuals)  
+    df[[".resid"]]     <- drop(u)
   } else {
-    df[[".fitted"]] <- y[, 1]
-    df[[".resid"]]  <- u[, 1]
+    df[[".fitted"]] <- drop(pred)
+    pred <- predict_oomglm_x(x, X, "response")
+    u    <- residuals_oomglm_x(x, X, pred, type = type_residuals)
+    df[[".resid"]]  <- drop(u)
   }
 
   df

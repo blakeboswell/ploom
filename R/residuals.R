@@ -82,8 +82,8 @@ residuals_oomlm <- function(object) {
 #' @keywords internal
 residuals_oomlm_x <- function(object, x) {
   y    <- x$response - x$offset
-  yhat <- x$data %*% coef(object)
-  y - yhat
+  pred <- x$data %*% coef(object)
+  y - pred
 }
 
 
@@ -102,9 +102,10 @@ residuals_oomglm <- function(object,
   type <- match.arg(type)
   
   function(data) {
-    chunk <- unpack_oomchunk(object, data)
-    r <- residuals_oomglm_x(object, chunk, type)
-    tibble::tibble(.resid = drop(r))
+    X     <- unpack_oomchunk(object, data)
+    pred  <- predict_oomglm_x(object, X, type = "response")
+    u     <- residuals_oomglm_x(object, X, pred, type)
+    tibble::tibble(.resid = drop(u))
   }
   
 }
@@ -114,39 +115,32 @@ residuals_oomglm <- function(object,
 #' 
 #' @param object An `oomglm` model.
 #' @param x The `list` of artifacts returned by `unpack_oomchunk()`.
+#' @param pred predicted response
 #' @param `type` Residual calculation method.
 #' 
 #' @keywords internal
-residuals_oomglm_x <- function(object, x, type) {
+residuals_oomglm_x <- function(object, x, pred, type) {
 
   fam  <- object$family
-  xadj <- glm_adjust(object, x)
-  wts  <- xadj$w
-  eta  <- xadj$z
-  y    <- x$response
-  yhat <- x$data %*% coef(object)
-  r    <- y - yhat
-  
-  switch(
-    type,
-    deviance=,pearson=,response=
-      if(is.null(y)) {
-        y <- yhat + r * fam$mu.eta(eta)
-      })
+  wts  <- x$weights
+  y    <- x$response - x$offset
   
   res <- switch(
     type,
     deviance = if(object$df.residual > 0) {
-      d.res <- sqrt(pmax(fam$dev.resids(y, yhat, wts), 0))
-      ifelse(y > yhat, d.res, -d.res)
+      dres <- sqrt(pmax(fam$dev.resids(y, pred, wts), 0))
+      ifelse(y > pred, dres, -dres)
     } else {
-      rep(0, length(yhat))
+      rep(0.0, length(pred))
     },
-    pearson  = (y - yhat) * sqrt(wts) / sqrt(fam$variance(yhat)),
-    working  = r,
-    response = y - yhat
+    pearson  = {
+      (y - pred) * sqrt(wts) / sqrt(fam$variance(pred))
+    },
+    response = y - pred
   )
   
   res
   
 }
+
+

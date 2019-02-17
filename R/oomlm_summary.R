@@ -1,4 +1,25 @@
 
+#' Internal. Calculate dispersion of oomlm model.
+#'
+#' @param x `oomlm` object
+#' @param ... ignored
+#' 
+#' @keywords internal
+dispersion_oomlm <- function(x, ...) {
+  
+  if(!inherits(x, "oomglm")) {
+    return(x$qr$rss_full / x$df.residual)
+  }
+  
+  if (x$family$family %in% c("poisson", "binomial")) {
+    1
+  } else {
+    deviance(x) / x$df.residual
+  }
+  
+}
+
+
 # Mimic base `lm` as closely as possible
 #
 #' @method summary oomlm
@@ -30,10 +51,10 @@ summary.oomlm <- function(object,
   
   sumsqy     <- object$qr$sumsqy
   rss        <- object$qr$rss()
-  rss_full   <- tail(rss, 1)
+  rss_full   <- object$qr$rss_full
   rss_red    <- if(has_intercept) head(rss, 1) else sumsqy
   res_dof    <- num_obs - rank
-  res_var    <- rss_full / res_dof
+  res_var    <- deviance(object) / res_dof
   res_std    <- sqrt(res_var)
   
   beta       <- coef(object)
@@ -98,11 +119,12 @@ summary.oomlm <- function(object,
     sigma         = res_std,
     r.squared     = r_squared,
     adj.r.squared = adj_r_squared,
-    cov.unscaled  = cov_mat * (num_obs - rank) / rss_full
+    cov.unscaled  = cov_mat / dispersion_oomlm(object)
   )
   
   if (correlation) {
-    corr_mat           <- (rval$cov.unscaled * res_var) / outer(se, se)
+    dd                 <- sqrt(diag(rval$cov.unscaled))
+    corr_mat           <- rval$cov.unscaled / outer(dd, dd)
     dimnames(corr_mat) <- dimnames(rval$cov.unscaled)
     rval$correlation   <- corr_mat
     rval$symbolic.cor  <- symbolic.cor

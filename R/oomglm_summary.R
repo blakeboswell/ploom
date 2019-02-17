@@ -7,8 +7,12 @@ summary.oomglm <- function(object,
 
     rval <- summary.oomlm(object, correlation, symbolic.cor, ...)
     
+    if(object$family$family != "gaussian") {
+      colnames(rval$coefficients)[3:4] <- c("z value", "Pr(>|z|)")  
+    }
+    
     rval$family      <- object$family  
-    rval$deviance    <- object$qr$rss_full
+    rval$deviance    <- deviance(object)
     rval$aic         <- AIC(object)
     rval$df.residual <- object$df.residual
     rval$df.null     <- object$df.null
