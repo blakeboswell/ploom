@@ -259,7 +259,7 @@ iter_weight <- function(object, data,
 #' \item{call}{The matched call.}
 #' @seealso [oomlm()]
 #' @aliases print.oomglm print.summary.oomglm summary.oomglm logLik.oomglm
-#'   family.oomglm deviance.oomglm vcov.oomglm
+#'   family.oomglm deviance.oomglm vcov.oomglm AIC.oomglm
 #' @export
 #' @name oomglm
 #' @examples \donttest{

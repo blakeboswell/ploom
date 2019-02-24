@@ -48,6 +48,13 @@ AIC.oomlm <- function(object, ..., k = 2) {
 }
 
 
+#' @method AIC oomglm
+#' @export
+AIC.oomglm <- function(object, ..., k = 2) {
+  deviance(object) + k * (object$n - object$df.resid)
+}
+
+
 #' @method coef oomlm
 #' @export
 coef.oomlm <- function(object, ...) {
@@ -144,16 +151,9 @@ logLik.oomlm <- function(object, ...) {
   pw  <- object$qr$pweights
   
   n0  <- n
-  
-  # if(REML){
-  #   n <- n - p
-  # }
-
   val <- 0.5 * (pw - n * (log(2 * pi) + 1 - log(n) + log(rss)))
   
-  # if(REML) val <- val - sum(log(abs(diag(object$qr$qr)[1L:p])))
-  
-  attr(val, "nall") <- n0 # NB, still omits zero weights
+  attr(val, "nall") <- n0
   attr(val, "nobs") <- n
   attr(val, "df") <- p + 1
   class(val) <- "logLik"
@@ -165,21 +165,21 @@ logLik.oomlm <- function(object, ...) {
 #' @method logLik oomglm
 #' @export
 logLik.oomglm <- function(object, ...) {
-  
+
   fam <- family(object)$family
   p   <- object$qr$rank()
-  
+
   if(fam %in% c("gaussian", "Gamma", "inverse.gaussian")) {
     p <- p + 1
   }
-  
+
   val <- p - AIC(object) / 2
-  
+
   attr(val, "nobs") <- object$qr$num_obs
   attr(val, "df")   <- p
   class(val) <- "logLik"
   val
-  
+
 }
 
 

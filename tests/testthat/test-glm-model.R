@@ -2,7 +2,7 @@ context("test-glm-model.R")
 
 set.seed(43)
 
-p <- 4
+p <- 10
 N <- 10^3
 
 params <- linear_params(p)
@@ -40,7 +40,7 @@ make_family <- function(y) {
 
 iter_model <- function(df, eqn, family, weights = NULL) {
   x <- oomglm(formula = eqn,  family = family, weights = weights)
-  fit(x, df, times = 7)
+  fit(x, df, times = 100)
 }
 
 
@@ -52,7 +52,7 @@ expect_attr_equal <- function(x, y, df) {
   
   sy <- summary(y, correlation = TRUE)
   sx <- summary(x, correlation = TRUE)
-  
+
   expect_equal(sy$terms, sx$terms)
   expect_equal(deviance(sy), deviance(sx))
   expect_equal(sy$df.residual, sx$df.residual)
@@ -70,19 +70,19 @@ expect_attr_equal <- function(x, y, df) {
   yy        <- as.vector(predict(y, df, type = "link"))
   xy        <- predict(x, df, type = "link")$.pred
   expect_equal(yy, xy)
-   
+
   yy <- as.vector(residuals(y, type = "deviance"))
   xy <- as.vector(residuals(x, data = df, type = "deviance")$.resid)
   expect_equal(yy, xy)
-  
+
   yy <- as.vector(residuals(y, type = "pearson"))
   xy <- as.vector(residuals(x, data = df, type = "pearson")$.resid)
   expect_equal(yy, xy)
-  
+
   yy <- as.vector(residuals(y, type = "response"))
   xy <- as.vector(residuals(x, data = df, type = "response")$.resid)
   expect_equal(yy, xy)
-  
+
   yy <- tryCatch(
     {broom::augment(y, df)},
     error = function(e) { NULL }
@@ -92,7 +92,7 @@ expect_attr_equal <- function(x, y, df) {
     expect_equal(yy$.fitted, xy$.fitted)
     expect_equal(yy$.resid, xy$.resid)
   }
- 
+
   yy <- tryCatch({broom::augment(y, df)}, error = function(e) { NULL })
   xy <- augment(x, df, std_error = TRUE)
   if(!is.null(yy)) {
@@ -100,7 +100,7 @@ expect_attr_equal <- function(x, y, df) {
     expect_equal(yy$.resid, xy$.resid)
     expect_equal(yy$.se.fit, xy$.se.fit, tolerance = 1e-4)
   }
-  
+
   yy <- tryCatch(
     {broom::augment(y, df, type.predict = "response")},
     error = function(e) { NULL }
@@ -111,7 +111,8 @@ expect_attr_equal <- function(x, y, df) {
     expect_equal(yy$.resid, xy$.resid)
     expect_equal(yy$.se.fit, xy$.se.fit, tolerance = 1e-4)
   }
-  
+
+  # need to implement BIC, AIC, logLik
   # yy <- tryCatch({broom::glance(y)}, error = function(e) { NULL })
   # xy <- glance(x)
   # if(!is.null(yy)) {
@@ -120,50 +121,42 @@ expect_attr_equal <- function(x, y, df) {
   #     as.numeric(as.matrix(unclass(xy)))
   #   )
   # }
-  #
-  # 
-  # expect_equal(
-  #   as.matrix(broom::tidy(y)[2:5]),
-  #   as.matrix(tidy(x)[2:5])
-  # )
+
+  expect_equal(
+    as.matrix(broom::tidy(y)[2:5]),
+    as.matrix(tidy(x)[2:5]),
+    tolerance = 1e-4
+  )
 
 }
 
 
-for(e in colnames(df)[3:3]) {
+for(e in colnames(df)[2:5]) {
+  
+  eqn <- make_formula(e, df)
+  fam <- make_family(e)
   
   test_that(paste(e, "oomglm"), {
-    eqn <- make_formula(e, df)
-    fam <- make_family(e)
     y <- glm(eqn, data = df, family = fam)
     x <- iter_model(df, eqn, family = fam)
     expect_attr_equal(x, y, df)
   })
   
-  # test_that(paste(e, "weighted oomglm"), {
-  #   eqn <- make_formula(e, df)
-  #   y <- glm(eqn, data = df, weights = w)
-  #   x <- iter_model(df, eqn, weights = ~w)
-  #   expect_attr_equal(x, y, df)
-  # })
-  # 
+  test_that(paste(e, "oomglm without intercept"), {
+    y <- glm(eqn, data = df, family = fam)
+    x <- iter_model(df, eqn, family = fam)
+    expect_attr_equal(x, y, df)
+  })
+  
+
 }
 
-
-
-# 
-# 
-# test_that("updating oomglm without intercept", {
-# 
-#   for(e in colnames(df)[1:5]) {
-#     f <- make_formula(e, df, noint = TRUE)
-#     y <- glm(f, data = df)
-#     x <- iter_model(df, f)
-#     expect_attr_equal(x, y, df)
-#   }
-#   
+# test_that(paste(e, "weighted oomglm"), {
+#   y <- glm(eqn, data = df, family = fam, weights = w)
+#   x <- iter_model(df, eqn, family = fam, weights = ~w)
+#   expect_attr_equal(x, y, df)
 # })
-# 
+
 # 
 # test_that("weighted updating oomglm without intercept", {
 # 

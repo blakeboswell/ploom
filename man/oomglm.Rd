@@ -9,6 +9,7 @@
 \alias{family.oomglm}
 \alias{deviance.oomglm}
 \alias{vcov.oomglm}
+\alias{AIC.oomglm}
 \title{Out of memory Generalized Linear model}
 \usage{
 oomglm(formula, family = gaussian(), weights = NULL, start = NULL,
